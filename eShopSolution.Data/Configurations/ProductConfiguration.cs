@@ -16,8 +16,6 @@ namespace eShopSolution.Data.Configurations
 
             builder.Property(p => p.Price).IsRequired();
 
-            builder.Property(p => p.Name).IsRequired();
-
             builder.Property(p => p.Stock).IsRequired().HasDefaultValue(0);
 
             builder.Property(p => p.Created_At)

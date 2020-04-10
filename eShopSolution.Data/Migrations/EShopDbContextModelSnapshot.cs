@@ -35,6 +35,14 @@ namespace eShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Carts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Price = 20000m
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.CartProduct", b =>
@@ -53,6 +61,14 @@ namespace eShopSolution.Data.Migrations
                     b.HasIndex("ProductID");
 
                     b.ToTable("CartProducts");
+
+                    b.HasData(
+                        new
+                        {
+                            CartID = 1,
+                            ProductID = 1,
+                            Quantity = 2
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Category", b =>
@@ -61,9 +77,6 @@ namespace eShopSolution.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CategoryUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
@@ -75,10 +88,6 @@ namespace eShopSolution.Data.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -87,6 +96,52 @@ namespace eShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Created_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsShowOnHome = true,
+                            Status = 1
+                        });
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.CategoryTranslation", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CategoryUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CategoryId", "LanguageId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("CategoryTranslations");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            LanguageId = 1,
+                            CategoryUrl = "banh-ngot",
+                            Name = "Bánh ngọt"
+                        },
+                        new
+                        {
+                            CategoryId = 1,
+                            LanguageId = 2,
+                            CategoryUrl = "cake",
+                            Name = "Cake"
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Contact", b =>
@@ -111,6 +166,29 @@ namespace eShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contact");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "hieuvo044@gmail.com",
+                            Message = "Very good",
+                            Name = "Võ Trung Hiếu"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "hieuvo044@gmail.com",
+                            Message = "Very good",
+                            Name = "Phuong Quyen"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "hieuvo044@gmail.com",
+                            Message = "Very good",
+                            Name = "Võ Trung Hiếu"
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Language", b =>
@@ -129,6 +207,20 @@ namespace eShopSolution.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Languages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Default = 0,
+                            Name = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Default = 0,
+                            Name = 0
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Order", b =>
@@ -225,21 +317,11 @@ namespace eShopSolution.Data.Migrations
                         .HasColumnType("Date")
                         .HasDefaultValueSql("GetDate()");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("OriginalPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ProductUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Stock")
                         .ValueGeneratedOnAdd()
@@ -251,6 +333,106 @@ namespace eShopSolution.Data.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Created_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            OriginalPrice = 17000m,
+                            Price = 20000m,
+                            Stock = 0
+                        });
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.ProductImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Caption = "!23",
+                            ImagePath = "http://product.hstatic.net/1000026716/product/81ax00mcvn_bd76b8bf0aed4307bc9714e4dc5830f0_large.jpg",
+                            IsDefault = true,
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Caption = "!23",
+                            ImagePath = "http://product.hstatic.net/1000026716/product/81ax00mcvn_bd76b8bf0aed4307bc9714e4dc5830f0_large.jpg",
+                            IsDefault = false,
+                            ProductId = 1
+                        });
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.ProductTranslation", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductId", "LanguageId");
+
+                    b.HasIndex("LanguageId");
+
+                    b.ToTable("ProductTranslations");
+
+                    b.HasData(
+                        new
+                        {
+                            ProductId = 1,
+                            LanguageId = 1,
+                            Description = "This is banh ngot 1",
+                            Name = "Bánh ngọt1",
+                            ProductUrl = "banh-ngot1"
+                        },
+                        new
+                        {
+                            ProductId = 1,
+                            LanguageId = 2,
+                            Description = "This is cake1",
+                            Name = "Cake1",
+                            ProductUrl = "cake1"
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Promotion", b =>
@@ -281,6 +463,26 @@ namespace eShopSolution.Data.Migrations
                     b.HasAlternateKey("Code");
 
                     b.ToTable("Promotions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "123",
+                            DiscountAmount = 10000,
+                            DiscountPercent = 0,
+                            FromDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ToDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "1234",
+                            DiscountAmount = 20000,
+                            DiscountPercent = 0,
+                            FromDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ToDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.CartProduct", b =>
@@ -294,6 +496,21 @@ namespace eShopSolution.Data.Migrations
                     b.HasOne("eShopSolution.Data.Entities.Product", "Product")
                         .WithMany("CartProducts")
                         .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.CategoryTranslation", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.Category", "Category")
+                        .WithMany("CategoryTranslations")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eShopSolution.Data.Entities.Language", "Language")
+                        .WithMany("CategoryTranslations")
+                        .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -327,6 +544,30 @@ namespace eShopSolution.Data.Migrations
                     b.HasOne("eShopSolution.Data.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.ProductImage", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.ProductTranslation", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.Language", "Language")
+                        .WithMany("ProductTranslations")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eShopSolution.Data.Entities.Product", "Product")
+                        .WithMany("ProductTranslations")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
