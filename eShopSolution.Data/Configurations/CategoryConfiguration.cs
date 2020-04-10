@@ -15,7 +15,6 @@ namespace eShopSolution.Data.Configurations
             builder.ToTable("Categories");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.IsShowOnHome).IsRequired().HasDefaultValue<bool>(true);
-            builder.Property(x => x.Name).IsRequired();
             builder.Property(x => x.Status).IsRequired().HasDefaultValue(CategoryStatus.Active);
             builder.Property(x => x.Created_At)
             .IsRequired()
