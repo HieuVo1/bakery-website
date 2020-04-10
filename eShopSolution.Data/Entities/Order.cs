@@ -10,6 +10,7 @@ namespace eShopSolution.Data.Entities
         public int Id { set; get; }
         public int UserId { set; get; }
         public int CartId { set; get; }
+        public int PromotionId { set; get; }
         public string ShipName { set; get; }
         public string ShipEmail { set; get; }
         public string ShipPhone { set; get; }
@@ -17,6 +18,8 @@ namespace eShopSolution.Data.Entities
         public decimal Total { set; get; }
         public OrderStatus Status { set; get; }
         public DateTime Created_At { set; get; }
+        public Promotion Promotion { set; get; }
+        public List<OrderDetail> OrderDetails { set; get; }
 
 
     }
