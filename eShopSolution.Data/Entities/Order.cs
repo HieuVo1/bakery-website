@@ -8,7 +8,7 @@ namespace eShopSolution.Data.Entities
     public class Order
     {
         public int Id { set; get; }
-        public int UserId { set; get; }
+        public Guid UserId { set; get; }
         public int CartId { set; get; }
         public int PromotionId { set; get; }
         public string ShipName { set; get; }
@@ -20,6 +20,7 @@ namespace eShopSolution.Data.Entities
         public DateTime Created_At { set; get; }
         public Promotion Promotion { set; get; }
         public List<OrderDetail> OrderDetails { set; get; }
+        public UserApp UserApp { set; get; }
 
 
     }
