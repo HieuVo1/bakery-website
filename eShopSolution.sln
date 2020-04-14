@@ -10,9 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.Data", "eShopSolution.Data\eShopSolution.Data.csproj", "{57A12B71-B423-4161-8A14-A349706D43BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopSolution.Data", "eShopSolution.Data\eShopSolution.Data.csproj", "{57A12B71-B423-4161-8A14-A349706D43BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.Application", "eShopSolution.Application\eShopSolution.Application.csproj", "{D8F9E988-DAF6-48D7-B73D-6C4F53934564}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopSolution.Application", "eShopSolution.Application\eShopSolution.Application.csproj", "{D8F9E988-DAF6-48D7-B73D-6C4F53934564}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.Utilities", "eShopSolution.Utilities\eShopSolution.Utilities.csproj", "{93556470-DBC8-42E0-BECA-49A750FE4B46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.ViewModel", "eShopSolution.ViewModel\eShopSolution.ViewModel.csproj", "{194BF9B4-25B2-435E-BC2A-9D9BA5742621}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,14 @@ Global
 		{D8F9E988-DAF6-48D7-B73D-6C4F53934564}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8F9E988-DAF6-48D7-B73D-6C4F53934564}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8F9E988-DAF6-48D7-B73D-6C4F53934564}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93556470-DBC8-42E0-BECA-49A750FE4B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93556470-DBC8-42E0-BECA-49A750FE4B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93556470-DBC8-42E0-BECA-49A750FE4B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93556470-DBC8-42E0-BECA-49A750FE4B46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194BF9B4-25B2-435E-BC2A-9D9BA5742621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194BF9B4-25B2-435E-BC2A-9D9BA5742621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194BF9B4-25B2-435E-BC2A-9D9BA5742621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194BF9B4-25B2-435E-BC2A-9D9BA5742621}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

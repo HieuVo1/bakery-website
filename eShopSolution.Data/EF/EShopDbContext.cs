@@ -10,7 +10,7 @@ using System.Text;
 
 namespace eShopSolution.Data.EF
 {
-    class EShopDbContext : IdentityDbContext<UserApp,RoleApp,Guid>
+    public class EShopDbContext : IdentityDbContext<UserApp,RoleApp,Guid>
     {
         public EShopDbContext( DbContextOptions options) : base(options)
         {
@@ -43,7 +43,10 @@ namespace eShopSolution.Data.EF
             //base.OnModelCreating(modelBuilder);
         }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<ProductTranslation> ProductTranslations { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CategoryTranslation> CategoryTranslations { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartProduct> CartProducts { get; set; }
         public DbSet<Contact> Contacts { get; set; }
