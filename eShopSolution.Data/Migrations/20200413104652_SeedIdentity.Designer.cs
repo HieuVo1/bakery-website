@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using eShopSolution.Data.EF;
 
 namespace eShopSolution.Data.Migrations
 {
     [DbContext(typeof(EShopDbContext))]
-    partial class EShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200413104652_SeedIdentity")]
+    partial class SeedIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,9 +471,6 @@ namespace eShopSolution.Data.Migrations
                     b.Property<string>("Caption")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("FileSize")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -495,7 +494,6 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = 1,
                             Caption = "!23",
-                            FileSize = 0L,
                             ImagePath = "http://product.hstatic.net/1000026716/product/81ax00mcvn_bd76b8bf0aed4307bc9714e4dc5830f0_large.jpg",
                             IsDefault = true,
                             ProductId = 1
@@ -504,7 +502,6 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = 2,
                             Caption = "!23",
-                            FileSize = 0L,
                             ImagePath = "http://product.hstatic.net/1000026716/product/81ax00mcvn_bd76b8bf0aed4307bc9714e4dc5830f0_large.jpg",
                             IsDefault = false,
                             ProductId = 1
@@ -630,7 +627,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "06e5ba9c-14d7-4e4a-9d23-2a573e9ad393",
+                            ConcurrencyStamp = "3abff076-5358-4dbd-8af1-44aad07f1c2f",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -697,14 +694,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "64ffcd09-ad80-4846-855c-ac9e7f1b3745",
+                            ConcurrencyStamp = "56a7bf90-ee6c-4a8e-a46d-c419f8c617bb",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "tedu.international@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "tedu.international@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKidzyDDtQZRG6zpVdEUmR4vcRHZN5q0YTCLvu7DtfUeiO9NXTlNNVkIcfqpsGlPdA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC1jB+Fd2p5xMXHatAGd4Brw/WxDecY49BSN6AVogpdiusRfc5uCbpTcMpRrknsdAw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,

@@ -18,6 +18,7 @@ namespace eShopSolution.Data.Configurations
             .IsRequired()
             .HasColumnType("Date")
             .HasDefaultValueSql("GetDate()");
+            builder.HasOne(x => x.UserApp).WithMany(u => u.Carts).HasForeignKey(x => x.UserId);
         }
     }
 }

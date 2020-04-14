@@ -13,6 +13,7 @@ namespace eShopSolution.Data.Entities
         public string ImagePath { get; set; }
 
         public string Caption { get; set; }
+        public long FileSize { set; get; }
 
         public bool IsDefault { get; set; }
 
