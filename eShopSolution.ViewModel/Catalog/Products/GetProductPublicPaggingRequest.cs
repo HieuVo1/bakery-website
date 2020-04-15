@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace eShopSolution.ViewModel.Catalog.Products.Public
+namespace eShopSolution.ViewModel.Catalog.Products
 {
-    public class GetProductPaggingRequest : PaggingRequestBase
+    public class GetProductPublicPaggingRequest : PaggingRequestBase
     {
         public int? CategoryId { set; get; }
         public string Keywork { set; get; }
