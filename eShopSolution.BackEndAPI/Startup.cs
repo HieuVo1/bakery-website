@@ -4,11 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Products;
 using eShopSolution.Application.Comom;
+using eShopSolution.Application.System.Users;
 using eShopSolution.Data.EF;
+using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.Constants;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,10 +34,19 @@ namespace eShopSolution.BackEndAPI
         {
             services.AddDbContext<EShopDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+            services.AddIdentity<UserApp, RoleApp>()
+                .AddEntityFrameworkStores<EShopDbContext>()
+                .AddDefaultTokenProviders();
             // Declare DI
             services.AddTransient<IStorageService, FileStorageService>();
             services.AddTransient<IPublicProductService,PublicProductService>();
             services.AddTransient<IManageProductService,ManageProductService>();
+            services.AddTransient<IUserService,UserService>();
+
+
+            services.AddTransient<UserManager<UserApp>, UserManager<UserApp>>();
+            services.AddTransient<SignInManager<UserApp>, SignInManager<UserApp>>();
+            services.AddTransient<RoleManager<RoleApp>, RoleManager<RoleApp>>();
             services.AddControllersWithViews();
             services.AddSwaggerGen(c =>
             {
