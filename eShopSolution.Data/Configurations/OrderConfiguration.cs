@@ -23,6 +23,8 @@ namespace eShopSolution.Data.Configurations
             builder.HasOne(o => o.Promotion)
                .WithOne(p => p.Order)
                .HasForeignKey<Order>(o => o.PromotionId);
+            builder.HasOne(o => o.UserApp).WithMany(u => u.Orders).HasForeignKey(o => o.UserId);
         }
+
     }
 }

@@ -10,6 +10,8 @@ namespace eShopSolution.Data.Entities
         public int Id { set; get; }
         public Languages Name { set; get; }
         public Languages Default { set; get; }
+        public List<ProductTranslation> ProductTranslations { set; get; }
+        public List<CategoryTranslation> CategoryTranslations { set; get; }
 
     }
 }
