@@ -3,16 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace eShopSolution.ViewModel.Catalog.Products
+namespace eShopSolution.ViewModel.Catalog.ProductImages
 {
     public class ProductImageCreateRequest
     {
-        public int ProductId { get; set; }
-
-        public string ImagePath { get; set; }
-
         public string Caption { get; set; }
-        public long FileSize { set; get; }
 
         public bool IsDefault { get; set; }
         public IFormFile ThumbnailImage { get; set; }
