@@ -17,11 +17,12 @@ namespace eShopSolution.Application.Catelog.Products
             _context = context;
         }
 
-        public async Task<List<ProductViewModel>> GetAll()
+        public async Task<List<ProductViewModel>> GetAll(int languageId)
         {
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join c in _context.Categories on p.CategoryId equals c.Id
+                        where pt.LanguageId == languageId
                         select new { p, pt, c };
             //Pagging
             var data = await query.Select(x => new ProductViewModel()
@@ -40,12 +41,12 @@ namespace eShopSolution.Application.Catelog.Products
             return data;
         }
 
-        public async Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request)
+        public async Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request, int LanguageId)
         {
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join c in _context.Categories on p.CategoryId equals c.Id
-                        where pt.Name.Contains(request.Keywork)
+                        where pt.LanguageId == LanguageId
                         select new { p, pt, c };
             //filter
             if (!String.IsNullOrEmpty(request.Keywork))
