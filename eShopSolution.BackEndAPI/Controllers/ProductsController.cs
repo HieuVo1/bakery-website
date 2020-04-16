@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Products;
 using eShopSolution.ViewModel.Catalog.ProductImages;
 using eShopSolution.ViewModel.Catalog.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,6 +25,7 @@ namespace eShopSolution.BackEndAPI.Controllers
 
         //https://locahost:port/products/?PageIndex=1&pageSize=1&categoryId=1
         [HttpGet("{LanguageId}")]
+        [Authorize]
         public async Task<IActionResult> GetPagging(int LanguageId, [FromQuery] GetProductPublicPaggingRequest request)
         {
             var products = await _publicProductService.GetAllByCategoryId(request, LanguageId);
