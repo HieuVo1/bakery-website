@@ -18,13 +18,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopSolution.Utilities", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopSolution.ViewModel", "eShopSolution.ViewModel\eShopSolution.ViewModel.csproj", "{194BF9B4-25B2-435E-BC2A-9D9BA5742621}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.BackEndAPI", "eShopSolution.BackEndAPI\eShopSolution.BackEndAPI.csproj", "{B16F5061-01A8-47B3-AA02-D8B04939A06E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "eShopSolution.BackEndAPI", "eShopSolution.BackEndAPI\eShopSolution.BackEndAPI.csproj", "{B16F5061-01A8-47B3-AA02-D8B04939A06E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. Infrastructure", "1. Infrastructure", "{6F660858-FD9E-4234-BBF0-FB1FA922D75F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Domain", "2. Domain", "{13458129-05EB-41C0-BB2B-2B5735F48996}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Hosts", "3. Hosts", "{6B099275-C789-4F23-B421-710E4D27B22F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eShopSolution.AdminApp", "eShopSolution.AdminApp\eShopSolution.AdminApp.csproj", "{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,6 +58,10 @@ Global
 		{B16F5061-01A8-47B3-AA02-D8B04939A06E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B16F5061-01A8-47B3-AA02-D8B04939A06E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B16F5061-01A8-47B3-AA02-D8B04939A06E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,6 +73,7 @@ Global
 		{93556470-DBC8-42E0-BECA-49A750FE4B46} = {6F660858-FD9E-4234-BBF0-FB1FA922D75F}
 		{194BF9B4-25B2-435E-BC2A-9D9BA5742621} = {6F660858-FD9E-4234-BBF0-FB1FA922D75F}
 		{B16F5061-01A8-47B3-AA02-D8B04939A06E} = {6B099275-C789-4F23-B421-710E4D27B22F}
+		{78C4A49C-400F-4FFC-AEF5-C71FDA3CDC27} = {6B099275-C789-4F23-B421-710E4D27B22F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CB0F16BC-DFCE-4CEB-881D-622479F38E08}

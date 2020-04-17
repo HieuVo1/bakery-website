@@ -18,9 +18,9 @@ namespace eShopSolution.BackEndAPI.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public string Index()
         {
-            return View();
+            return "Ok";
         }
 
         public IActionResult Privacy()
