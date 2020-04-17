@@ -1,0 +1,110 @@
+﻿<!doctype html>
+<html class="no-js " lang="en">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <meta name="description" content="Responsive Bootstrap 4 and web Application ui kit.">
+    <title>:: Aero Bootstrap4 Admin :: Home</title>
+    <link rel="icon" href="icon.ico" type="image/x-icon"> <!-- Favicon-->
+    <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css" />
+    <link rel="stylesheet" href="/assets/plugins/charts-c3/plugin.css" />
+
+    <link rel="stylesheet" href="/assets/plugins/morrisjs/morris.min.css" />
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="/assets/css/style.min.css">
+    @RenderSection("Bot", required: false)
+</head>
+
+<body class="theme-blush">
+
+    <!-- Page Loader -->
+    <partial name="_Loader.cshtml">
+
+     <!-- Overlay For Sidebars -->
+     <div class="overlay"></div>
+
+    <!-- Main Search -->
+    <partial name="_MainSearch.cshtml">
+
+     <!-- Right Icon menu Sidebar -->
+    <partial name="_RightIcon.cshtml">
+
+     <!-- Left Sidebar -->
+    <partial name="_LeftSidebar.cshtml">
+
+     <!-- Right Sidebar -->
+    <partial name="_RightSidebar.cshtml">
+
+    <section class="content">
+        @RenderBody()
+    </section>
+
+    <!-- Jquery Core Js -->
+    <script src="/assets/bundles/libscripts.bundle.js"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) -->
+    <script src="/assets/bundles/vendorscripts.bundle.js"></script> <!-- slimscroll, waves Scripts Plugin Js -->
+
+    <script src="/assets/bundles/jvectormap.bundle.js"></script> <!-- JVectorMap Plugin Js -->
+    <script src="/assets/bundles/sparkline.bundle.js"></script> <!-- Sparkline Plugin Js -->
+    <script src="/assets/bundles/c3.bundle.js"></script>
+
+    <script src="/assets/bundles/mainscripts.bundle.js"></script>
+    <script src="/assets/js/pages/index.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+
+
+</html>
+
+<!-- Main Content -->
+@*<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] - eShopSolution.AdminApp</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="/css/site.css" />
+    </head>
+    <body>
+        <header>
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">eShopSolution.AdminApp</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="container">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <footer class="border-top footer text-muted">
+            <div class="container">
+                &copy; 2020 - eShopSolution.AdminApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </div>
+        </footer>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @RenderSection("Scripts", required: false)
+    </body>
+    </html>*@
