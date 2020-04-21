@@ -8,6 +8,7 @@ namespace eShopSolution.Data.Entities
     public class UserApp :IdentityUser<Guid>
     {
         public DateTime Dob { set; get; }
+        public string FullName { set; get; }
         public List<Cart> Carts { set; get; }
         public List<Order> Orders { set; get; }
     }

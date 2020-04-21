@@ -13,4 +13,8 @@
     <Folder Include="Views\Product\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\eShopSolution.ViewModel\eShopSolution.ViewModel.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -6,20 +6,30 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using eShopSolution.WebApp.Models;
+using eShopSolution.WebApp.Services.Languages;
+using eShopSolution.WebApp.Services.Categorys;
 
 namespace eShopSolution.WebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly ILanguageService _languageService;
+        private readonly ICategoryService _categoryService;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ILanguageService languageService, ICategoryService categoryService)
         {
+            _languageService = languageService;
+            _categoryService = categoryService;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var categories = await _categoryService.GetAll("vn",1,6);
+            var languages = await _languageService.GetAll();
+            ViewData["languages"] = languages;
+            ViewData["categories"] = categories;
             return View();
         }
 

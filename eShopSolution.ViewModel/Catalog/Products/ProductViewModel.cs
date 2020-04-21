@@ -8,6 +8,7 @@ namespace eShopSolution.ViewModel.Catalog.Products
     {
         public int Id { set; get; }
         public int CategoryId { set; get; }
+        public string categoryUrl { set; get; }
         public decimal Price { set; get; }
         public decimal OriginalPrice { set; get; }
         public int Stock { set; get; }
@@ -15,6 +16,8 @@ namespace eShopSolution.ViewModel.Catalog.Products
         public string Name { set; get; }
         public string Description { set; get; }
         public string ProductUrl { set; get; }
-        public int LanguageId { set; get; }
+        public string LanguageId { set; get; }
+        public string Language { set; get; }
+        public string ImagePath { set; get; }
     }
 }

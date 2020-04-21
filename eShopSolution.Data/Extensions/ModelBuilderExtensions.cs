@@ -19,8 +19,8 @@ namespace eShopSolution.Data.Extensions
             );
             //Languages
             modelBuilder.Entity<Language>().HasData(
-                new Language() { Id = 1, Name = Enums.Languages.VIETNAM },
-                new Language() { Id = 2, Name = Enums.Languages.ENGLISH }
+                new Language() { Id = "vn", Name = "VIETNAM" },
+                new Language() { Id = "en", Name = "ENGLISH" }
             );
             //Promotions
             modelBuilder.Entity<Promotion>().HasData(
@@ -38,8 +38,8 @@ namespace eShopSolution.Data.Extensions
            );
             //CategoryTranslations
            modelBuilder.Entity<CategoryTranslation>().HasData(
-                 new CategoryTranslation() { Name = "Bánh ngọt", LanguageId = 1, CategoryUrl = "banh-ngot", CategoryId = 1 },
-                 new CategoryTranslation() { Name = "Cake", LanguageId = 2, CategoryUrl = "cake", CategoryId = 1 }
+                 new CategoryTranslation() { Name = "Bánh ngọt", LanguageId = "vn", CategoryUrl = "banh-ngot", CategoryId = 1 },
+                 new CategoryTranslation() { Name = "Cake", LanguageId = "en", CategoryUrl = "cake", CategoryId = 1 }
             );
             //Products
             modelBuilder.Entity<Product>().HasData(
@@ -53,8 +53,8 @@ namespace eShopSolution.Data.Extensions
             );
             //ProductTranslations
             modelBuilder.Entity<ProductTranslation>().HasData(
-                new ProductTranslation() { ProductId = 1, Name = "Bánh ngọt1", LanguageId = 1, ProductUrl = "banh-ngot1", Description = "This is banh ngot 1" },
-                new ProductTranslation() { ProductId = 1, Name = "Cake1", LanguageId = 2, ProductUrl = "cake1", Description = "This is cake1" }
+                new ProductTranslation() { ProductId = 1, Name = "Bánh ngọt1", LanguageId = "vn", ProductUrl = "banh-ngot1", Description = "This is banh ngot 1" },
+                new ProductTranslation() { ProductId = 1, Name = "Cake1", LanguageId = "en", ProductUrl = "cake1", Description = "This is cake1" }
             );
             //ProductImages
             modelBuilder.Entity<ProductImage>().HasData(

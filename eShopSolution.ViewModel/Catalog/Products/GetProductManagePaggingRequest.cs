@@ -7,9 +7,10 @@ namespace eShopSolution.ViewModel.Catalog.Products
 {
     public class GetProductManagePaggingRequest : PaggingRequestBase
     {
-        public int languageId { set; get; }
-        public List<int> CategoryIds { set; get; }
+        public string languageId { set; get; }
+        public List<int>? CategoryIds { set; get; }
         public string Keywork { set; get; }
+        public string? CategoryUrl { set; get; }
 
     }
 }

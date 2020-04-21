@@ -25,16 +25,22 @@ namespace eShopSolution.BackEndAPI.Controllers
 
         //https://locahost:port/products/?PageIndex=1&pageSize=1&categoryId=1
         [HttpGet("{LanguageId}")]
-        [Authorize]
-        public async Task<IActionResult> GetPagging(int LanguageId, [FromQuery] GetProductPublicPaggingRequest request)
+        public async Task<IActionResult> GetPagging(string LanguageId, [FromQuery] GetProductPublicPaggingRequest request)
         {
             var products = await _publicProductService.GetAllByCategoryId(request, LanguageId);
             return Ok(products);
         }
+        //https://locahost:port/products/getbyUrl/languageId/?PageIndex=1&pageSize=1&categoryUrl=1
+        [HttpGet("getByUrl/{LanguageId}")]
+        public async Task<IActionResult> GetByCategoryUrl(string LanguageId, [FromQuery] GetProductManagePaggingRequest request)
+        {
+            var products = await _manageProductService.GetAllByCategoryUrl(request, LanguageId);
+            return Ok(products);
+        }
 
-        //https://locahost:port/product/id
+        //https://locahost:port/products/productId/languageId
         [HttpGet("{productId}/{languageId}")]
-        public async Task<IActionResult> GetById(int productId,int languageId)
+        public async Task<IActionResult> GetById(int productId, string languageId)
         {
             var product = await _manageProductService.GetById(productId, languageId);
             if (product == null) return NotFound("Can not find");
@@ -54,7 +60,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Created(nameof(GetById), result);
         }
 
-        [HttpPut]
+        [HttpPatch]
         public async Task<IActionResult> Update([FromForm] ProductUpdateRequest request)
         {
             if (ModelState.IsValid == false)
@@ -83,7 +89,7 @@ namespace eShopSolution.BackEndAPI.Controllers
         }
 
         [HttpPost("{productId}/images")]
-        public async Task<IActionResult> CreateImages(int productId,[FromForm] ProductImageCreateRequest request)
+        public async Task<IActionResult> CreateImages(int productId, [FromForm] ProductImageCreateRequest request)
         {
             if (ModelState.IsValid == false)
             {
@@ -108,7 +114,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(product);
         }
 
-        [HttpPut("{productId}/images/{imageId}")]
+        [HttpPatch("images/{imageId}")]
         public async Task<IActionResult> UpdateImage(int imageId, [FromForm] ProductImageUpdateRequest request)
         {
             if (ModelState.IsValid == false)
@@ -119,7 +125,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             if (result == 0) return BadRequest();
             return Ok();
         }
-        [HttpDelete("{productId}/images/{imageId}")]
+        [HttpDelete("images/{imageId}")]
         public async Task<IActionResult> DeleteImage(int imageId)
         {
             var result = await _manageProductService.RemoveImage(imageId);

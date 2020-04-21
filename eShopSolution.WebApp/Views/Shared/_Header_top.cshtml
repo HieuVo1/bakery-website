@@ -1,4 +1,12 @@
-﻿<div class="header__top">
+﻿
+@using eShopSolution.ViewModel.Language
+@{
+
+    var languages = (List<LanguageViewModel>)ViewData["languages"];
+
+}
+
+<div class="header__top">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12 ">
@@ -18,9 +26,15 @@
                 <div class="btn-group ps-dropdown">
                     <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Language<i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">English</a></li>
-                        <li><a href="#">Japanese</a></li>
-                        <li><a href="#">Chinese</a></li>
+                        @{
+                            if (languages != null)
+                            {
+                                foreach (var language in languages)
+                                {
+                                    <li><a href="#">@language.Name</a></li>
+                                }
+                            }
+                        }
                     </ul>
                 </div>
             </div>

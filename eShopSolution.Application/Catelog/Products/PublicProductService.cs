@@ -17,7 +17,7 @@ namespace eShopSolution.Application.Catelog.Products
             _context = context;
         }
 
-        public async Task<List<ProductViewModel>> GetAll(int languageId)
+        public async Task<List<ProductViewModel>> GetAll(string languageId)
         {
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
@@ -41,7 +41,7 @@ namespace eShopSolution.Application.Catelog.Products
             return data;
         }
 
-        public async Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request, int LanguageId)
+        public async Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request, string LanguageId)
         {
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
@@ -59,7 +59,32 @@ namespace eShopSolution.Application.Catelog.Products
             }
             //Pagging
             int totalRow = await query.CountAsync();
-            var data = await query.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize)
+            if (request.PageIndex == 0 || request.PageSize == 0)
+            {
+                var data = await query
+               .Select(x => new ProductViewModel()
+               {
+                   Id = x.p.Id,
+                   Name = x.pt.Name,
+                   Created_At = x.p.Created_At,
+                   Description = x.pt.Description,
+                   LanguageId = x.pt.LanguageId,
+                   OriginalPrice = x.p.OriginalPrice,
+                   Price = x.p.Price,
+                   Stock = x.p.Stock,
+                   CategoryId = x.c.Id,
+                   ProductUrl = x.pt.ProductUrl
+               }).ToListAsync();
+                var pageViewModel = new PageViewModel<ProductViewModel>()
+                {
+                    TotalRecord = totalRow,
+                    Items = data
+                };
+                return pageViewModel;
+            }
+            else
+            {
+                var data = await query.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize)
                 .Select(x => new ProductViewModel()
                 {
                     Id = x.p.Id,
@@ -73,13 +98,15 @@ namespace eShopSolution.Application.Catelog.Products
                     CategoryId = x.c.Id,
                     ProductUrl = x.pt.ProductUrl
                 }).ToListAsync();
-            //Select and  projection
-            var pageViewModel = new PageViewModel<ProductViewModel>()
-            {
-                TotalRecord = totalRow,
-                Items = data
-            };
-            return pageViewModel;
+                //Select and  projection
+                var pageViewModel = new PageViewModel<ProductViewModel>()
+                {
+                    TotalRecord = totalRow,
+                    Items = data
+                };
+                return pageViewModel;
+            }
+                
         }
     }
 }

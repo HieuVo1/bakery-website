@@ -1,0 +1,229 @@
+﻿@using eShopSolution.ViewModel.Catalog.Categories
+@using eShopSolution.ViewModel.Language
+@model CategoryCreateRequest
+@{
+    var categories = (List<CategoryViewModel>)ViewData["categories"];
+    var languages = (List<LanguageViewModel>)ViewData["languages"];
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/jquery-datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/assets/plugins/dropify/css/dropify.min.css">
+    <link rel="stylesheet" href="/assets/plugins/bootstrap-select/css/bootstrap-select.css" />
+}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-9 col-md-6 col-sm-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/index"><i class="zmdi zmdi-home"></i> Home</a></li>
+                    <li class="breadcrumb-item active">Category</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button">
+                    <i class="zmdi zmdi-sort-amount-desc"></i>
+                </button>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 language-select">
+                        <select class="form-control show-tick ms select2" data-placeholder="Select">
+                            @{
+                                if (languages != null)
+                                {
+                                    foreach (var language in @languages)
+                                    {
+                                        <option>@language.Name</option>
+                                    }
+                                }
+
+                            }
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form enctype="multipart/form-data" asp-controller="Category" asp-action="Create" method="post">
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" asp-for="Name" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>ShowHome:</label>
+                            <div class="default" style="display: inline;margin-left: 66px;">
+                                <div class="radio inlineblock m-r-20">
+                                    <input type="radio" asp-for="IsShowOnHome" id="Show" class="with-gap" value="true">
+                                    <label for="Show">True</label>
+                                </div>
+                                <div class="radio inlineblock">
+                                    <input type="radio" asp-for="IsShowOnHome" id="NotShow" class="with-gap" value="false" checked="">
+                                    <label for="NotShow">False</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group-image">
+                            <label>Image</label>
+                            <input type="file" asp-for="ThumbnailImage" class="dropify" multiple data-allowed-file-extensions="png jpg">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Basic Examples -->
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><strong>Categories</strong> </h2>
+
+                        <div class="float-right">
+                            <button type="button" style="margin-top: -50px;"
+                                    class=" insertcategory btn btn-primary waves-effect waves-light add-form-category " data-toggle="modal"
+                                    data-target="#exampleModal">
+                                <i class="fa fa-cog mr-1"></i>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Name</th>
+                                        <th>Language</th>
+                                        <th>IsShowHome</th>
+                                        <th>Image</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @{
+                                        if (@categories != null)
+                                        {
+                                            foreach (var category in @categories)
+                                            {
+                                                <tr>
+                                                    <td>@category.Id</td>
+                                                    <td>@category.Name</td>
+                                                    <td>@category.Language</td>
+                                                    <td>@category.IsShowOnHome</td>
+                                                    <td class="text-center">
+                                                        <img src="https://localhost:5001/user-content/@category.ImagePath" width="48" alt="category img">
+                                                    </td>
+                                                    <td width="15%" class="footable-last-visible" style="display: table-cell;">
+                                                        <a>
+                                                            <button class="btn btn-primary btn-sm editcategory"
+                                                                    data-id="@category.Id" data-toggle="modal"
+                                                                    data-target="#exampleModal">
+                                                                <i class="zmdi zmdi-edit"></i>
+                                                                Sửa
+                                                            </button>
+                                                        </a>
+                                                        <a class="delete" asp-controller="category" asp-action="delete" asp-route-id=@category.Id>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="zmdi zmdi-delete"></i>
+                                                                Delete
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="/assets/bundles/datatablescripts.bundle.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.bootstrap4.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.colVis.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.flash.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.print.min.js"></script>
+
+    <script src="/assets/js/pages/tables/jquery-datatable.js"></script>
+    <script src="/assets/plugins/dropify/js/dropify.min.js"></script>
+
+    <script src="/assets/js/pages/forms/dropify.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.editcategory').click(function (e) {
+                var id = $(this).attr("data-id");
+                //get row
+                var row = $(this).parent().parent().parent();
+                //get value of row
+
+                var name = row.find("td:eq(1)").text();
+                var IsShowOnHome = row.find("td:eq(3)").text();
+                var src = row.find("td:eq(4)").children().attr("src");
+                $('#exampleModalLabel').text("Edit Category")
+                $("#exampleModal form").attr("action", "/category/Update/" + id);
+
+                //set value for form
+                $(".modal-body [name=Name]").val(name);
+                $("#exampleModal .form-group-image .dropify-wrapper").remove();
+                $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
+                $('.dropify').dropify();
+                //$(".dropify").attr("data-default-file", src);
+                if (IsShowOnHome === "True") {
+                    $("#Show").prop('checked', true);
+                }
+                else {
+                    $("#NotShow").prop('checked', true);
+                }
+
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.insertcategory').click(function (e) {
+                e.preventDefault();
+                $(".modal-body [name=Name]").val('');
+                $("#NotShow").prop('checked', true);
+                $('#exampleModalLabel').text("Add Category")
+                $("#exampleModal form").attr('action', "/category/create/");
+                $("#exampleModal .form-group-image .dropify-wrapper").remove();
+                $("#exampleModal .form-group-image").append('<input type="file" name="ThumbnailImage" class="dropify" multiple  data-allowed-file-extensions="png jpg">');
+                $('.dropify').dropify();
+            });
+        });
+    </script>
+}

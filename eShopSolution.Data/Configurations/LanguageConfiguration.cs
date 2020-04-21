@@ -14,8 +14,8 @@ namespace eShopSolution.Data.Configurations
         {
             builder.ToTable("Languages");
             builder.HasKey(l => l.Id);
-            builder.Property(l => l.Name).IsRequired(true);
-            builder.Property(l => l.Default).IsRequired(true).HasDefaultValue(Languages.VIETNAM);
+            builder.Property(l => l.Name).IsRequired(true).HasDefaultValue("VIETNAM");
+            builder.Property(l => l.IsDefault).IsRequired(true).HasDefaultValue(false);
         }
     }
 }

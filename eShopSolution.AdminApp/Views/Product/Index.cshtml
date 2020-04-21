@@ -1,0 +1,142 @@
+﻿@using eShopSolution.ViewModel.Catalog.Products
+@using eShopSolution.ViewModel.Language
+@using Microsoft.AspNetCore.Http.Extensions
+@{
+    var products = (List<ProductViewModel>)ViewData["products"];
+    var languages = (List<LanguageViewModel>)ViewData["languages"];
+    var url = @Context.Request.GetDisplayUrl();
+    string[] arrListUrl = url.Split('/');
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/jquery-datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/assets/plugins/bootstrap-select/css/bootstrap-select.css" />
+}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-9 col-md-6 col-sm-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/index"><i class="zmdi zmdi-home"></i> Home</a></li>
+                    <li class="breadcrumb-item active">Product</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button">
+                    <i class="zmdi zmdi-sort-amount-desc"></i>
+                </button>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+                <div class="row">
+                    <div class="col-lg-8 col-md-6 language-select">
+                        <select class="form-control show-tick ms select2" data-placeholder="Select">
+                            @{
+                                if (languages != null)
+                                {
+                                    foreach (var language in @languages)
+                                    {
+                                        <option>@language.Name</option>
+                                    }
+                                }
+
+                            }
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <!-- Basic Examples -->
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><strong>Categories</strong> </h2>
+
+                        <div class="float-right">
+                            <form action="/product/@arrListUrl[4]/newproduct" method="get">
+                                <button type="submit" style="margin-top: -50px;"
+                                        class=" insertcategory btn btn-primary waves-effect waves-light add-form-category " data-toggle="modal"
+                                        data-target="#exampleModal">
+                                    <i class="fa fa-cog mr-1"></i>
+                                    Add
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Name</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Language</th>
+                                        <th>Image</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @{
+                                        if (products != null)
+                                        {
+                                            foreach (var product in products)
+                                            {
+                                                <tr>
+                                                    <td>@product.Id</td>
+                                                    <td>@product.Name</td>
+                                                    <td>@product.Price</td>
+                                                    <td>@product.Stock</td>
+                                                    <td>@product.Language</td>
+                                                    <td class="text-center">
+                                                        <img style="display: block; margin: auto;padding-bottom: 13px;" src="https://localhost:5001/user-content/@product.ImagePath" width="48" alt="product img">
+                                                        <a href="/product/@product.Id/Images">More Image</a>
+                                                    </td>
+                                                    <td width="15%" class="footable-last-visible" style="display: table-cell;">
+                                                        <form action="/product/@product.categoryUrl/edit/@product.Id/@product.LanguageId"  method="get">
+                                                            <button class="btn btn-primary btn-sm"
+                                                                    data-id="@product.Id" data-toggle="modal"
+                                                                    data-target="#exampleModal">
+                                                                <i class="zmdi zmdi-edit"></i>
+                                                                Edit
+                                                            </button>
+                                                        </form>
+                                                        <a class="delete" asp-controller="product" asp-action="delete" asp-route-categoryUrl="@product.categoryUrl" asp-route-id=@product.Id>
+                                                            <button class="btn btn-danger btn-sm">
+                                                                <i class="zmdi zmdi-delete"></i>
+                                                                Delete
+                                                            </button>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="/assets/bundles/datatablescripts.bundle.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.bootstrap4.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.colVis.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.flash.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.print.min.js"></script>
+
+    <script src="/assets/js/pages/tables/jquery-datatable.js"></script>
+}

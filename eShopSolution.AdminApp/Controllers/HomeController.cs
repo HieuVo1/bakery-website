@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using eShopSolution.AdminApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using eShopSolution.AdminApp.Service.Categorys;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace eShopSolution.AdminApp.Controllers
 {
@@ -14,17 +17,24 @@ namespace eShopSolution.AdminApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ICategoryService _categoryService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ICategoryService categoryService)
         {
+            _categoryService = categoryService;
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult>Index()
         {
+            var categories = await _categoryService.GetAll("vn");
+            ViewData["categories"] = categories;
             var user = User.Identity.Name;
+            var role = User.Identity.AuthenticationType;
+            
             return View();
         }
+   
 
         public IActionResult Privacy()
         {

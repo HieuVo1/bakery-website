@@ -11,6 +11,7 @@ namespace eShopSolution.Data.Entities
         public bool IsShowOnHome { set; get; }
         public CategoryStatus Status { set; get; }
         public DateTime Created_At { set; get; }
+        public string ImagePath { get; set; }
         public List<Product> Products { set; get; }
         public List<CategoryTranslation> CategoryTranslations { set; get; }
     }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eShopSolution.Application.Catelog.Categories;
 using eShopSolution.Application.Catelog.Products;
 using eShopSolution.Application.Comom;
+using eShopSolution.Application.Languages;
 using eShopSolution.Application.System.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
@@ -37,6 +39,14 @@ namespace eShopSolution.BackEndAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:5002");
+                    });
+            });
             services.AddDbContext<EShopDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
             services.AddIdentity<UserApp, RoleApp>()
@@ -46,6 +56,9 @@ namespace eShopSolution.BackEndAPI
             services.AddTransient<IStorageService, FileStorageService>();
             services.AddTransient<IPublicProductService, PublicProductService>();
             services.AddTransient<IManageProductService, ManageProductService>();
+            services.AddTransient<IPublicCategoryService, PublicCategoryService>();
+            services.AddTransient<IManageCategoryService, ManageCategoryService>();
+            services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IUserService, UserService>();
 
 
@@ -55,6 +68,9 @@ namespace eShopSolution.BackEndAPI
             services.AddControllers().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
             //services.AddTransient<IValidator<LoginRequest>, LoginRequestValidator>();
             //services.AddTransient<IValidator<RegisterRequest>, RegisterRequestValidator>();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+             );
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger eShopSolution", Version = "v1" });
@@ -112,8 +128,8 @@ namespace eShopSolution.BackEndAPI
                     IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                 };
             });
-            
-         }
+
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -132,7 +148,7 @@ namespace eShopSolution.BackEndAPI
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseRouting();
-
+            app.UseCors();
             app.UseAuthorization();
             app.UseSwagger();
             app.UseSwaggerUI(c =>

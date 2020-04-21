@@ -194,6 +194,9 @@ namespace eShopSolution.Data.Migrations
                         .HasColumnType("Date")
                         .HasDefaultValueSql("GetDate()");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsShowOnHome")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -223,8 +226,8 @@ namespace eShopSolution.Data.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
+                    b.Property<string>("LanguageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CategoryUrl")
                         .HasColumnType("nvarchar(max)");
@@ -242,14 +245,14 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             CategoryId = 1,
-                            LanguageId = 1,
+                            LanguageId = "vn",
                             CategoryUrl = "banh-ngot",
                             Name = "Bánh ngọt"
                         },
                         new
                         {
                             CategoryId = 1,
-                            LanguageId = 2,
+                            LanguageId = "en",
                             CategoryUrl = "cake",
                             Name = "Cake"
                         });
@@ -304,16 +307,14 @@ namespace eShopSolution.Data.Migrations
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Language", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Default")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Name")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -322,15 +323,15 @@ namespace eShopSolution.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Default = 0,
-                            Name = 1
+                            Id = "vn",
+                            IsDefault = false,
+                            Name = "VIETNAM"
                         },
                         new
                         {
-                            Id = 2,
-                            Default = 0,
-                            Name = 0
+                            Id = "en",
+                            IsDefault = false,
+                            Name = "ENGLISH"
                         });
                 });
 
@@ -516,8 +517,8 @@ namespace eShopSolution.Data.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("int");
+                    b.Property<string>("LanguageId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -538,7 +539,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             ProductId = 1,
-                            LanguageId = 1,
+                            LanguageId = "vn",
                             Description = "This is banh ngot 1",
                             Name = "Bánh ngọt1",
                             ProductUrl = "banh-ngot1"
@@ -546,7 +547,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             ProductId = 1,
-                            LanguageId = 2,
+                            LanguageId = "en",
                             Description = "This is cake1",
                             Name = "Cake1",
                             ProductUrl = "cake1"
@@ -630,7 +631,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "06e5ba9c-14d7-4e4a-9d23-2a573e9ad393",
+                            ConcurrencyStamp = "ccd8674e-5f7e-4f9e-9acd-70e0cb34190f",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -657,6 +658,9 @@ namespace eShopSolution.Data.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -697,14 +701,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "64ffcd09-ad80-4846-855c-ac9e7f1b3745",
+                            ConcurrencyStamp = "e606ef79-5ca5-4c74-a5bb-3cd56a356fa4",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "tedu.international@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "tedu.international@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEKidzyDDtQZRG6zpVdEUmR4vcRHZN5q0YTCLvu7DtfUeiO9NXTlNNVkIcfqpsGlPdA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIu7mXygmlZ2Qdwxrc8wGZFQrFVEGeS+OwUEe7X+Vrr1ij+Yg3ETlD0wNQ7Ek6Ir4Q==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,

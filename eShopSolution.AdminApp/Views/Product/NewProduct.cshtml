@@ -1,0 +1,318 @@
+﻿@using eShopSolution.ViewModel.Catalog.Products
+@using eShopSolution.ViewModel.Catalog.Categories
+@using eShopSolution.ViewModel.Language
+@model ProductCreateRequest
+@{
+    var categories = (List<CategoryViewModel>)ViewData["categories"];
+    var languages = (List<LanguageViewModel>)ViewData["languages"];
+    var product = (ProductViewModel)ViewData["product"];
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/jquery-datatable/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/assets/plugins/summernote/dist/summernote.css" />
+    <link rel="stylesheet" href="/assets/plugins/dropify/css/dropify.min.css">
+}
+@{
+   
+    if (product != null)
+    {
+
+        <div class="body_scroll">
+            <div class="block-header">
+                <div class="row">
+                    <div class="col-lg-7 col-md-6 col-sm-12">
+                        <h2></h2>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/products">Product</a></li>
+                            <li class="breadcrumb-item active">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-5 col-md-6 col-sm-12">
+                        <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <form asp-controller="product" asp-action="update" asp-route-id="@product.Id" method="POST" enctype="multipart/form-data">
+                    <div class="row clearfix">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="card">
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <label>Language</label>
+                                            <div class="form-group">
+                                                <select class="form-control ms" id="select-category" asp-for="LanguageId"
+                                                        required>
+                                                    @{
+                                                        if (languages != null)
+                                                        {
+                                                            foreach (var language in languages)
+                                                            {
+                                                                <option value="@language.Id">@language.Name</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Category</label>
+                                            <div class="form-group">
+                                                <select class="form-control ms" id="select-category" asp-for="CategoryId"
+                                                        required>
+                                                    @{
+                                                        if (categories != null)
+                                                        {
+                                                            foreach (var category in categories)
+                                                            {
+                                                                <option value="@category.Id">@category.Name</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <label>Name</label>
+                                            <div class="form-group">
+                                                <input type="text" asp-for="Name" class="form-control"
+                                                       value="@product.Name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Stock</label>
+                                                <input type="number" asp-for="Stock" class="form-control"
+                                                       value="@product.Stock" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Price</label>
+                                                <div class="input-group masked-input mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="zmdi zmdi-money"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control price"
+                                                           value="@product.Price" placeholder="Ex: 100,000,000,000 vnđ" asp-for="Price" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Original Price</label>
+                                                <div class="input-group masked-input mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="zmdi zmdi-money"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control price"
+                                                           value="@product.OriginalPrice" placeholder="Ex: 100,000,000,000 vnđ" asp-for="OriginalPrice" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <div class="header">
+                                                    <h2><strong>Description</strong></h2>
+                                                </div>
+                                                <textarea class="summernote" name="Description">@product.Description</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-9 m-auto ">
+                                            <div class="form-group">
+                                                <div class="header">
+                                                    <h2><label>Image</label></h2>
+                                                </div>
+                                                <div class="body">
+                                                    <input type="file" class="dropify" name="ThumbnailImage" data-height="300px" multiple
+                                                           data-default-file="https://localhost:5001/user-content/@product.ImagePath"
+                                                           data-allowed-file-extensions="jpg png">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="body_scroll">
+            <div class="block-header">
+                <div class="row">
+                    <div class="col-lg-7 col-md-6 col-sm-12">
+                        <h2></h2>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/products">Product</a></li>
+                            <li class="breadcrumb-item active">
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-5 col-md-6 col-sm-12">
+                        <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button">
+                            <i class="zmdi zmdi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <form asp-controller="product" asp-action="create" method="POST" enctype="multipart/form-data">
+                    <div class="row clearfix">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="card">
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <label>Language</label>
+                                            <div class="form-group">
+                                                <select class="form-control ms" id="select-category" asp-for="LanguageId"
+                                                        required>
+                                                    @{
+                                                        if (languages != null)
+                                                        {
+                                                            foreach (var language in languages)
+                                                            {
+
+                                                                <option value="@language.Id">@language.Name</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>Category</label>
+                                            <div class="form-group">
+                                                <select class="form-control ms" id="select-category" asp-for="CategoryId"
+                                                        required>
+                                                    @{
+                                                        if (categories != null)
+                                                        {
+                                                            foreach (var category in categories)
+                                                            {
+
+                                                                <option value="@category.Id">@category.Name</option>
+                                                            }
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <label>Name</label>
+                                            <div class="form-group">
+                                                <input type="text" asp-for="Name" class="form-control"
+                                                       value="" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Stock</label>
+                                                <input type="number" asp-for="Stock" class="form-control"
+                                                       value="" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Price</label>
+                                                <div class="input-group masked-input mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="zmdi zmdi-money"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control price"
+                                                           value="" placeholder="Ex: 100,000,000,000 vnđ" asp-for="Price" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <label>Original Price</label>
+                                                <div class="input-group masked-input mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text"><i class="zmdi zmdi-money"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control price"
+                                                           placeholder="Ex: 100,000,000,000 vnđ" asp-for="OriginalPrice" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="body">
+                                    <div class="row clearfix">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <div class="header">
+                                                    <h2><strong>Description</strong></h2>
+                                                </div>
+                                                <textarea class="summernote" asp-for="Description"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                        <div class="col-sm-9 m-auto ">
+                                            <div class="form-group">
+                                                <div class="header">
+                                                    <h2><label>Image</label></h2>
+                                                </div>
+                                                <div class="body">
+                                                    <input type="file" class="dropify" asp-for="ThumbnailImage" data-height="300px" multiple
+                                                           data-default-file=""
+                                                           data-allowed-file-extensions="jpg png">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+
+}
+
+@section Scripts
+{
+    <script src="/assets/js/pages/forms/basic-form-elements.js"></script>
+    <script src="/assets/plugins/dropify/js/dropify.min.js"></script>
+    <script src="/assets/js/pages/forms/dropify.js"></script>
+    <script src="/assets/plugins/summernote/dist/summernote.js"></script>
+}

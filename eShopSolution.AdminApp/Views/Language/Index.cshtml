@@ -1,0 +1,188 @@
+﻿@using eShopSolution.ViewModel.Language
+@model LanguageCreateRequest
+@{
+    var languages = (List<LanguageViewModel>)ViewData["languages"];
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/jquery-datatable/dataTables.bootstrap4.min.css">
+}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/index"><i class="zmdi zmdi-home"></i> Home</a></li>
+                    <li class="breadcrumb-item active">Language</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button">
+                    <i class="zmdi zmdi-sort-amount-desc"></i>
+                </button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">
+                <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button">
+                    <i class="zmdi zmdi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Language</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form asp-controller="Language" asp-action="Create" method="post" id="languageForm">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Id</label>
+                            <input type="text" asp-for="Id" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" asp-for="Name" class="form-control"  />
+                        </div>
+                        <div class="form-group">
+                            <label>IsDefault:</label>
+                            <div class="default" style="display: inline;margin-left: 66px;">
+                                <div class="radio inlineblock m-r-20">
+                                    <input type="radio" asp-for="IsDefault" id="Isdefault" class="with-gap" value="true">
+                                    <label for="Isdefault">True</label>
+                                </div>
+                                <div class="radio inlineblock">
+                                    <input type="radio" asp-for="IsDefault" id="IsNotDefault" class="with-gap" value="false" checked="">
+                                    <label for="IsNotDefault">False</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Basic Examples -->
+        <div class="row clearfix">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><strong>Languges</strong> </h2>
+                        <div class="float-right">
+                            <button type="button" style="margin-top: -50px;"
+                                    class=" insertlanguage btn btn-primary waves-effect waves-light add-form-category " data-toggle="modal"
+                                    data-target="#exampleModal">
+                                <i class="fa fa-cog mr-1"></i>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover js-basic-example dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Name</th>
+                                        <th>IsDefault</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @{
+                                        foreach (var language in @languages)
+                                        {
+                                        <tr>
+                                            <td>@language.Id</td>
+                                            <td>@language.Name</td>
+                                            <td>@language.IsDefault</td>
+                                            <td width="15%" class="footable-last-visible" style="display: table-cell;">
+                                                <a>
+                                                    <button class="btn btn-primary btn-sm editlanguage"
+                                                            data-id="@language.Id" data-toggle="modal"
+                                                            data-target="#exampleModal">
+                                                        <i class="zmdi zmdi-edit"></i>
+                                                        Edit
+                                                    </button>
+                                                </a>
+                                                <a class="delete" asp-controller="language" asp-action="delete" asp-route-id=@language.Id>
+                                                    <button class="btn btn-danger btn-sm">
+                                                        <i class="zmdi zmdi-delete"></i>
+                                                        Delete
+                                                    </button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="/assets/bundles/datatablescripts.bundle.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/dataTables.buttons.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.bootstrap4.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.colVis.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.flash.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.html5.min.js"></script>
+    <script src="/assets/plugins/jquery-datatable/buttons/buttons.print.min.js"></script>
+    <script src="/assets/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="/assets/js/pages/forms/form-validation.js"></script>
+    <script src="/assets/js/pages/tables/jquery-datatable.js"></script>
+   
+    <script>
+        $(document).ready(function () {
+            $('.editlanguage').click(function (e) {
+               //get row
+                var row = $(this).parent().parent().parent();
+                //get value of row
+                var id = row.find("td:eq(0)").text();
+                var name = row.find("td:eq(1)").text();
+                var Isdefault = row.find("td:eq(2)").text();
+                $('#exampleModalLabel').text("Edit Language")
+                $("#exampleModal form").attr("action", "/language/update/" + id);
+                
+                //set value for form
+                $(".modal-body [name=Id]").val(id).prop("disabled", true);
+                $(".modal-body [name=Name]").val(name);
+                if (Isdefault === "True") {
+                    $("#Isdefault").prop('checked', true);
+                }
+                else {
+                    $("#IsNotDefault").prop('checked', true);
+                }
+                
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.insertlanguage').click(function (e) {
+                e.preventDefault();
+                $(".modal-body [name=Id]").val('').val('').prop("disabled", false);
+                $(".modal-body [name=Name]").val("");
+                $("#IsNotDefault").prop('checked', true);
+                $("#Isdefault").prop('value', true);
+                $('#exampleModalLabel').text("Add Language")
+                $("#exampleModal form").attr('action', "/language/create");
+            });
+        });
+    </script>
+}

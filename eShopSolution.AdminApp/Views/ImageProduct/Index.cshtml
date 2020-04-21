@@ -1,0 +1,195 @@
+﻿@using eShopSolution.ViewModel.Catalog.ProductImages
+@using eShopSolution.ViewModel.Catalog.Products
+@using eShopSolution.ViewModel.Common;
+@using Microsoft.AspNetCore.Http.Extensions
+@model ProductImageCreateRequest
+@{
+    var images = (List<ProductImageViewModel>)ViewData["images"];
+    var products = (List<ProductViewModel>)ViewData["products"];
+    var url = @Context.Request.GetDisplayUrl();
+    string[] arrListUrl = url.Split('/');
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/light-gallery/css/lightgallery.css">
+    <link rel="stylesheet" href="/assets/plugins/dropify/css/dropify.min.css">
+}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Image Product</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                    <li class="breadcrumb-item active">Product</li>
+                    <li class="breadcrumb-item active">Image Product</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">
+                <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form asp-controller="ImageProduct" asp-action="Create" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Product Name</label>
+                            <select asp-for="productId" class="form-control show-tick ms select2" data-placeholder="Select">
+                                @{
+                                    if (products != null)
+                                    {
+                                        foreach (var product in products)
+                                        {
+                                            <option value="@product.Id">@product.Name</option>
+                                        }
+                                    }
+
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Caption</label>
+                            <input type="text" asp-for="Caption" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>IsDefault:</label>
+                            <div class="default" style="display: inline;margin-left: 66px;">
+                                <div class="radio inlineblock m-r-20">
+                                    <input type="radio" id="Isdefault" asp-for="IsDefault" class="with-gap" value="true">
+                                    <label for="Isdefault">True</label>
+                                </div>
+                                <div class="radio inlineblock">
+                                    <input type="radio" id="IsNotDefault" asp-for="IsDefault" class="with-gap" value="false" checked="">
+                                    <label for="IsNotDefault">False</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group-image">
+                            <label>Image</label>
+                            <input type="file" name="ThumbnailImage" class="dropify" multiple data-allowed-file-extensions="png jpg">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><strong>Images</strong> </h2>
+                        <div class="float-right">
+                            <button type="button" style="margin-top: -50px;"
+                                    class=" insertProductImage btn btn-primary waves-effect waves-light add-form-category " data-toggle="modal"
+                                    data-target="#exampleModal">
+                                <i class="fa fa-cog mr-1"></i>
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                            @{
+                                if (images != null)
+                                {
+                                    foreach (var image in images)
+                                    {
+                                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 m-b-30 card file_manager">
+                                            <div class="file">
+                                                <div class="hover">
+                                                    <form class="delete" action="/product/@arrListUrl[4]/Images/delete/@image.Id" style="display:inline">
+                                                        <button type="button" class="btn btn-icon btn-icon-mini btn-round btn-danger">
+                                                            <i class="zmdi zmdi-delete"></i>
+                                                        </button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-icon btn-icon-mini btn-round btn-primary eidtProductImage" data-id="@image.Id" data-toggle="modal"
+                                                            data-target="#exampleModal">
+                                                        <i class="zmdi zmdi-edit"></i>
+                                                    </button>
+                                                </div>
+                                                <a href="https://localhost:5001/user-content/@image.ImagePath">
+                                                    <div class="image">
+                                                        <img class="img-fluid img-thumbnail" src="https://localhost:5001/user-content/@image.ImagePath" alt="">
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="/assets/js/pages/medias/image-gallery.js"></script>
+    <script src="/assets/plugins/light-gallery/js/lightgallery-all.min.js"></script>
+    <script src="/assets/plugins/dropify/js/dropify.min.js"></script>
+
+    <script src="/assets/js/pages/forms/dropify.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.eidtProductImage').click(function (e) {
+                var id = $(this).attr("data-id");
+                $.ajax({
+                    type: "get",
+                    url: "https://localhost:5001/api/products/@arrListUrl[4]/images/"+id,
+                    dataType: "json",
+                    success: function (res) {
+                        console.log(res);
+                        $('#exampleModalLabel').text("Edit Image")
+                        $("#exampleModal form").attr("action", "/product/"+@arrListUrl[4]+"/images/Update/" + id);
+                        $(".select2").prop("disabled", true);
+                        $(".modal-body [name=Caption]").val(res.caption);
+                        $("#exampleModal .form-group-image .dropify-wrapper").remove();
+                        var src = "https://localhost:5001/user-content/" + res.imagePath;
+                        $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
+                        $('.dropify').dropify();
+                        //$(".dropify").attr("data-default-file", src);
+                        if (res.isDefault === true) {
+                            $("#Isdefault").prop('checked', true);
+                        }
+                        else {
+                            $("#IsNotdefault").prop('checked', true);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.insertProductImage').click(function (e) {
+                e.preventDefault();
+                $("#IsNotdefault").prop('checked', true);
+                $('#exampleModalLabel').text("Add Image")
+                $("#exampleModal form").attr('action', "/imageproduct/create/");
+                $("#exampleModal .form-group-image .dropify-wrapper").remove();
+                $("#exampleModal .form-group-image").append('<input type="file" name="ThumbnailImage" class="dropify" multiple  data-allowed-file-extensions="png jpg">');
+                $('.dropify').dropify();
+            });
+        });
+    </script>
+
+}
