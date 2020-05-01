@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ICategoryService _categoryService;
@@ -28,7 +28,7 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult>Index()
         {
             var categories = await _categoryService.GetAll("vn");
-            ViewData["categories"] = categories;
+            ViewData["categories"] = categories.ResultObject;
             var user = User.Identity.Name;
             var role = User.Identity.AuthenticationType;
             

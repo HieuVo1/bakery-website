@@ -1,5 +1,6 @@
 ﻿
 using eShopSolution.ViewModel.Catalog.Categories;
+using eShopSolution.ViewModel.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace eShopSolution.WebApp.Services.Categorys
 {
     public interface ICategoryService
     {
-        Task<CategoryViewModel> GetById(int categoryId, int languageId);
-        Task<List<CategoryViewModel>> GetAll(string languageId,int pageIndex,int pageSize);
+        Task<ApiResult<CategoryViewModel>> GetById(int categoryId, int languageId);
+        Task<ApiResult<List<CategoryViewModel>>> GetAll(string languageId,int pageIndex=0,int pageSize=0);
     }
 }

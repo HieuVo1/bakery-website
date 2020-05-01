@@ -1,4 +1,5 @@
 ﻿using eShopSolution.Data.Entities;
+using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,10 @@ namespace eShopSolution.AdminApp.Service.Languages
 {
     public interface ILanguageService
     {
-        Task<LanguageViewModel> GetById(string languageId);
-        Task<bool> Create(LanguageCreateRequest request);
-        Task<bool> Update(LanguageUpdateRequest request,string languageId);
-        Task<bool> Delete(string languageId);
-        Task<List<LanguageViewModel>> GetAll();
+        Task<ApiResult<LanguageViewModel>> GetById(string languageId);
+        Task<ApiResult<string>> Create(LanguageCreateRequest request);
+        Task<ApiResult<string>> Update(LanguageUpdateRequest request,string languageId);
+        Task<ApiResult<string>> Delete(string languageId);
+        Task<ApiResult<List<LanguageViewModel>>> GetAll();
     }
 }

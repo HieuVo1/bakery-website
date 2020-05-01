@@ -2,12 +2,14 @@
 using eShopSolution.ViewModel.Catalog.Products;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Service.Products
@@ -16,16 +18,19 @@ namespace eShopSolution.AdminApp.Service.Products
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
-        public ProductService(IHttpClientFactory httpClientFactory)
+        private IHttpContextAccessor _httpContextAccessor;
+        public ProductService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactor = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
             _client.BaseAddress = new Uri("https://localhost:5001");
         }
 
-        public async Task<bool> Create(ProductCreateRequest request)
+        public async Task<ApiResult<string>> Create(ProductCreateRequest request)
         {
-            var json = JsonConvert.SerializeObject(request);
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.LanguageId), "languageId");
             form.Add(new StringContent(request.Name), "Name");
@@ -44,21 +49,33 @@ namespace eShopSolution.AdminApp.Service.Products
             }
            
             var response = await _client.PostAsync($"/api/products", form);
-            return response.IsSuccessStatusCode;
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
         }
 
-        public async Task<bool> Delete(int productId)
+        public async Task<ApiResult<string>> Delete(int productId)
         {
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var response = await _client.DeleteAsync($"/api/products/{productId}");
-            return response.IsSuccessStatusCode;
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
         }
 
-        public Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request, string LanguageId)
+        public Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryId(GetProductPaggingRequest request, string LanguageId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<PageViewModel<ProductViewModel>> GetAllByCategoryUrl(string categoryUrl, string languageId)
+        public async Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryUrl(string categoryUrl, string languageId)
         {
             //https://locahost:port/products/languageId/?PageIndex=1&pageSize=1&categoryUrl=1
             var response = await _client.GetAsync($"/api/products/getByUrl/{languageId}?categoryUrl={categoryUrl}");
@@ -70,8 +87,11 @@ namespace eShopSolution.AdminApp.Service.Products
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<PageViewModel<ProductViewModel>>(data);
-
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<PageViewModel<ProductViewModel>>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<PageViewModel<ProductViewModel>>>(data);
                 }
                 else
                 {
@@ -80,10 +100,10 @@ namespace eShopSolution.AdminApp.Service.Products
             }
         }
 
-        public async Task<PageViewModel<ProductViewModel>> getAllPagging(GetProductManagePaggingRequest request)
+        public async Task<ApiResult<PageViewModel<ProductViewModel>>> getAllPagging(GetProductPaggingRequest request)
         {
             //https://locahost:port/products/?PageIndex=1&pageSize=1&categoryId=1
-            var response = await _client.GetAsync($"/api/products/{request.languageId}");
+            var response = await _client.GetAsync($"/api/products/{request.LanguageId}");
             using (HttpContent content = response.Content)
             {
                 //convert data content to string using await
@@ -92,8 +112,11 @@ namespace eShopSolution.AdminApp.Service.Products
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<PageViewModel<ProductViewModel>>(data);
-
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<PageViewModel<ProductViewModel>>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<PageViewModel<ProductViewModel>>>(data);
                 }
                 else
                 {
@@ -102,7 +125,7 @@ namespace eShopSolution.AdminApp.Service.Products
             }
         }
 
-        public async Task<ProductViewModel> GetById(int productId,string languageId)
+        public async Task<ApiResult<ProductViewModel>> GetById(int productId,string languageId)
         {
             //https://locahost:port/products/productId/languageId
             var response = await _client.GetAsync($"/api/products/{productId}/{languageId}");
@@ -114,7 +137,11 @@ namespace eShopSolution.AdminApp.Service.Products
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<ProductViewModel>(data);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<ProductViewModel>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<ProductViewModel>>(data);
 
                 }
                 else
@@ -123,8 +150,10 @@ namespace eShopSolution.AdminApp.Service.Products
                 }
             }
         }
-        public async Task<bool> Update(ProductUpdateRequest request)
+        public async Task<ApiResult<string>> Update(ProductUpdateRequest request)
         {
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var json = JsonConvert.SerializeObject(request);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.LanguageId), "languageId");
@@ -145,17 +174,22 @@ namespace eShopSolution.AdminApp.Service.Products
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
             var response = await _client.PatchAsync($"/api/products", form);
-            return response.IsSuccessStatusCode;
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
         }
 
   
 
-        public Task<bool> UpdatePrice(int ProductId, decimal newPrice)
+        public Task<ApiResult<string>> UpdatePrice(int ProductId, decimal newPrice)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateStock(int ProductId, int addedQuantity)
+        public Task<ApiResult<string>> UpdateStock(int ProductId, int addedQuantity)
         {
             throw new NotImplementedException();
         }

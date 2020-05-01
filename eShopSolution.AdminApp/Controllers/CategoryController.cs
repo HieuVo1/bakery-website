@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    public class CategoryController : Controller
+    public class CategoryController : BaseController
     {
         private readonly ICategoryService _categoryService;
         private readonly ILanguageService _languageService;
@@ -23,14 +23,19 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Index([FromRoute] string id)
         {
             var categories = await _categoryService.GetAll(id);
-            var languages = await _languageService.GetAll();
-            var indexVN = languages.FindIndex(x => x.Name == "VIETNAM");
-            if (indexVN != 0)
+            var result = await _languageService.GetAll();
+            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
+            if (indexVN != -1)
             {
-                SwapGeneric<LanguageViewModel>.Swap(languages, indexVN, 0);
+                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
             }
-            ViewData["categories"] = categories;
-            ViewData["languages"] = languages;
+            if (TempData["result"] != null)
+            {
+                ViewBag.result = TempData["result"];
+                ViewBag.IsSuccess = TempData["IsSuccess"];
+            }
+            ViewData["categories"] = categories.ResultObject;
+            ViewData["languages"] = result.ResultObject;
             return View();
         }
         [HttpPost]
@@ -39,10 +44,20 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
+                
                 request.LanguageId = "vn";
-                var category = await _categoryService.Create(request);
-
-                return RedirectToAction("Index", "category",new { id="vn"});
+                var result = await _categoryService.Create(request);
+                if (result.IsSuccessed == true)
+                {
+                    TempData["result"] = "Create Success";
+                    TempData["IsSuccess"] = true;
+                }
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "Category", new { id = "vn" });
             }
             else
             {
@@ -52,9 +67,18 @@ namespace eShopSolution.AdminApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var IsDeleted = await _categoryService.Delete(id);
-            if (IsDeleted == true) return RedirectToAction("Index", "category", new { id = "vn" });
-            return BadRequest();
+            var result = await _categoryService.Delete(id);
+            if (result.IsSuccessed == true)
+            {
+                TempData["result"] = "Delete Success";
+                TempData["IsSuccess"] = true;
+            }
+            else
+            {
+                TempData["result"] = result.Message;
+                TempData["IsSuccess"] = false;
+            }
+            return RedirectToAction("Index", "Category", new { id = "vn" });
         }
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] CategoryUpdateRequest request, [FromRoute]int Id)
@@ -63,12 +87,18 @@ namespace eShopSolution.AdminApp.Controllers
             if (ModelState.IsValid)
             {
                 request.LanguageId = "vn";
-                var isCreated = await _categoryService.Update(request, Id);
-                if (isCreated == true)
+                var result = await _categoryService.Update(request, Id);
+                if (result.IsSuccessed == true)
                 {
-                    return RedirectToAction("Index", "Category", new { id = "vn" });
+                    TempData["result"] = "Update Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "Category", new { id = "vn" });
             }
             else
             {

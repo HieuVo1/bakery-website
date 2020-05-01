@@ -1,6 +1,8 @@
 ﻿using eShopSolution.Data.Entities;
 using eShopSolution.Data.Enums;
 using eShopSolution.ViewModel.Catalog.Categories;
+using eShopSolution.ViewModel.Common;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,7 @@ namespace eShopSolution.WebApp.Services.Categorys
             _client.BaseAddress = new Uri("https://localhost:5001");
         }
       
-        public async Task<List<CategoryViewModel>> GetAll(string languageId, int pageIndex, int pageSize)
+        public async Task<ApiResult<List<CategoryViewModel>>> GetAll(string languageId, int pageIndex, int pageSize)
         {
             var client = _httpClientFactor.CreateClient();
             client.BaseAddress = new Uri("https://localhost:5001");
@@ -37,7 +39,11 @@ namespace eShopSolution.WebApp.Services.Categorys
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<List<CategoryViewModel>>(data);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<List<CategoryViewModel>>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<List<CategoryViewModel>>>(data);
 
                 }
                 else
@@ -47,7 +53,7 @@ namespace eShopSolution.WebApp.Services.Categorys
             }
         }
 
-        public async Task<CategoryViewModel> GetById(int categoryId, int languageId)
+        public async Task<ApiResult<CategoryViewModel>> GetById(int categoryId, int languageId)
         {
             var client = _httpClientFactor.CreateClient();
             client.BaseAddress = new Uri("https://localhost:5001");
@@ -60,8 +66,11 @@ namespace eShopSolution.WebApp.Services.Categorys
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<CategoryViewModel>(data);
-
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<CategoryViewModel>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<CategoryViewModel>>(data);
                 }
                 else
                 {

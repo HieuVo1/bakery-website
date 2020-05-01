@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using eShopSolution.Data.Entities;
+using eShopSolution.ViewModel.Common;
 
 namespace eShopSolution.Application.Languages
 {
     public interface ILanguageService
     {
-        Task<LanguageViewModel> GetById(string languageId);
-        Task<Language> Create(LanguageCreateRequest request);
-        Task<Language> Update(LanguageUpdateRequest request,string languageId);
-        Task<Language> Delete(string languageId);
-        Task<List<LanguageViewModel>> GetAll();
+        Task<ApiResult<LanguageViewModel>> GetById(string languageId);
+        Task<ApiResult<bool>> Create(LanguageCreateRequest request);
+        Task<ApiResult<bool>> Update(LanguageUpdateRequest request,string languageId);
+        Task<ApiResult<bool>> Delete(string languageId);
+        Task<ApiResult<List<LanguageViewModel>>> GetAll();
     }
 }

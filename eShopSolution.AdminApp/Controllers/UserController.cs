@@ -5,10 +5,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using eShopSolution.AdminApp.Service.Categorys;
 using eShopSolution.AdminApp.Service.Users;
+using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.System.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
@@ -16,71 +19,110 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private readonly IUserAPIClient _userAPIClient;
         private readonly IConfiguration _configuration;
-        public  UserController(IUserAPIClient userAPIClient, IConfiguration configuration)
+        private readonly ICategoryService _categoryService;
+        public  UserController(IUserAPIClient userAPIClient, IConfiguration configuration,ICategoryService categoryService)
         {
             _userAPIClient = userAPIClient;
             _configuration= configuration;
+            _categoryService = categoryService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync(string keyword= null,int pageIndex=0,int pageSize=0)
         {
+            var section = HttpContext.Session.GetString("Token");
+            var request = new GetUserPaggingRequest
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Keyword = keyword
+            };
+            var roles = await _userAPIClient.getListRole();
+            var users = await _userAPIClient.getListUser(request);
+            var categories = await _categoryService.GetAll("vn");
+            ViewData["categories"] = categories.ResultObject;
+            ViewData["roles"] = roles.ResultObject.Items;
+            ViewData["users"] = users.ResultObject.Items;
+            ViewData["Token"] = section;
+            if (TempData["result"] != null)
+            {
+                ViewBag.result = TempData["result"];
+                ViewBag.IsSuccess = TempData["IsSuccess"];
+            }
+              
             return View();
         }
-        [HttpGet]
-        public async Task<IActionResult> Login()
+        
+        public async Task<IActionResult> Register([FromForm] RegisterRequest request)
         {
-            await HttpContext.SignOutAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-            return View();
+            if (ModelState.IsValid)
+            {
+                var result = await _userAPIClient.Register(request);
+                if (result.IsSuccessed == true)
+                {
+                    TempData["result"] = "Register Success";
+                    TempData["IsSuccess"] = true;
+                }
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "User");
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
         [HttpGet]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Delete(Guid id)
         {
-            await HttpContext.SignOutAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "User");
+            var result = await _userAPIClient.Delete(id);
+            if (result.IsSuccessed == true)
+            {
+                TempData["result"] = "Delete Success";
+                TempData["IsSuccess"] = true;
+            }
+            else
+            {
+                TempData["result"] = result.Message;
+                TempData["IsSuccess"] = false;
+            }
+            return RedirectToAction("Index", "User");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var data = await _userAPIClient.getUserById(id);
+            return Ok(data.ResultObject);
         }
         [HttpPost]
-        public async  Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Update([FromForm] UserUpdateRequest request, [FromRoute]Guid Id)
         {
-            if (!ModelState.IsValid) return View(ModelState);
 
-            var token = await _userAPIClient.Authenticate(request);
-
-            var userPrincipal = this.ValidateToken(token);
-
-            var authProperties = new AuthenticationProperties
+            if (ModelState.IsValid)
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                IsPersistent = true // khi đăng nhập rồi thì ko cần phải đăng nhập lại
-            };
-
-            await HttpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    userPrincipal,
-                    authProperties);
-
-            return Redirect("/home/index");
+                var result = await _userAPIClient.Update(Id,request);
+                if (result.IsSuccessed == true)
+                {
+                    TempData["result"] = "Update Success";
+                    TempData["IsSuccess"] = true;
+                }
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "User");
+            }
+            else
+            {
+                return View(ModelState.ErrorCount);
+            }
         }
-        private ClaimsPrincipal ValidateToken(string jwtToken)
-        {
-            IdentityModelEventSource.ShowPII = true;
-
-            SecurityToken validatedToken;
-            TokenValidationParameters validationParameters = new TokenValidationParameters();
-
-            validationParameters.ValidateLifetime = true;
-            var Iss = _configuration["Tokens:Issuer"];
-            validationParameters.ValidAudience = _configuration["Tokens:Issuer"];
-            validationParameters.ValidIssuer = _configuration["Tokens:Issuer"];
-            validationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
-
-            ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
-
-            return principal;
-        }
+        
     }
 }

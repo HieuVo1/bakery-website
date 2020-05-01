@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using eShopSolution.WebApp.Models;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.Categorys;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace eShopSolution.WebApp.Controllers
 {
@@ -28,8 +29,8 @@ namespace eShopSolution.WebApp.Controllers
         {
             var categories = await _categoryService.GetAll("vn",1,6);
             var languages = await _languageService.GetAll();
-            ViewData["languages"] = languages;
-            ViewData["categories"] = categories;
+            ViewData["languages"] = languages.ResultObject;
+            ViewData["categories"] = categories.ResultObject;
             return View();
         }
 

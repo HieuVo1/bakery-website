@@ -83,22 +83,13 @@ namespace eShopSolution.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
-                            RoleId = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -198,9 +189,7 @@ namespace eShopSolution.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsShowOnHome")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<int>("Status")
                         .ValueGeneratedOnAdd()
@@ -631,10 +620,18 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "ccd8674e-5f7e-4f9e-9acd-70e0cb34190f",
+                            ConcurrencyStamp = "b8eb1358-33d6-4190-96f2-765d2af6ef1d",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
+                            ConcurrencyStamp = "db9c262c-4942-47b8-9490-a2249d6871ae",
+                            Description = "Client role",
+                            Name = "client",
+                            NormalizedName = "client"
                         });
                 });
 
@@ -662,6 +659,9 @@ namespace eShopSolution.Data.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -683,6 +683,9 @@ namespace eShopSolution.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("RoleID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -694,6 +697,8 @@ namespace eShopSolution.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RoleID");
+
                     b.ToTable("Users");
 
                     b.HasData(
@@ -701,15 +706,16 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e606ef79-5ca5-4c74-a5bb-3cd56a356fa4",
+                            ConcurrencyStamp = "aa5be8d3-c6ac-449d-b8bb-c186cb9bbbec",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "tedu.international@gmail.com",
+                            Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "tedu.international@gmail.com",
+                            NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIu7mXygmlZ2Qdwxrc8wGZFQrFVEGeS+OwUEe7X+Vrr1ij+Yg3ETlD0wNQ7Ek6Ir4Q==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGMjKK+6ZewEKkLPpVvgWFsyNOYqunvRMQ+efywMb5vm4jMJDopPhH2RgpQZ+1rdjA==",
                             PhoneNumberConfirmed = false,
+                            RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -812,6 +818,15 @@ namespace eShopSolution.Data.Migrations
                     b.HasOne("eShopSolution.Data.Entities.Product", "Product")
                         .WithMany("ProductTranslations")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.UserApp", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.RoleApp", "RoleApp")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

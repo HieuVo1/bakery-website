@@ -29,36 +29,41 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Index( string categoryUrl)
         {
             var products = await _productServive.GetAllByCategoryUrl(categoryUrl,"vn");
-            var languages = await _languageService.GetAll();
+            var result = await _languageService.GetAll();
             var categories = await _categoryService.GetAll("vn");
-            ViewData["languages"] = languages;
-            var indexVN = languages.FindIndex(x => x.Name == "VIETNAM");
-            if (indexVN != 0)
+            ViewData["languages"] = result.ResultObject;
+            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
+            if (indexVN != -1)
             {
-                SwapGeneric<LanguageViewModel>.Swap(languages, indexVN, 0);
+                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
             }
-            ViewData["categories"] = categories;
-            ViewData["products"] = products.Items;
+            ViewData["categories"] = categories.ResultObject;
+            ViewData["products"] = products.ResultObject.Items;
+            if (TempData["result"] != null)
+            {
+                ViewBag.result = TempData["result"];
+                ViewBag.IsSuccess = TempData["IsSuccess"];
+            }
             return View();
         }
         [HttpGet]
         public async Task<IActionResult> NewProduct(string categoryUrl)
         {
-            var languages = await _languageService.GetAll();
+            var result = await _languageService.GetAll();
             var categories = await _categoryService.GetAll("vn");
-            ViewData["languages"] = languages;
+            ViewData["languages"] = result.ResultObject;
             
-            var indexVN = languages.FindIndex(x => x.Name == "VIETNAM");
+            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
             if (indexVN != 0)
             {
-                SwapGeneric<LanguageViewModel>.Swap(languages, indexVN, 0);
+                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
             }
-            ViewData["categories"] = categories;
-            var index = categories.FindIndex(x => x.CategoryUrl == categoryUrl);
+            ViewData["categories"] = categories.ResultObject;
+            var index = categories.ResultObject.FindIndex(x => x.CategoryUrl == categoryUrl);
             //Swap
             if (index != 0)
             {
-                SwapGeneric<CategoryViewModel>.Swap(categories, index, 0);
+                SwapGeneric<CategoryViewModel>.Swap(categories.ResultObject, index, 0);
             }
             return View();
         }
@@ -68,13 +73,20 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCreated = await _productServive.Create(request);
-                if (isCreated == true)
+                var result = await _productServive.Create(request);
+                if (result.IsSuccessed == true)
                 {
-                    var category = await _categoryService.GetById(request.CategoryId,"vn");
-                    return Redirect($"/product/{category.CategoryUrl}");
+                    TempData["result"] = "Create Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                var category = await _categoryService.GetById(request.CategoryId, "vn");
+                return Redirect($"/product/{category.ResultObject.CategoryUrl}");
+
             }
             else
             {
@@ -85,31 +97,40 @@ namespace eShopSolution.AdminApp.Controllers
         [Route("{categoryUrl}/{id}")]
         public async Task<IActionResult> Delete( int id, string categoryUrl)
         {
-            var IsDeleted = await _productServive.Delete(id);
-            if (IsDeleted == true) return RedirectToAction("Index", "product", new { categoryUrl = categoryUrl });
-            return BadRequest();
+            var result = await _productServive.Delete(id);
+            if (result.IsSuccessed == true)
+            {
+                TempData["result"] = "Delete Success";
+                TempData["IsSuccess"] = true;
+            }
+            else
+            {
+                TempData["result"] = result.Message;
+                TempData["IsSuccess"] = false;
+            }
+            return RedirectToAction("Index", "product", new { categoryUrl = categoryUrl });
         }
         [HttpGet]
         public async Task<IActionResult> Edit(int productId, string categoryUrl,string languageId)
         {
             var product = await _productServive.GetById(productId,languageId);
-            var languages = await _languageService.GetAll();
+            var result = await _languageService.GetAll();
             var categories = await _categoryService.GetAll("vn");
-            ViewData["languages"] = languages;
+            ViewData["languages"] = result.ResultObject;
 
-            var indexVN = languages.FindIndex(x => x.Name == "VIETNAM");
+            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
             if (indexVN != 0)
             {
-                SwapGeneric<LanguageViewModel>.Swap(languages, indexVN, 0);
+                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
             }
-            ViewData["categories"] = categories;
-            var index = categories.FindIndex(x => x.CategoryUrl == categoryUrl);
+            ViewData["categories"] = categories.ResultObject;
+            var index = categories.ResultObject.FindIndex(x => x.CategoryUrl == categoryUrl);
             //Swap
             if (index != 0)
             {
-                SwapGeneric<CategoryViewModel>.Swap(categories, index, 0);
+                SwapGeneric<CategoryViewModel>.Swap(categories.ResultObject, index, 0);
             }
-            ViewData["product"] = product;
+            ViewData["product"] = product.ResultObject;
             return View("NewProduct");
         }
         [HttpPost]
@@ -119,13 +140,19 @@ namespace eShopSolution.AdminApp.Controllers
             if (ModelState.IsValid)
             {
                 request.Id = Id;
-                var isCreated = await _productServive.Update(request);
-                if (isCreated == true)
+                var result = await _productServive.Update(request);
+                if (result.IsSuccessed == true)
                 {
-                    var category = await _categoryService.GetById(request.CategoryId, "vn");
-                    return Redirect($"/product/{category.CategoryUrl}");
+                    TempData["result"] = "Update Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                var category = await _categoryService.GetById(request.CategoryId, "vn");
+                return Redirect($"/product/{category.ResultObject.CategoryUrl}");
             }
             else
             {

@@ -11,20 +11,20 @@ namespace eShopSolution.AdminApp.Service.Products
 {
     public interface IProductService
     {
-        Task<PageViewModel<ProductViewModel>> getAllPagging(GetProductManagePaggingRequest request);
-        public Task<PageViewModel<ProductViewModel>> GetAllByCategoryId(GetProductPublicPaggingRequest request, string LanguageId);
-        public Task<PageViewModel<ProductViewModel>> GetAllByCategoryUrl(string categoryUrl, string LanguageId);
-        Task<ProductViewModel> GetById(int productId,string languageId);
+        Task<ApiResult<PageViewModel<ProductViewModel>>> getAllPagging(GetProductPaggingRequest request);
+        Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryId(GetProductPaggingRequest request, string LanguageId);
+        Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryUrl(string categoryUrl, string LanguageId);
+        Task<ApiResult<ProductViewModel>> GetById(int productId,string languageId);
 
-        Task<bool> Create(ProductCreateRequest request);
+        Task<ApiResult<string>> Create(ProductCreateRequest request);
 
-        Task<bool> Update(ProductUpdateRequest request);
+        Task<ApiResult<string>> Update(ProductUpdateRequest request);
 
-        Task<bool> Delete(int productId);
+        Task<ApiResult<string>> Delete(int productId);
 
-        Task<bool> UpdatePrice(int ProductId, decimal newPrice);
+        Task<ApiResult<string>> UpdatePrice(int ProductId, decimal newPrice);
 
-        Task<bool> UpdateStock(int ProductId, int addedQuantity);
+        Task<ApiResult<string>> UpdateStock(int ProductId, int addedQuantity);
 
     }
 }

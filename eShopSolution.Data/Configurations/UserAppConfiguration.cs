@@ -13,6 +13,7 @@ namespace eShopSolution.Data.Configurations
         {
             builder.ToTable("Users");
             builder.Property(c => c.Dob).IsRequired(true);
+            builder.HasOne(o => o.RoleApp).WithMany(u => u.Users).HasForeignKey(o => o.RoleID);
         }
     }
 }

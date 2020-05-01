@@ -1,6 +1,7 @@
 ﻿@{
-    
+    var loginSuccess = TempData["Succes"];
 }
+
 <div class="body_scroll">
     <div class="block-header">
         <div class="row">
@@ -367,3 +368,25 @@
         </div>
     </div>
 </div>
+@section Scripts{
+    @{
+        if (loginSuccess != null)
+        {
+            <script>
+                $(document).ready(function () {
+                    var message = '@loginSuccess';
+                    Swal.fire({
+                        type: 'success',
+                        title: message,
+                        showConfirmButton: false,
+                        timer: 1500,
+                        width: '500px'
+                    })
+
+                });
+
+            </script>
+        }
+    }
+
+}

@@ -27,19 +27,25 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> IndexAsync(int productId)
         {
             var categories = await _categoryService.GetAll("vn");
-            var paggingRequest = new GetProductManagePaggingRequest()
+            var paggingRequest = new GetProductPaggingRequest()
             {
-                languageId = "vn",
+                LanguageId = "vn",
             };
             var products = await _productServive.getAllPagging(paggingRequest);
-            var productSelected = products.Items.FindIndex(x => x.Id == productId);
-            if (productSelected != 0)
+            var images = await _imageProductServive.GetListImage(productId);
+            var productSelected = products.ResultObject.Items.FindIndex(x => x.Id == productId);
+            if (productSelected != -1)
             {
-                SwapGeneric<ProductViewModel>.Swap(products.Items, productSelected, 0);
+                SwapGeneric<ProductViewModel>.Swap(products.ResultObject.Items, productSelected, 0);
             }
-            ViewData["categories"] = categories;
-            ViewData["products"] = products.Items;
-            ViewData["images"] = await _imageProductServive.GetListImage(productId);
+            ViewData["categories"] = categories.ResultObject;
+            ViewData["products"] = products.ResultObject.Items;
+            ViewData["images"] = images.ResultObject;
+            if (TempData["result"] != null)
+            {
+                ViewBag.result = TempData["result"];
+                ViewBag.IsSuccess = TempData["IsSuccess"];
+            }
             return View();
         }
         [HttpPost]
@@ -48,12 +54,18 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCreated = await _imageProductServive.AddImage(request.productId,request);
-                if (isCreated == true)
+                var result = await _imageProductServive.AddImage(request.productId,request);
+                if (result.IsSuccessed == true)
                 {
-                    return Redirect($"/product/{request.productId}/images");
+                    TempData["result"] = "Create Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return Redirect($"/product/{request.productId}/images");
             }
             else
             {
@@ -64,9 +76,18 @@ namespace eShopSolution.AdminApp.Controllers
         public async Task<IActionResult> Delete(int productId,int imageId)
         {
 
-            var IsDeleted = await _imageProductServive.RemoveImage(productId,imageId);
-            if (IsDeleted == true) return Redirect($"/product/{productId}/images");
-            return BadRequest();
+            var result = await _imageProductServive.RemoveImage(productId,imageId);
+            if (result.IsSuccessed == true)
+            {
+                TempData["result"] = "Delete Success";
+                TempData["IsSuccess"] = true;
+            }
+            else
+            {
+                TempData["result"] = result.Message;
+                TempData["IsSuccess"] = false;
+            }
+            return Redirect($"/product/{productId}/images");
         }
         [HttpPost]
         public async Task<IActionResult> Update([FromForm] ProductImageUpdateRequest request, int productId, int imageId)
@@ -74,12 +95,18 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var isUpdated = await _imageProductServive.UpdateImage(productId,imageId,request);
-                if (isUpdated == true)
+                var result = await _imageProductServive.UpdateImage(productId,imageId,request);
+                if (result.IsSuccessed == true)
                 {
-                    return Redirect($"/product/{productId}/images");
+                    TempData["result"] = "Update Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return Redirect($"/product/{productId}/images");
             }
             else
             {

@@ -13,36 +13,40 @@ namespace eShopSolution.BackEndAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
-        private readonly IPublicProductService _publicProductService;
-        private readonly IManageProductService _manageProductService;
-        public ProductsController(IPublicProductService publicProductService, IManageProductService manageProductService)
+        private readonly IProductService _ProductService;
+        public ProductsController( IProductService manageProductService)
         {
-            _publicProductService = publicProductService;
-            _manageProductService = manageProductService;
+
+            _ProductService = manageProductService;
         }
 
         //https://locahost:port/products/?PageIndex=1&pageSize=1&categoryId=1
         [HttpGet("{LanguageId}")]
-        public async Task<IActionResult> GetPagging(string LanguageId, [FromQuery] GetProductPublicPaggingRequest request)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPagging(string LanguageId, [FromQuery] GetProductPaggingRequest request)
         {
-            var products = await _publicProductService.GetAllByCategoryId(request, LanguageId);
+            request.LanguageId = LanguageId;
+            var products = await _ProductService.GetAllPagging(request);
             return Ok(products);
         }
         //https://locahost:port/products/getbyUrl/languageId/?PageIndex=1&pageSize=1&categoryUrl=1
         [HttpGet("getByUrl/{LanguageId}")]
-        public async Task<IActionResult> GetByCategoryUrl(string LanguageId, [FromQuery] GetProductManagePaggingRequest request)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByCategoryUrl(string LanguageId, [FromQuery] GetProductPaggingRequest request)
         {
-            var products = await _manageProductService.GetAllByCategoryUrl(request, LanguageId);
+            var products = await _ProductService.GetAllByCategoryUrl(request, LanguageId);
             return Ok(products);
         }
 
         //https://locahost:port/products/productId/languageId
         [HttpGet("{productId}/{languageId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int productId, string languageId)
         {
-            var product = await _manageProductService.GetById(productId, languageId);
+            var product = await _ProductService.GetById(productId, languageId);
             if (product == null) return NotFound("Can not find");
             return Ok(product);
         }
@@ -55,9 +59,9 @@ namespace eShopSolution.BackEndAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _manageProductService.Create(request);
-            if (result == 0) return BadRequest();
-            return Created(nameof(GetById), result);
+            var result = await _ProductService.Create(request);
+            if (result.IsSuccessed==false) return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpPatch]
@@ -67,70 +71,27 @@ namespace eShopSolution.BackEndAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _manageProductService.Update(request);
-            if (result == 0) return BadRequest();
-            return Ok();
+            var result = await _ProductService.Update(request);
+            if (result.IsSuccessed==false) return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpPatch("{productId}/{newPrice}")]
         public async Task<IActionResult> UpdatePrice(int productId, decimal newPrice )
         {
-            var result = await _manageProductService.UpdatePrice(productId, newPrice);
-            if (result==false) return BadRequest();
-            return Ok();
+            var result = await _ProductService.UpdatePrice(productId, newPrice);
+            if (result.IsSuccessed==false) return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpDelete("{productId}")]
         public async Task<IActionResult> Delete(int productId)
         {
-            var result = await _manageProductService.Delete(productId);
-            if (result == 0) return BadRequest();
-            return Ok();
+            var result = await _ProductService.Delete(productId);
+            if (result.IsSuccessed==false) return BadRequest(result);
+            return Ok(result);
         }
 
-        [HttpPost("{productId}/images")]
-        public async Task<IActionResult> CreateImages(int productId, [FromForm] ProductImageCreateRequest request)
-        {
-            if (ModelState.IsValid == false)
-            {
-                return BadRequest(ModelState);
-            }
-            var result = await _manageProductService.AddImage(productId, request);
-            if (result == 0) return BadRequest();
-            return Created(nameof(GetById), result);
-        }
-
-        [HttpGet("{productId}/images/{imageId}")]
-        public async Task<IActionResult> GetImageById(int productId,int imageId)
-        {
-            var product = await _manageProductService.GetImageById(imageId);
-            if (product == null) return NotFound("Can not find");
-            return Ok(product);
-        }
-        [HttpGet("{productId}/images")]
-        public async Task<IActionResult> GetAllImage(int productId)
-        {
-            var product = await _manageProductService.GetListImage(productId);
-            return Ok(product);
-        }
-
-        [HttpPatch("images/{imageId}")]
-        public async Task<IActionResult> UpdateImage(int imageId, [FromForm] ProductImageUpdateRequest request)
-        {
-            if (ModelState.IsValid == false)
-            {
-                return BadRequest(ModelState);
-            }
-            var result = await _manageProductService.UpdateImage(imageId, request);
-            if (result == 0) return BadRequest();
-            return Ok();
-        }
-        [HttpDelete("images/{imageId}")]
-        public async Task<IActionResult> DeleteImage(int imageId)
-        {
-            var result = await _manageProductService.RemoveImage(imageId);
-            if (result == 0) return BadRequest();
-            return Ok();
-        }
+        
     }
 }

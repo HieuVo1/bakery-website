@@ -76,13 +76,22 @@ namespace eShopSolution.Data.Extensions
             // any guid
             var roleId = new Guid("8D04DCE2-969A-435D-BBA4-DF3F325983DC");
             var adminId = new Guid("69BD714F-9576-45BA-B5B7-F00649BE00DE");
-            modelBuilder.Entity<RoleApp>().HasData(new RoleApp
-            {
-                Id = roleId,
-                Name = "admin",
-                NormalizedName = "admin",
-                Description = "Administrator role"
-            });
+            modelBuilder.Entity<RoleApp>().HasData(
+                new RoleApp
+                    {
+                        Id = roleId,
+                        Name = "admin",
+                        NormalizedName = "admin",
+                        Description = "Administrator role"
+                    },
+                 new RoleApp
+                 {
+                     Id = new Guid("8D04DCE2-969A-435D-BBA4-DF3F325983DD"),
+                     Name = "client",
+                     NormalizedName = "client",
+                     Description = "Client role"
+                 }
+            );
 
             var hasher = new PasswordHasher<UserApp>();
             modelBuilder.Entity<UserApp>().HasData(new UserApp
@@ -90,21 +99,14 @@ namespace eShopSolution.Data.Extensions
                 Id = adminId,
                 UserName = "admin",
                 NormalizedUserName = "admin",
-                Email = "tedu.international@gmail.com",
-                NormalizedEmail = "tedu.international@gmail.com",
+                Email = "hieuvo044@gmail.com",
+                NormalizedEmail = "hieuvo044@gmail.com",
                 EmailConfirmed = true,
                 PasswordHash = hasher.HashPassword(null, "123"),
                 SecurityStamp = string.Empty,
-                Dob = new DateTime(2020, 01, 31)
+                Dob = new DateTime(2020, 01, 31),
+                RoleID= roleId
             });
-
-            modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(new IdentityUserRole<Guid>
-            {
-                RoleId = roleId,
-                UserId = adminId
-            });
-
-
         }
     }
 

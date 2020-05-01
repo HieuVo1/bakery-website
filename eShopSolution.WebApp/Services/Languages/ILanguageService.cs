@@ -1,4 +1,5 @@
 ﻿
+using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace eShopSolution.WebApp.Services.Languages
 {
     public interface ILanguageService
     {
-        Task<LanguageViewModel> GetById(string languageId);
-        Task<List<LanguageViewModel>> GetAll();
+        Task<ApiResult<LanguageViewModel>> GetById(string languageId);
+        Task<ApiResult<List<LanguageViewModel>>> GetAll();
     }
 }

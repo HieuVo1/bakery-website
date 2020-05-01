@@ -4,6 +4,7 @@
 @{
     var categories = (List<CategoryViewModel>)ViewData["categories"];
     var languages = (List<LanguageViewModel>)ViewData["languages"];
+
 }
 @section Header{
     <link rel="stylesheet" href="/assets/plugins/jquery-datatable/dataTables.bootstrap4.min.css">
@@ -130,13 +131,14 @@
                                         {
                                             foreach (var category in @categories)
                                             {
+                                                var imagePath = "https://localhost:5001/user-content/" + (category.ImagePath ?? "image-not-found.jpg");
                                                 <tr>
                                                     <td>@category.Id</td>
                                                     <td>@category.Name</td>
                                                     <td>@category.Language</td>
                                                     <td>@category.IsShowOnHome</td>
                                                     <td class="text-center">
-                                                        <img src="https://localhost:5001/user-content/@category.ImagePath" width="48" alt="category img">
+                                                        <img src="@imagePath" width="48" asp-append-version="true" alt="category img">
                                                     </td>
                                                     <td width="15%" class="footable-last-visible" style="display: table-cell;">
                                                         <a>
@@ -144,7 +146,7 @@
                                                                     data-id="@category.Id" data-toggle="modal"
                                                                     data-target="#exampleModal">
                                                                 <i class="zmdi zmdi-edit"></i>
-                                                                Sửa
+                                                                Edit
                                                             </button>
                                                         </a>
                                                         <a class="delete" asp-controller="category" asp-action="delete" asp-route-id=@category.Id>

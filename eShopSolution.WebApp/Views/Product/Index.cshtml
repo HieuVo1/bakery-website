@@ -1,8 +1,22 @@
-﻿
+﻿@using eShopSolution.ViewModel.Catalog.Products
+@using eShopSolution.ViewModel.Common
+@using eShopSolution.ViewModel.Catalog.Categories
+@using Microsoft.AspNetCore.Http.Extensions
+@model PageViewModel<ProductViewModel>;
 @{
+    var urlTemplate = Url.Action();
+    var products = (List<ProductViewModel>)ViewData["products"];
+    var categories = (List<CategoryViewModel>)ViewData["categories"];
+    var minP = ViewData["minPrice"];
+    var maxP = ViewData["maxPrice"];
     ViewData["Header"] = "header--2";
     ViewData["Image-logo"] = "/assets/images/logo-2.png";
+    var url = @Context.Request.GetDisplayUrl();
+    string[] arrListUrl = url.Split('/');
+    string[] searchValue = url.Split('?');
+
 }
+
 
 <!-- Heros-->
 <div class="ps-section--hero">
@@ -65,203 +79,78 @@
                     </div>
                     <div class="ps-shop ps-col-tiny">
                         <div class="row">
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <div class="ps-badge ps-badge--new"><span>New</span></div><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-7.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Red sugar flower</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
+                            @{
+                                if (products != null)
+                                {
+                                    foreach (var product in products)
+                                    {
+                                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+                                            <div class="ps-product">
+                                                <div class="ps-product__thumbnail">
+                                                    @*<div class="ps-badge ps-badge--new"><span>New</span></div>*@
+                                                    <a class="ps-product__overlay" href="product-detail.html"></a><img height="260" width="260" src="https://localhost:5001/user-content/@product.ImagePath" alt="">
+                                                    <ul class="ps-product__action">
+                                                        <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
+                                                        <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
+                                                        <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
+                                                        <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="ps-product__content">
+                                                    <a class="ps-product__title" href="product-detail.html">@product.Name</a>
+                                                    <div class="ps-product__category">
+                                                        <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
+                                                    </div>
+                                                    <select class="ps-rating">
+                                                        <option value="1">1</option>
+                                                        <option value="1">2</option>
+                                                        <option value="1">3</option>
+                                                        <option value="1">4</option>
+                                                        <option value="5">5</option>
+                                                    </select>
+                                                    <p class="ps-product__price">@product.Price VNĐ</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price">£5.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-2.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Cupcake Queen</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
-                                        </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price">£5.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <div class="ps-badge"><span>50%</span></div><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-4.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Cupcake Glory</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
-                                        </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price"><del> £10.00</del> £5.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-8.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Sweet Cakes</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
-                                        </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price">£5.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <div class="ps-badge"><span>50%</span></div><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-9.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Sweet Cakes</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
-                                        </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price"><del> £10.00</del> £5.00</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                                <div class="ps-product">
-                                    <div class="ps-product__thumbnail">
-                                        <a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-7.jpg" alt="">
-                                        <ul class="ps-product__action">
-                                            <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                            <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
-                                            <li><a href="#" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
-                                        </ul>
-                                    </div>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="product-detail.html">Sweet Cakes</a>
-                                        <div class="ps-product__category">
-                                            <a class="ps-product__category" href="product-listing.html">cupcake</a><a class="ps-product__category" href="product-listing.html">sweet</a><a class="ps-product__category" href="product-listing.html">bio</a>
-                                        </div>
-                                        <select class="ps-rating">
-                                            <option value="1">1</option>
-                                            <option value="1">2</option>
-                                            <option value="1">3</option>
-                                            <option value="1">4</option>
-                                            <option value="5">5</option>
-                                        </select>
-                                        <p class="ps-product__price">£5.00</p>
-                                    </div>
-                                </div>
-                            </div>
+                                    }
+                                }
+                            }
                         </div>
-                        <div class="ps-pagination">
-                            <ul class="pagination">
-                                <li><a href="#"><i class="fa fa-arrow-left"></i></a></li>
-                                <li class="active"><a href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a href="#">3</a></li>
-                                <li><a href="#">4</a></li>
-                                <li><a href="#"><i class="fa fa-arrow-right"></i></a></li>
-                            </ul>
-                        </div>
+                        @await Component.InvokeAsync("Pager", Model)
                     </div>
                 </div>
             </div>
             <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-lg-pull-9 col-md-pull-9">
                 <div class="ps-sidebar">
                     <aside class="ps-widget ps-widget--sidebar ps-widget--search">
-                        <form method="post" action="http://nouthemes.net/html/bakery/search-result.html">
-                            <input class="form-control" type="text" placeholder="Type here bakery name...">
+                        <form method="get" action="/product/index" id="findByKey">
+                            <input class="form-control" type="search" name="Keyword" id="Keyword" placeholder="Type here bakery name...">
                             <button type="submit"><i class="ps-icon--search"></i></button>
                         </form>
                     </aside>
                     <aside class="ps-widget ps-widget--sidebar ps-widget--category">
                         <div class="ps-widget__header">
-                            <h3 class="ps-widget__title">CATEGORY</h3>
+                            <h3 class="ps-widget__title">CATEGORY   </h3>
                         </div>
                         <div class="ps-widget__content">
                             <ul class="ps-list--circle">
-                                <li class="current"><a href="product-listing.html"><span class="circle"></span>All bakery (321)</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>Amazin’ Glazin’</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>The Crusty Croissant</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>The Rolling Pin</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>Skippity Scones</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>Mad Batter</a></li>
-                                <li><a href="product-listing.html"><span class="circle"></span>Confection Connection</a></li>
+
+                                @*<li class='@(arrListUrl[4].IndexOf("index")!=-1?"current":"")'><a href="/product/index"><span class="circle"></span>All bakery@(arrListUrl[4].IndexOf("index")!=-1? $"({@total})" : "" )</a></li>
+                                @{
+                                    if (categories != null)
+                                    {
+                                        foreach (var category in categories)
+                                        {
+
+                                            <li class='@(arrListUrl[4]==@category.CategoryUrl?"current":"")'>
+                                                <a href="/product/@category.CategoryUrl">
+                                                    <span class="circle"></span>@category.Name@(arrListUrl[4]== @category.CategoryUrl ? $"({@total})" :"" )
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+
+                                }*@
                             </ul>
                         </div>
                     </aside>
@@ -270,8 +159,11 @@
                             <h3 class="ps-widget__title">Fillter Prices</h3>
                         </div>
                         <div class="ps-widget__content">
-                            <div class="ac-slider" data-default-min="300" data-default-max="2000" data-max="3450" data-step="50" data-unit="$"></div>
-                            <p class="ac-slider__meta">Price:<span class="ac-slider__value ac-slider__min"></span>-<span class="ac-slider__value ac-slider__max"></span></p><a class="ac-slider__filter ps-btn ps-btn--xs" href="#">Filter</a>
+                            <div class="ac-slider price" data-default-min="0" data-default-max="0" data-max="3450" data-step="50" data-unit="VND"></div>
+                            <p class="ac-slider__meta">Price:<span class="ac-slider__value ac-slider__min"></span>-<span class="ac-slider__value ac-slider__max"></span></p>
+                            <form method="post" action="/product/index" id="findByPrice">
+                                <button type="submit" class="ac-slider__filter ps-btn ps-btn--xs">Filter</button>
+                            </form>
                         </div>
                     </aside>
                     <aside class="ps-widget ps-widget--sidebar ps-widget--ads">
@@ -337,3 +229,31 @@
 <partial name="../Shared/_Partner.cshtml">
     <partial name="../Shared/_Subscribe.cshtml">
         <partial name="../Shared/_Footer.cshtml">
+
+            @section Scripts{
+                <script>
+                            $(document).ready(function () {
+                                // set filter price
+                                $(".ac-slider__value.ac-slider__min").text(@minP);
+                                $(".ac-slider__value.ac-slider__max").text(@maxP);
+                                var maxPrice=$('.ac-slider.price').attr("data-max");
+                                var minPercent = @minP/parseInt(maxPrice)*100;
+                                var maxPercent = @maxP/parseInt(maxPrice)*100;
+                                var space = maxPercent - minPercent;
+                                $('.ac-slider.price').children().eq(0).css("left", `${minPercent}%`)
+                                    .css("width", `${space}%`);
+                                $('.ac-slider.price').children().eq(1).css("left", `${minPercent}%`);
+                                $('.ac-slider.price').children().eq(2).css("left", `${maxPercent}%`);
+                                $('.ac-slider.price').attr("data-default-min",@minP);
+                                $('.ac-slider.price').attr("data-default-max",@maxP);
+
+
+                                $("#findByPrice").submit(function (event) {
+                                    var minPrice = $(".ac-slider__value.ac-slider__min").text();
+                                    var maxPrice = $(".ac-slider__value.ac-slider__max").text();
+                                    var urlSearchPrice = `?minPrice=${minPrice.substring(1)}&maxPrice=${maxPrice.substring(1)}`;
+                                    $(this).attr("action", urlSearchPrice);
+                                });
+                            });
+                </script>
+            }

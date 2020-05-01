@@ -1,6 +1,8 @@
-﻿using eShopSolution.Data.EF;
+﻿using eShopSolution.Application.Comom;
+using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.Exceptions;
+using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,7 +20,7 @@ namespace eShopSolution.Application.Languages
         {
             _context = context;
         }
-        public async Task<Language> Create(LanguageCreateRequest request)
+        public async Task<ApiResult<bool>> Create(LanguageCreateRequest request)
         {
             var language = new Language()
             {
@@ -27,21 +29,19 @@ namespace eShopSolution.Application.Languages
                 IsDefault=request.IsDefault
             };
             _context.Languages.Add(language);
-            await _context.SaveChangesAsync();
-            return language;
+            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
 
-        public async Task<Language> Delete(string languageId)
+        public async Task<ApiResult<bool>> Delete(string languageId)
         {
             var language = await _context.Languages.FindAsync(languageId);
-            if (language == null) throw new EShopException($"Can not find language with Id: {languageId}");
+            if (language == null) return new ApiResultErrors<bool>($"Can not find language with Id: {languageId}");
             _context.Remove(language);
-            await _context.SaveChangesAsync();
-            return language;
+            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
 
         }
 
-        public async Task<List<LanguageViewModel>> GetAll()
+        public async Task<ApiResult<List<LanguageViewModel>>> GetAll()
         {
             var query = from l in _context.Languages
                             select l;
@@ -52,10 +52,10 @@ namespace eShopSolution.Application.Languages
                 Id=x.Id
             }).ToListAsync();
 
-            return data;
+            return new ApiResultSuccess<List<LanguageViewModel>>(data);
         }
 
-        public async Task<LanguageViewModel> GetById(string languageId)
+        public async Task<ApiResult<LanguageViewModel>> GetById(string languageId)
         {
             var language = await _context.Languages.FindAsync(languageId);
             var languageViewModel = new LanguageViewModel()
@@ -64,17 +64,16 @@ namespace eShopSolution.Application.Languages
                 Name=language.Name,
                 IsDefault=language.IsDefault
             };
-            return languageViewModel;
+            return new ApiResultSuccess<LanguageViewModel>(languageViewModel);
         }
 
-        public async Task<Language> Update(LanguageUpdateRequest request,string languageId)
+        public async Task<ApiResult<bool>> Update(LanguageUpdateRequest request,string languageId)
         {
             var language = await _context.Languages.FindAsync(languageId);
-            if (language == null) throw new EShopException($"Can not find language with Id: {languageId}");
+            if (language == null) return new ApiResultErrors<bool>($"Can not find language with Id: {languageId}");
             language.Name = request.Name;
             language.IsDefault = request.IsDefault;
-            await _context.SaveChangesAsync();
-            return language;
+            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
     }
 }

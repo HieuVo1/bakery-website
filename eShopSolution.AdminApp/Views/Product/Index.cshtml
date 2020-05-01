@@ -88,6 +88,7 @@
                                         {
                                             foreach (var product in products)
                                             {
+                                                var imagePath = "https://localhost:5001/user-content/" + (product.ImagePath ?? "image-not-found.jpg");
                                                 <tr>
                                                     <td>@product.Id</td>
                                                     <td>@product.Name</td>
@@ -95,7 +96,7 @@
                                                     <td>@product.Stock</td>
                                                     <td>@product.Language</td>
                                                     <td class="text-center">
-                                                        <img style="display: block; margin: auto;padding-bottom: 13px;" src="https://localhost:5001/user-content/@product.ImagePath" width="48" alt="product img">
+                                                        <img style="display: block; margin: auto;padding-bottom: 13px;" src="@imagePath" width="48" asp-append-version="true" alt="product img">
                                                         <a href="/product/@product.Id/Images">More Image</a>
                                                     </td>
                                                     <td width="15%" class="footable-last-visible" style="display: table-cell;">

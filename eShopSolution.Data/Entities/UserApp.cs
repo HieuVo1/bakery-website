@@ -9,6 +9,9 @@ namespace eShopSolution.Data.Entities
     {
         public DateTime Dob { set; get; }
         public string FullName { set; get; }
+        public string ImagePath { get; set; }
+        public Guid RoleID { set; get; }
+        public RoleApp RoleApp { set; get; }
         public List<Cart> Carts { set; get; }
         public List<Order> Orders { set; get; }
     }

@@ -15,27 +15,30 @@ namespace eShopSolution.BackEndAPI.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly IPublicCategoryService _publicCategoryService;
-        private readonly IManageCategoryService _manageCategoryService;
-        public CategoriesController(IPublicCategoryService publicCategoryService, IManageCategoryService manageCategoryService)
+        private readonly ICategoryService _CategoryService;
+        public CategoriesController(ICategoryService CategoryService)
         {
-            _publicCategoryService = publicCategoryService;
-            _manageCategoryService = manageCategoryService;
+
+            _CategoryService = CategoryService;
         }
         //https://locahost:port/api/categories/?PageIndex=1&pageSize=1
         [HttpGet("{LanguageId}")]
         public async Task<IActionResult> GetPagging(string LanguageId, [FromQuery] GetCategoryPaggingReqest request)
         {
-            var categorys = await _publicCategoryService.GetAll( request, LanguageId);
-            return Ok(categorys);
+            var result = await _CategoryService.GetAll( request, LanguageId);
+            if (result.IsSuccessed == false)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
         }
         //https://locahost:port/product/id
         [HttpGet("{categoryId}/{languageId}")]
         public async Task<IActionResult> GetById(int categoryId, string languageId)
         {
-            var category = await _manageCategoryService.GetById(categoryId, languageId);
-            if (category == null) return NotFound("Can not find");
-            return Ok(category);
+            var result = await _CategoryService.GetById(categoryId, languageId);
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
         }
 
 
@@ -46,8 +49,9 @@ namespace eShopSolution.BackEndAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _manageCategoryService.Create(request);
-            if (result == null) return BadRequest();
+            var result = await _CategoryService.Create(request);
+
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok( result);
         }
 
@@ -58,24 +62,24 @@ namespace eShopSolution.BackEndAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var result = await _manageCategoryService.Update(request, categoryId);
-            if (result == null) return BadRequest();
+            var result = await _CategoryService.Update(request, categoryId);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
 
         [HttpPatch("{categoryId}/{status}")]
         public async Task<IActionResult> UpdatePrice(int categoryId, CategoryStatus status)
         {
-            var result = await _manageCategoryService.Updatestatus(categoryId, status);
-            if (result == false) return BadRequest();
-            return Ok();
+            var result = await _CategoryService.Updatestatus(categoryId, status);
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpDelete("{categoryId}")]
         public async Task<IActionResult> Delete(int categoryId)
         {
-            var result = await _manageCategoryService.Delete(categoryId);
-            if (result == null) return BadRequest();
+            var result = await _CategoryService.Delete(categoryId);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
 

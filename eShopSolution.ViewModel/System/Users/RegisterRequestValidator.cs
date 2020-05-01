@@ -11,8 +11,7 @@ namespace eShopSolution.ViewModel.System.Users
         {
             RuleFor(x => x.UserName).NotEmpty().WithMessage("User name is required");
             RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required");
-            RuleFor(x => x.Passwork).NotEmpty().WithMessage("Passwork is required");
-            RuleFor(x => x.Passwork).NotEmpty().WithMessage("Passwork is required");
+            RuleFor(x => x.Passwork).NotEmpty().WithMessage("Passwork is required").Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$");
             RuleFor(x => x.Dob).NotEmpty().GreaterThan(DateTime.Now.AddYears(-100)).WithMessage("Birth day is incorrect");
             RuleFor(x => x.Email).NotEmpty().WithMessage("Email is required").Matches(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$")
                 .WithMessage("Email format is match");

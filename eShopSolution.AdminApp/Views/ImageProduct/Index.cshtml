@@ -111,6 +111,7 @@
                                 {
                                     foreach (var image in images)
                                     {
+                                        var imagePath = "https://localhost:5001/user-content/" + (image.ImagePath ?? "image-not-found.jpg");
                                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 m-b-30 card file_manager">
                                             <div class="file">
                                                 <div class="hover">
@@ -124,9 +125,9 @@
                                                         <i class="zmdi zmdi-edit"></i>
                                                     </button>
                                                 </div>
-                                                <a href="https://localhost:5001/user-content/@image.ImagePath">
+                                                <a href="@imagePath">
                                                     <div class="image">
-                                                        <img class="img-fluid img-thumbnail" src="https://localhost:5001/user-content/@image.ImagePath" alt="">
+                                                        <img asp-append-version="true" class="img-fluid img-thumbnail" src="@imagePath" alt="">
                                                     </div>
                                                 </a>
                                             </div>
@@ -154,20 +155,20 @@
                 var id = $(this).attr("data-id");
                 $.ajax({
                     type: "get",
-                    url: "https://localhost:5001/api/products/@arrListUrl[4]/images/"+id,
+                    url: "https://localhost:5001/api/productimages/@arrListUrl[4]/images/"+id,
                     dataType: "json",
                     success: function (res) {
-                        console.log(res);
+                        var data = res.resultObject;
                         $('#exampleModalLabel').text("Edit Image")
                         $("#exampleModal form").attr("action", "/product/"+@arrListUrl[4]+"/images/Update/" + id);
                         $(".select2").prop("disabled", true);
-                        $(".modal-body [name=Caption]").val(res.caption);
+                        $(".modal-body [name=Caption]").val(data.caption);
                         $("#exampleModal .form-group-image .dropify-wrapper").remove();
-                        var src = "https://localhost:5001/user-content/" + res.imagePath;
+                        var src = "https://localhost:5001/user-content/" + data.imagePath;
                         $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
                         $('.dropify').dropify();
                         //$(".dropify").attr("data-default-file", src);
-                        if (res.isDefault === true) {
+                        if (data.isDefault === true) {
                             $("#Isdefault").prop('checked', true);
                         }
                         else {
@@ -183,6 +184,7 @@
             $('.insertProductImage').click(function (e) {
                 e.preventDefault();
                 $("#IsNotdefault").prop('checked', true);
+                $(".modal-body [name=Caption]").val("");
                 $('#exampleModalLabel').text("Add Image")
                 $("#exampleModal form").attr('action', "/imageproduct/create/");
                 $("#exampleModal .form-group-image .dropify-wrapper").remove();

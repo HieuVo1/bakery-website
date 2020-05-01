@@ -45,7 +45,7 @@
                         </div>
                         <div class="form-group">
                             <label>Name</label>
-                            <input type="text" asp-for="Name" class="form-control"  />
+                            <input type="text" asp-for="Name" class="form-control" />
                         </div>
                         <div class="form-group">
                             <label>IsDefault:</label>
@@ -102,27 +102,27 @@
                                     @{
                                         foreach (var language in @languages)
                                         {
-                                        <tr>
-                                            <td>@language.Id</td>
-                                            <td>@language.Name</td>
-                                            <td>@language.IsDefault</td>
-                                            <td width="15%" class="footable-last-visible" style="display: table-cell;">
-                                                <a>
-                                                    <button class="btn btn-primary btn-sm editlanguage"
-                                                            data-id="@language.Id" data-toggle="modal"
-                                                            data-target="#exampleModal">
-                                                        <i class="zmdi zmdi-edit"></i>
-                                                        Edit
-                                                    </button>
-                                                </a>
-                                                <a class="delete" asp-controller="language" asp-action="delete" asp-route-id=@language.Id>
-                                                    <button class="btn btn-danger btn-sm">
-                                                        <i class="zmdi zmdi-delete"></i>
-                                                        Delete
-                                                    </button>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td>@language.Id</td>
+                                                <td>@language.Name</td>
+                                                <td>@language.IsDefault</td>
+                                                <td width="15%" class="footable-last-visible" style="display: table-cell;">
+                                                    <a>
+                                                        <button class="btn btn-primary btn-sm editlanguage"
+                                                                data-id="@language.Id" data-toggle="modal"
+                                                                data-target="#exampleModal">
+                                                            <i class="zmdi zmdi-edit"></i>
+                                                            Edit
+                                                        </button>
+                                                    </a>
+                                                    <a class="delete" asp-controller="language" asp-action="delete" asp-route-id=@language.Id>
+                                                        <button class="btn btn-danger btn-sm">
+                                                            <i class="zmdi zmdi-delete"></i>
+                                                            Delete
+                                                        </button>
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         }
                                     }
                                 </tbody>
@@ -146,11 +146,11 @@
     <script src="/assets/plugins/jquery-validation/jquery.validate.js"></script>
     <script src="/assets/js/pages/forms/form-validation.js"></script>
     <script src="/assets/js/pages/tables/jquery-datatable.js"></script>
-   
+
     <script>
         $(document).ready(function () {
             $('.editlanguage').click(function (e) {
-               //get row
+                //get row
                 var row = $(this).parent().parent().parent();
                 //get value of row
                 var id = row.find("td:eq(0)").text();
@@ -158,7 +158,7 @@
                 var Isdefault = row.find("td:eq(2)").text();
                 $('#exampleModalLabel').text("Edit Language")
                 $("#exampleModal form").attr("action", "/language/update/" + id);
-                
+
                 //set value for form
                 $(".modal-body [name=Id]").val(id).prop("disabled", true);
                 $(".modal-body [name=Name]").val(name);
@@ -168,7 +168,7 @@
                 else {
                     $("#IsNotDefault").prop('checked', true);
                 }
-                
+
             });
         });
     </script>

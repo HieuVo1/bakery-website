@@ -22,8 +22,13 @@ namespace eShopSolution.AdminApp.Controllers
         {
             var categories = await _categoryService.GetAll("vn");
             var languages = await _languageService.GetAll();
-            ViewData["languages"] = languages;
-            ViewData["categories"] = categories;
+            ViewData["languages"] = languages.ResultObject;
+            ViewData["categories"] = categories.ResultObject;
+            if (TempData["result"] != null)
+            {
+                ViewBag.result = TempData["result"];
+                ViewBag.IsSuccess = TempData["IsSuccess"];
+            }
             return View();
         }
         [HttpPost]
@@ -32,11 +37,18 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCreated = await _languageService.Create(request);
-                if (isCreated == true) {
-                    return RedirectToAction("Index", "language");
+                var result = await _languageService.Create(request);
+                if (result.IsSuccessed == true)
+                {
+                    TempData["result"] = "Create Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "language");
             }
             else
             {
@@ -46,9 +58,18 @@ namespace eShopSolution.AdminApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            var IsDeleted = await _languageService.Delete(id);
-            if (IsDeleted == true) return RedirectToAction("Index", "language");
-            return BadRequest();
+            var result = await _languageService.Delete(id);
+            if (result.IsSuccessed == true)
+            {
+                TempData["result"] = "Delete Success";
+                TempData["IsSuccess"] = true;
+            }
+            else
+            {
+                TempData["result"] = result.Message;
+                TempData["IsSuccess"] = false;
+            }
+            return RedirectToAction("Index", "language");
         }
         [HttpPost]
         public async Task<IActionResult> Update( LanguageUpdateRequest request, [FromRoute]string Id)
@@ -56,12 +77,18 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var isCreated = await _languageService.Update(request, Id);
-                if (isCreated == true)
+                var result = await _languageService.Update(request, Id);
+                if (result.IsSuccessed == true)
                 {
-                    return RedirectToAction("Index", "language");
+                    TempData["result"] = "Update Success";
+                    TempData["IsSuccess"] = true;
                 }
-                return BadRequest();
+                else
+                {
+                    TempData["result"] = result.Message;
+                    TempData["IsSuccess"] = false;
+                }
+                return RedirectToAction("Index", "language");
             }
             else
             {

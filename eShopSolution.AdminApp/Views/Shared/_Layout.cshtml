@@ -3,6 +3,8 @@
     var url = @Context.Request.GetDisplayUrl();
     string[] arrListUrl = url.Split('/');
     if (arrListUrl[3] == "") arrListUrl[3] = "index";
+    var result = ViewBag.result;
+    var type = (ViewBag.isSuccess == true) ? "success" : "error";
 }
 <!doctype html>
 <html class="no-js " lang="en">
@@ -26,6 +28,7 @@
         .language-select {
             padding: 4px 0px;
         }
+
     </style>
     @RenderSection("Header", required: false)
 </head>
@@ -76,9 +79,9 @@
                                         text: "Data will be completely lost!",
                                         type: 'warning',
                                         showCancelButton: true,
-                                        confirmButtonColor: '#3085d6',
-                                        cancelButtonColor: '#d33',
-                                        cancelButtonText: 'Cancle',
+                                        confirmButtonColor: '#d33',
+                                        cancelButtonColor: '#3085d6',
+                                        cancelButtonText: 'Trở về',
                                     })
 
                                     if (success) {
@@ -87,7 +90,7 @@
                                 });
                             });
                         </script>
-                         @*active menu*@
+                        @*active menu*@
                         <script>
                             $(document).ready(function () {
                                 var className = ".menu-@arrListUrl[3]";
@@ -96,6 +99,28 @@
                                 //$(subClassName).toggleClass("active open");
                             });
                         </script>
+                        @{
+                            if (result != null)
+                            {
+                                <script>
+                                        $(document).ready(function () {
+                                            var notifination = '@result';
+                                            const Toast = Swal.mixin({
+                                            toast: true,
+                                                    position: 'top-end',
+                                                    showConfirmButton: false,
+                                                    timer: 3000,
+
+                                                });
+                                            Toast.fire({
+                                            type: '@type',
+                                                    title: notifination,
+                                                    });
+                                         });
+                                </script>
+                            }
+
+                        }
                         @RenderSection("Scripts", required: false)
 </body>
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Categories;
+using eShopSolution.Application.Catelog.ProductImages;
 using eShopSolution.Application.Catelog.Products;
 using eShopSolution.Application.Comom;
 using eShopSolution.Application.Languages;
@@ -53,11 +54,17 @@ namespace eShopSolution.BackEndAPI
                 .AddEntityFrameworkStores<EShopDbContext>()
                 .AddDefaultTokenProviders();
             // Declare DI
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = false ;
+                options.Password.RequireUppercase = false;
+            });
             services.AddTransient<IStorageService, FileStorageService>();
-            services.AddTransient<IPublicProductService, PublicProductService>();
-            services.AddTransient<IManageProductService, ManageProductService>();
-            services.AddTransient<IPublicCategoryService, PublicCategoryService>();
-            services.AddTransient<IManageCategoryService, ManageCategoryService>();
+            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IProductImageService, ProductImageService>();
+            services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IUserService, UserService>();
 

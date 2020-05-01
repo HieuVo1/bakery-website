@@ -8,5 +8,6 @@ namespace eShopSolution.Data.Entities
     public class RoleApp:IdentityRole<Guid>
     {
         public string Description { set; get; }
+        public List<UserApp> Users { set; get; }
     }
 }

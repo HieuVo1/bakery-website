@@ -7182,16 +7182,26 @@ textarea.form-control {
   text-align: center;
   width: 100%;
 }
-
+.ps-img-user-btn {
+    position: relative;
+    display: block;
+    height: 40px;
+    width: 40px;
+    float: right;
+}
 .ps-search-btn {
   position: relative;
   display: block;
   height: 40px;
   width: 40px;
   float: right;
-  border-right: 1px solid #eaeaea;
 }
-
+.img-user {
+    position: absolute;
+    top: 15%;
+    left: 35%;
+    border-radius: 50%;
+}
 .ps-search-btn i {
   position: absolute;
   top: 50%;
@@ -7896,9 +7906,6 @@ textarea.form-control {
   border-bottom: 0;
 }
 
-.header .ps-dropdown:last-child {
-  border-right: none;
-}
 
 @media (max-width: 1199px) {
   .header {

@@ -1,4 +1,5 @@
-﻿using eShopSolution.ViewModel.Language;
+﻿using eShopSolution.ViewModel.Common;
+using eShopSolution.ViewModel.Language;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace eShopSolution.WebApp.Services.Languages
         }
 
 
-        public async Task<List<LanguageViewModel>> GetAll()
+        public async Task<ApiResult<List<LanguageViewModel>>> GetAll()
         {
             var response = await _client.GetAsync($"/api/languages");
             using (HttpContent content = response.Content)
@@ -32,8 +33,11 @@ namespace eShopSolution.WebApp.Services.Languages
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<List<LanguageViewModel>>(data);
-
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<List<LanguageViewModel>>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<List<LanguageViewModel>>>(data);
                 }
                 else
                 {
@@ -42,7 +46,7 @@ namespace eShopSolution.WebApp.Services.Languages
             }
         }
 
-        public async Task<LanguageViewModel> GetById(string languageId)
+        public async Task<ApiResult<LanguageViewModel>> GetById(string languageId)
         {
             var response = await _client.GetAsync($"/api/languages/{languageId}");
             using (HttpContent content = response.Content)
@@ -53,7 +57,11 @@ namespace eShopSolution.WebApp.Services.Languages
                 //If the data is not null, parse(deserialize) the data to a C# object
                 if (data != null)
                 {
-                    return JsonConvert.DeserializeObject<LanguageViewModel>(data);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<LanguageViewModel>>(data);
+                    }
+                    return JsonConvert.DeserializeObject<ApiResultErrors<LanguageViewModel>>(data);
 
                 }
                 else
