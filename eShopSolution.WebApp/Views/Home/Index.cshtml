@@ -1,13 +1,10 @@
-﻿@using eShopSolution.ViewModel.Catalog.Categories
-@using eShopSolution.ViewModel.Language
-@model CategoryCreateRequest
+﻿@model CategoryCreateRequest
 @{
     var urlTemplate = Url.Action();
     var categories = (List<CategoryViewModel>)ViewData["categories"];
     var languages = (List<LanguageViewModel>)ViewData["languages"];
     ViewData["Image-logo"] = "/assets/images/logo-1.png";
 }
-
 
 <div class="ps-banner--home-1">
     <div class="rev_slider_wrapper fullscreen-container" id="revolution-slider-1" data-alias="concept121" data-source="gallery" style="background-color:#000000;padding:0px;">

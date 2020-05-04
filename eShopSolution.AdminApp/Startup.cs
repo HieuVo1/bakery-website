@@ -74,8 +74,8 @@ namespace eShopSolution.AdminApp
         {
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+                app.UseDeveloperExceptionPage();
+                //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
             else
             {

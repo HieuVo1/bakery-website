@@ -17,5 +17,7 @@ namespace eShopSolution.AdminApp.Service.Users
         Task<ApiResult<string>> Register(RegisterRequest request);
         Task<ApiResult<string>> Delete(Guid userId);
         Task<ApiResult<string>> Update(Guid userId,UserUpdateRequest request);
+        Task<ApiResult<UserViewModel>> GetUserByEmail(string email);
+        Task<ApiResult<UserViewModel>> GetUserByUserName(string userName);
     }
 }

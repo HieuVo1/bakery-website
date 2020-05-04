@@ -1,8 +1,15 @@
+using eShopSolution.Data.Entities;
+using eShopSolution.ViewModel.System.Users;
 using eShopSolution.WebApp.Services.Categorys;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.products;
+using eShopSolution.WebApp.Services.Users;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,10 +30,25 @@ namespace eShopSolution.WebApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
-            services.AddControllersWithViews();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+              .AddCookie(options =>
+              {
+                  options.LoginPath = "/Login/index/";
+                  options.AccessDeniedPath = "/User/Forbidden/";
+              });
+            
+            services.AddControllersWithViews()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IUserAPIClient, UserAPIClient>();
             IMvcBuilder builder = services.AddRazorPages();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -43,8 +65,8 @@ namespace eShopSolution.WebApp
         {
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+                app.UseDeveloperExceptionPage();
+                //app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
             else
             {
@@ -55,11 +77,11 @@ namespace eShopSolution.WebApp
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 //index product

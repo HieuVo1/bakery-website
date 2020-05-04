@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private readonly IProductService _productServive;
         private readonly ILanguageService _languageService;
@@ -156,7 +156,7 @@ namespace eShopSolution.AdminApp.Controllers
             }
             else
             {
-                return View(ModelState.ErrorCount);
+                return BadRequest(ModelState);
             }
         }
 

@@ -1,8 +1,8 @@
-﻿@using eShopSolution.ViewModel.System.Users
-@model LoginRequest
+﻿@model LoginRequest
 @{
     Layout = null;
     var messageFaild = TempData["message"];
+    var returnUrl = @Context.Request.Query["ReturnUrl"];
 }
 
 <!doctype html>
@@ -29,7 +29,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-sm-12">
-                    <form asp-action="index" asp-controller="Login" method="post" class="card auth_form">
+                    <form asp-action="index" asp-controller="Login" asp-route-ReturnUrl="@returnUrl" method="post" class="card auth_form">
                         <div class="header">
                             <img class="logo" src="/assets/images/logo.svg" alt="">
                             <h5>Log in</h5>

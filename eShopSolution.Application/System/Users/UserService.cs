@@ -47,12 +47,11 @@ namespace eShopSolution.Application.System.Users
             if (user == null) return new ApiResultErrors<string>("UserName not found");
             var result = await _signInManager.PasswordSignInAsync(user, request.Passwork, request.RememberMe, true);
             if (!result.Succeeded) return new ApiResultErrors<string>("UserName or Password is incorrect");
-
-            var roles = _userManager.GetRolesAsync(user);
+            var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.Role,string.Join(";",roles)),
+                new Claim(ClaimTypes.Role,string.Join(";",role.Result.Name)),
                 new Claim(ClaimTypes.Name, request.UserName),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
@@ -79,12 +78,54 @@ namespace eShopSolution.Application.System.Users
             return new ApiResultErrors<bool>(" Xóa không thành công");
         }
 
+        public async Task<ApiResult<UserViewModel>> GetByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return new ApiResultErrors<UserViewModel>($"Can not find user with email: {email}");
+            }
+            var userViewModel = new UserViewModel()
+            {
+                Email = user.Email,
+                FullName = user.FullName,
+                Phone = user.PhoneNumber,
+                UserName = user.UserName,
+                Dob = user.Dob,
+                Id = user.Id,
+                ImagePath = user.ImagePath,
+                RoleId = user.RoleID
+            };
+            return new ApiResultSuccess<UserViewModel>(userViewModel);
+        }
+
         public async Task<ApiResult<UserViewModel>> GetById(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-                new ApiResultErrors<bool>($"Can not find user with id: {userId}");
+               return new ApiResultErrors<UserViewModel>($"Can not find user with id: {userId}");
+            }
+            var userViewModel = new UserViewModel()
+            {
+                Email = user.Email,
+                FullName = user.FullName,
+                Phone = user.PhoneNumber,
+                UserName = user.UserName,
+                Dob = user.Dob,
+                Id = user.Id,
+                ImagePath = user.ImagePath,
+                RoleId = user.RoleID
+            };
+            return new ApiResultSuccess<UserViewModel>(userViewModel);
+        }
+
+        public async Task<ApiResult<UserViewModel>> GetByUserName(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return new ApiResultErrors<UserViewModel>($"Can not find user with userName: {userName}");
             }
             var userViewModel = new UserViewModel()
             {
@@ -184,7 +225,11 @@ namespace eShopSolution.Application.System.Users
             {
                 return new ApiResultErrors<bool>("Email is already");
             }
-
+            var roleDefault = await _roleManager.FindByNameAsync("client");
+            if (request.RoleId == new Guid("00000000-0000-0000-0000-000000000000"))
+            {
+                request.RoleId = roleDefault.Id;
+            }
             var user = new UserApp()
             {
                 Dob = request.Dob,

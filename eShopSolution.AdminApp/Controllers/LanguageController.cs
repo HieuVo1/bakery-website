@@ -9,7 +9,7 @@ using eShopSolution.AdminApp.Service.Categorys;
 
 namespace eShopSolution.AdminApp.Controllers
 {
-    public class LanguageController : Controller
+    public class LanguageController : BaseController
     {
         private readonly ILanguageService _languageService;
         private readonly ICategoryService _categoryService;
@@ -52,7 +52,7 @@ namespace eShopSolution.AdminApp.Controllers
             }
             else
             {
-                return View(ModelState.ErrorCount);
+                return BadRequest(ModelState.ErrorCount);
             }
         }
         [HttpGet]

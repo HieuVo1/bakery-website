@@ -50,17 +50,24 @@ namespace eShopSolution.BackEndAPI
             });
             services.AddDbContext<EShopDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
-            services.AddIdentity<UserApp, RoleApp>()
+            services.AddIdentity<UserApp, RoleApp>(
+                options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                })
                 .AddEntityFrameworkStores<EShopDbContext>()
                 .AddDefaultTokenProviders();
             // Declare DI
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequiredLength = 5;
-                options.Password.RequireLowercase = false ;
-                options.Password.RequireUppercase = false;
-            });
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    options.Password.RequireDigit = false;
+            //    options.Password.RequiredLength = 5;
+            //    options.Password.RequireLowercase = false ;
+            //    options.Password.RequireUppercase = false;
+            //});
             services.AddTransient<IStorageService, FileStorageService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductImageService, ProductImageService>();
@@ -78,38 +85,38 @@ namespace eShopSolution.BackEndAPI
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
              );
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger eShopSolution", Version = "v1" });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger eShopSolution", Version = "v1" });
+            //    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            //    {
+            //        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
+            //          Enter 'Bearer' [space] and then your token in the text input below.
+            //          \r\n\r\nExample: 'Bearer 12345abcdef'",
+            //        Name = "Authorization",
+            //        In = ParameterLocation.Header,
+            //        Type = SecuritySchemeType.ApiKey,
+            //        Scheme = "Bearer"
+            //    });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                  {
-                    {
-                      new OpenApiSecurityScheme
-                      {
-                        Reference = new OpenApiReference
-                          {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                          },
-                          Scheme = "oauth2",
-                          Name = "Bearer",
-                          In = ParameterLocation.Header,
-                        },
-                        new List<string>()
-                      }
-                    });
-            });
+            //    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+            //      {
+            //        {
+            //          new OpenApiSecurityScheme
+            //          {
+            //            Reference = new OpenApiReference
+            //              {
+            //                Type = ReferenceType.SecurityScheme,
+            //                Id = "Bearer"
+            //              },
+            //              Scheme = "oauth2",
+            //              Name = "Bearer",
+            //              In = ParameterLocation.Header,
+            //            },
+            //            new List<string>()
+            //          }
+            //        });
+            //});
             string issuer = Configuration.GetValue<string>("Tokens:Issuer");
             string signingKey = Configuration.GetValue<string>("Tokens:Key");
             byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
@@ -157,11 +164,11 @@ namespace eShopSolution.BackEndAPI
             app.UseRouting();
             app.UseCors();
             app.UseAuthorization();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger eShopSolution V1");
-            });
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Swagger eShopSolution V1");
+            //});
 
             app.UseEndpoints(endpoints =>
             {

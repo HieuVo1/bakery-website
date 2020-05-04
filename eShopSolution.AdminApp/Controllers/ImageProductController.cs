@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eShopSolution.AdminApp.Controllers
 {
 
-    public class ImageProductController : Controller
+    public class ImageProductController : BaseController
     {
         private readonly IProductService _productServive;
         private readonly IImageProductService _imageProductServive;

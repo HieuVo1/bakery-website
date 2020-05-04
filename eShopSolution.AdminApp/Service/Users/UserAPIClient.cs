@@ -109,11 +109,33 @@ namespace eShopSolution.AdminApp.Service.Users
             }
         }
 
+        public async Task<ApiResult<UserViewModel>> GetUserByEmail(string email)
+        {
+            var response = await _client.GetAsync($"/api/users/GetByEmail/{email}");
+            var data = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<UserViewModel>>(data);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<UserViewModel>>(data);
+        }
+
         public async Task<ApiResult<UserViewModel>> getUserById(Guid userId)
         {
             var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var response = await _client.GetAsync($"/api/users/{userId}");
+            var data = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<UserViewModel>>(data);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<UserViewModel>>(data);
+        }
+
+        public async Task<ApiResult<UserViewModel>> GetUserByUserName(string userName)
+        {
+            var response = await _client.GetAsync($"/api/users/GetByUserName/{userName}");
             var data = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {

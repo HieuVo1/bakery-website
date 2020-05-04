@@ -9,10 +9,11 @@ using eShopSolution.WebApp.Models;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.Categorys;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 
 namespace eShopSolution.WebApp.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILanguageService _languageService;
         private readonly ICategoryService _categoryService;
@@ -31,6 +32,10 @@ namespace eShopSolution.WebApp.Controllers
             var languages = await _languageService.GetAll();
             ViewData["languages"] = languages.ResultObject;
             ViewData["categories"] = categories.ResultObject;
+            if (section != null)
+            {
+                ViewBag.IsLogged = true;
+            }
             return View();
         }
 

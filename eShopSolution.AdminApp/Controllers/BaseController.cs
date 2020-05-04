@@ -15,13 +15,6 @@ namespace eShopSolution.AdminApp.Controllers
     [Authorize]
     public class BaseController : Controller
     {
-        //protected readonly ILanguageService _languageService;
-        //protected readonly ICategoryService _categoryService;
-        //public BaseController(ICategoryService categoryService, ILanguageService languageService)
-        //{
-        //    _categoryService = categoryService;
-        //    _languageService = languageService;
-        //}
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             var section = context.HttpContext.Session.GetString("Token");

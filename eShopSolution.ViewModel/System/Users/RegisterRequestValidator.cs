@@ -10,6 +10,7 @@ namespace eShopSolution.ViewModel.System.Users
         public RegisterRequestValidator()
         {
             RuleFor(x => x.UserName).NotEmpty().WithMessage("User name is required");
+            RuleFor(x => x.FullName).NotEmpty().WithMessage("Full name is required");
             RuleFor(x => x.Phone).NotEmpty().WithMessage("Phone is required");
             RuleFor(x => x.Passwork).NotEmpty().WithMessage("Passwork is required").Matches(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$");
             RuleFor(x => x.Dob).NotEmpty().GreaterThan(DateTime.Now.AddYears(-100)).WithMessage("Birth day is incorrect");

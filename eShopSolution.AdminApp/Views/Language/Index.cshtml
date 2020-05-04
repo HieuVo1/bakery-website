@@ -1,5 +1,4 @@
-﻿@using eShopSolution.ViewModel.Language
-@model LanguageCreateRequest
+﻿@model LanguageCreateRequest
 @{
     var languages = (List<LanguageViewModel>)ViewData["languages"];
 }
@@ -42,10 +41,12 @@
                         <div class="form-group">
                             <label>Id</label>
                             <input type="text" asp-for="Id" class="form-control" />
+                            <span asp-validation-for="Id" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label>Name</label>
                             <input type="text" asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                         <div class="form-group">
                             <label>IsDefault:</label>
@@ -143,7 +144,6 @@
     <script src="/assets/plugins/jquery-datatable/buttons/buttons.flash.min.js"></script>
     <script src="/assets/plugins/jquery-datatable/buttons/buttons.html5.min.js"></script>
     <script src="/assets/plugins/jquery-datatable/buttons/buttons.print.min.js"></script>
-    <script src="/assets/plugins/jquery-validation/jquery.validate.js"></script>
     <script src="/assets/js/pages/forms/form-validation.js"></script>
     <script src="/assets/js/pages/tables/jquery-datatable.js"></script>
 

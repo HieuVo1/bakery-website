@@ -73,6 +73,22 @@ namespace eShopSolution.BackEndAPI.Controllers
             if (result == null) return BadRequest(result);
             return Ok(result);
         }
+        [HttpGet("getByEmail/{email}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByEmail( string email)
+        {
+            var result = await _userService.GetByEmail(email);
+            if (result == null) return BadRequest(result);
+            return Ok(result);
+        }
+        [HttpGet("getByUserName/{userName}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByUserName( string userName)
+        {
+            var result = await _userService.GetByUserName(userName);
+            if (result == null) return BadRequest(result);
+            return Ok(result);
+        }
         [HttpPatch("{userId}")]
         public async Task<IActionResult> Update([FromRoute] Guid userId,[FromForm] UserUpdateRequest request)
         {

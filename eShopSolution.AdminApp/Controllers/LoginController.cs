@@ -43,7 +43,7 @@ namespace eShopSolution.AdminApp.Controllers
             return RedirectToAction("index", "Login");
         }
         [HttpPost]
-        public async Task<IActionResult> Index(LoginRequest request)
+        public async Task<IActionResult> Index(LoginRequest request,[FromQuery] string ReturnUrl)
         {
             if (!ModelState.IsValid) return View(ModelState);
 
@@ -62,7 +62,7 @@ namespace eShopSolution.AdminApp.Controllers
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                IsPersistent = false // khi đăng nhập rồi thì ko cần phải đăng nhập lại
+                IsPersistent = request.RememberMe // có sử dụng persistent cookie
             };
 
             await HttpContext.SignInAsync(
@@ -70,7 +70,40 @@ namespace eShopSolution.AdminApp.Controllers
                     userPrincipal,
                     authProperties);
 
-            return Redirect("/home/index");
+            if (!string.IsNullOrEmpty(ReturnUrl))
+            {
+                return LocalRedirect(ReturnUrl);
+            }
+            else
+            {
+                return RedirectToAction("index", "home");
+            }
+        }
+        [AcceptVerbs("Get", "post")]
+        public async Task<IActionResult> IsUserNameUse(string userName)
+        {
+            var result = await _userAPIClient.GetUserByUserName(userName);
+            if (result.IsSuccessed == false)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json($"UserName {userName} is already in use");
+            }
+        }
+        [AcceptVerbs("Get", "post")]
+        public async Task<IActionResult> IsEmailUse(string Email)
+        {
+            var result = await _userAPIClient.GetUserByEmail(Email);
+            if (result.IsSuccessed == false)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json($"Email {Email} is already in use");
+            }
         }
         private ClaimsPrincipal ValidateToken(string jwtToken)
         {

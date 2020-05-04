@@ -15,6 +15,8 @@ namespace eShopSolution.Application.System.Users
         Task<ApiResult<bool>> Register(RegisterRequest request);
         Task<ApiResult<PageViewModel<UserViewModel>>> GetListUser(GetUserPaggingRequest request);
         Task<ApiResult<UserViewModel>> GetById(Guid  userId);
+        Task<ApiResult<UserViewModel>> GetByEmail(string  email);
+        Task<ApiResult<UserViewModel>> GetByUserName(string  userName);
         Task<ApiResult<bool>> Delete(Guid userId);
         Task<ApiResult<bool>> Update(Guid userId,UserUpdateRequest request);
         Task<ApiResult<PageViewModel<RoleViewModel>>> GetListRole();
