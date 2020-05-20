@@ -11,46 +11,37 @@ using eShopSolution.ViewModel.Catalog.Categories;
 using eShopSolution.ViewModel.Catalog.Products;
 using eShopSolution.ViewModel.Language;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopSolution.AdminApp.Controllers
 {
     public class ProductController : BaseController
     {
         private readonly IProductService _productServive;
-        private readonly ILanguageService _languageService;
-        private readonly ICategoryService _categoryService;
-        public ProductController(IProductService productService, ILanguageService languageService,ICategoryService categoryService)
+
+        public ProductController(IProductService productService,
+            ILanguageService languageService,
+            ICategoryService categoryService,
+            IConfiguration configuration) : base(languageService, categoryService, configuration)
         {
-            _languageService = languageService;
             _productServive = productService;
-            _categoryService = categoryService;
         }
         [HttpGet]
         public async Task<IActionResult> Index( string categoryUrl)
         {
-            var products = await _productServive.GetAllByCategoryUrl(categoryUrl,"vn");
-            var result = await _languageService.GetAll();
-            var categories = await _categoryService.GetAll("vn");
-            ViewData["languages"] = result.ResultObject;
-            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
-            if (indexVN != -1)
-            {
-                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
-            }
-            ViewData["categories"] = categories.ResultObject;
+            var products = await _productServive.GetAllByCategoryUrl(categoryUrl,languageDefauleId);
+            ViewData["languages"] =  await GetListLanguageAsync();
+            var categories = await GetListCategoryAsync(languageDefauleId);
+            ViewData["categories"] =  await GetListCategoryAsync(languageDefauleId);
+
             ViewData["products"] = products.ResultObject.Items;
-            if (TempData["result"] != null)
-            {
-                ViewBag.result = TempData["result"];
-                ViewBag.IsSuccess = TempData["IsSuccess"];
-            }
             return View();
         }
         [HttpGet]
         public async Task<IActionResult> NewProduct(string categoryUrl)
         {
             var result = await _languageService.GetAll();
-            var categories = await _categoryService.GetAll("vn");
+            var categories = await _categoryService.GetAll(languageDefauleId);
             ViewData["languages"] = result.ResultObject;
             
             var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
@@ -60,7 +51,6 @@ namespace eShopSolution.AdminApp.Controllers
             }
             ViewData["categories"] = categories.ResultObject;
             var index = categories.ResultObject.FindIndex(x => x.CategoryUrl == categoryUrl);
-            //Swap
             if (index != 0)
             {
                 SwapGeneric<CategoryViewModel>.Swap(categories.ResultObject, index, 0);

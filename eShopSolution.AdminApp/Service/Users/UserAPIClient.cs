@@ -182,7 +182,6 @@ namespace eShopSolution.AdminApp.Service.Users
             form.Add(new StringContent(request.FullName), "FullName");
             form.Add(new StringContent(request.Phone), "Phone");
             form.Add(new StringContent(request.RoleId.ToString()), "RoleId");
-            form.Add(new StringContent(request.Email), "Email");
             if (request.ThumbnailImage != null)
             {
                 byte[] data;

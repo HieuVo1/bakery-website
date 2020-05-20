@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Categorys;
+using eShopSolution.AdminApp.Service.Languages;
 using eShopSolution.AdminApp.Service.Users;
 using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.System.Users;
@@ -22,13 +23,12 @@ namespace eShopSolution.AdminApp.Controllers
     public class UserController : BaseController
     {
         private readonly IUserAPIClient _userAPIClient;
-        private readonly IConfiguration _configuration;
-        private readonly ICategoryService _categoryService;
-        public  UserController(IUserAPIClient userAPIClient, IConfiguration configuration,ICategoryService categoryService)
+        public  UserController(IUserAPIClient userAPIClient,
+            ICategoryService categoryService,
+            ILanguageService languageService,
+            IConfiguration configuration) : base(languageService, categoryService, configuration)
         {
             _userAPIClient = userAPIClient;
-            _configuration= configuration;
-            _categoryService = categoryService;
         }
         public async Task<IActionResult> IndexAsync(string keyword= null,int pageIndex=0,int pageSize=0)
         {
@@ -41,17 +41,10 @@ namespace eShopSolution.AdminApp.Controllers
             };
             var roles = await _userAPIClient.getListRole();
             var users = await _userAPIClient.getListUser(request);
-            var categories = await _categoryService.GetAll("vn");
-            ViewData["categories"] = categories.ResultObject;
+            ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);
             ViewData["roles"] = roles.ResultObject.Items;
             ViewData["users"] = users.ResultObject.Items;
             ViewData["Token"] = section;
-            if (TempData["result"] != null)
-            {
-                ViewBag.result = TempData["result"];
-                ViewBag.IsSuccess = TempData["IsSuccess"];
-            }
-              
             return View();
         }
         

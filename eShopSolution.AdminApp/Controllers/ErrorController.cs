@@ -9,8 +9,8 @@ namespace eShopSolution.AdminApp.Controllers
 {
     public class ErrorController : Controller
     {
-        [Route("Error/{StatusCode}")]
-        public IActionResult HttpStatusCodeHandler(int StatusCode)
+        [Route("Error/{statusCode}")]
+        public IActionResult HttpStatusCodeHandler(int statusCode)
         {
             var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
             //switch (StatusCode)

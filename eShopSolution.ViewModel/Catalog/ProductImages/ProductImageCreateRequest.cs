@@ -11,7 +11,7 @@ namespace eShopSolution.ViewModel.Catalog.ProductImages
         [Required]
         public string Caption { get; set; }
         [Required]
-        public int productId { set; get; }
+        public int ProductId { set; get; }
         [Required]
         public bool IsDefault { get; set; }
         [Required]

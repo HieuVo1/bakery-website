@@ -1,4 +1,6 @@
-﻿using System;
+﻿using eShopSolution.ViewModel.Catalog.Categories;
+using eShopSolution.ViewModel.Language;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +14,6 @@ namespace eShopSolution.Utilities.functions
             l[index1] = l[index2];
             l[index2] = temp;
         }
+  
     }
 }

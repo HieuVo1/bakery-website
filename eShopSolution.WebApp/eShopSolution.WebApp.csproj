@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>2dbeb0b8-0425-46ce-a9eb-66a06716b972</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.2" />
@@ -12,10 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Product\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\eShopSolution.Utilities\eShopSolution.Utilities.csproj" />
     <ProjectReference Include="..\eShopSolution.ViewModel\eShopSolution.ViewModel.csproj" />
   </ItemGroup>
 

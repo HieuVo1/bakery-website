@@ -1,0 +1,35 @@
+﻿@using eShopSolution.WebApp.Helpers
+@using eShopSolution.ViewModel.Catalog.Carts.CartItems
+@{ 
+    var cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(@Context.Request.Cookies, "CartSessionKey");
+    var total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
+    var NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
+}
+<div class="ps-cart">
+    <a class="ps-cart__toggle" href="/cart/index"><span data-num="@NumItem" class="ps-cart__numItem"><i>@NumItem</i></span><i class="ps-icon--shopping-cart"></i></a>
+    <div class="ps-cart__listing">
+        <div class="ps-cart__content">
+            <div class="ps-cart__items">
+                @if (ViewBag.cart != null)
+                {
+                    @foreach (var item in cart)
+                    {
+                        <div class="ps-cart-item">
+                            <a class="ps-cart-item__close" href="#"></a>
+                            <div class="ps-cart-item__thumbnail"><a asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id"></a><img src="@item.Product.ImagePath" alt=""></div>
+                            <div class="ps-cart-item__content">
+                                <a class="ps-cart-item__title" asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id">@item.Product.Name</a>
+                                <p><span>Quantity:<i>@item.Quantity</i></span><span>Total:<i>@(item.Product.Price*item.Quantity)</i></span></p>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="ps-cart__total">
+                <p>Number of items:<span>@NumItem<span></p>
+                <p>Item Total:<span>@total</span></p>
+            </div>
+            <div class="ps-cart__footer"><a class="ps-btn ps-btn--view-bag" href="cart.html">View bag</a></div>
+        </div>
+    </div>
+</div>

@@ -14,5 +14,6 @@ namespace eShopSolution.Data.Entities
         public string ImagePath { get; set; }
         public List<Product> Products { set; get; }
         public List<CategoryTranslation> CategoryTranslations { set; get; }
+        public List<Blog> Blogs { set; get; }
     }
 }

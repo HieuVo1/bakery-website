@@ -2,21 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eShopSolution.Application.Blogs;
+using eShopSolution.Application.Catelog.Carts;
 using eShopSolution.Application.Catelog.Categories;
 using eShopSolution.Application.Catelog.ProductImages;
 using eShopSolution.Application.Catelog.Products;
+using eShopSolution.Application.Comments;
 using eShopSolution.Application.Comom;
+using eShopSolution.Application.Contacts;
 using eShopSolution.Application.Languages;
 using eShopSolution.Application.System.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.Constants;
+using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Users;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +53,13 @@ namespace eShopSolution.BackEndAPI
                     {
                         builder.WithOrigins("https://localhost:5002");
                     });
+
             });
+            var emailConfig = Configuration
+           .GetSection("EmailConfiguration")
+           .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+
             services.AddDbContext<EShopDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
             services.AddIdentity<UserApp, RoleApp>(
@@ -57,23 +69,26 @@ namespace eShopSolution.BackEndAPI
                     options.Password.RequiredLength = 8;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireUppercase = false;
+
+                    options.SignIn.RequireConfirmedEmail = true;
+
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
                 })
                 .AddEntityFrameworkStores<EShopDbContext>()
                 .AddDefaultTokenProviders();
-            // Declare DI
-            //services.Configure<IdentityOptions>(options =>
-            //{
-            //    options.Password.RequireDigit = false;
-            //    options.Password.RequiredLength = 5;
-            //    options.Password.RequireLowercase = false ;
-            //    options.Password.RequireUppercase = false;
-            //});
             services.AddTransient<IStorageService, FileStorageService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IProductImageService, ProductImageService>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IContactService, ContactService>();
+            services.AddTransient<IBlogService, BlogService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 
             services.AddTransient<UserManager<UserApp>, UserManager<UserApp>>();
@@ -141,7 +156,8 @@ namespace eShopSolution.BackEndAPI
                     ClockSkew = System.TimeSpan.Zero,
                     IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
                 };
-            });
+            })
+            .AddCookie();
 
         }
 

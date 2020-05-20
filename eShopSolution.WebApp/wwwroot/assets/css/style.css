@@ -6518,7 +6518,7 @@ textarea.form-control {
   -ms-transform: translate(-50%, 30px);
   -o-transform: translate(-50%, 30px);
   transform: translate(-50%, 30px);
-  width: 300px;
+  width: 350px;
   background-color: #fff;
   z-index: 100;
   -webkit-box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.2);
@@ -6551,8 +6551,10 @@ textarea.form-control {
   border-right: 7.5px solid transparent;
 }
 
-.ps-cart__content {
-  padding-top: 20px;
+.ps-cart__items {
+    overflow: auto;
+    height: 300px;
+    padding-top: 20px;
 }
 
 .ps-cart__total {
@@ -8992,6 +8994,11 @@ html .bg--parallax {
 }
 .pt-20 {
     padding-top: 20px;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* 6. CUSTOM STYLESHEET*/

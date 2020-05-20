@@ -23,7 +23,7 @@ namespace eShopSolution.WebApp.Services.products
         public async Task<ApiResult<PageViewModel<ProductViewModel>>> GetAll(string languageId, string Keyword, int pageIndex, int pageSize,int minPrice,int maxPrice)
         {
             //https://locahost:port/products/languageId/?PageIndex=1&pageSize=1&categoryUrl=1
-            var response = await _client.GetAsync($"/api/products/{languageId}?pageIndex={pageIndex}&pageSize={pageSize}&Keywork={Keyword}&minPrice={minPrice}&maxPrice={maxPrice}");
+            var response = await _client.GetAsync($"/api/products/{languageId}?pageIndex={pageIndex}&pageSize={pageSize}&Keyword={Keyword}&minPrice={minPrice}&maxPrice={maxPrice}");
             using (HttpContent content = response.Content)
             {
                 //convert data content to string using await
@@ -71,7 +71,7 @@ namespace eShopSolution.WebApp.Services.products
             }
         }
 
-        public async Task<ApiResult<ProductViewModel>> GetById(int productId, int languageId)
+        public async Task<ApiResult<ProductViewModel>> GetById(int productId, string languageId)
         {
             //https://locahost:port/products/productId/languageId
             var response = await _client.GetAsync($"/api/products/{productId}/{languageId}");

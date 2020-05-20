@@ -14,5 +14,7 @@ namespace eShopSolution.Data.Entities
         public RoleApp RoleApp { set; get; }
         public List<Cart> Carts { set; get; }
         public List<Order> Orders { set; get; }
+        public List<Blog> Blogs { set; get; }
+        public List<Comment> Comments { set; get; }
     }
 }

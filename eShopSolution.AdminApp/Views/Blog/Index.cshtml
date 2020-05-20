@@ -1,0 +1,90 @@
+﻿
+@{
+    var categories = (List<CategoryViewModel>)ViewData["categories"];
+    var blogs = (List<BlogViewModel>)ViewData["blogs"];
+}
+
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Blog Grid Style</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                    <li class="breadcrumb-item"><a href="blog-dashboard.html">Blog</a></li>
+                    <li class="breadcrumb-item active">Grid View</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">
+                <div class="row">
+                    <div class="col-lg-6"></div>
+                    <div class="col-lg-3">
+                        <form method="get" asp-action="PostBlog" asp-controller="Blog">
+                            <button style="height: 2.375rem;" class=" btn btn-primary" type="submit">Add</button>
+                        </form>
+                    </div>
+                    <div class="col-lg-3 ">
+                        <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    @for (int i = 0; i <= (blogs.Count - 1) / 2; i++)
+                    {
+                        <div class="blogitem mb-5">
+                            <div class="blogitem-image">
+                                <a href="/blog/edit/@blogs[i].Id"><img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image"></a>
+                                <span class="blogitem-date">@blogs[i].Created_At</span>
+                            </div>
+                            <div class="blogitem-content">
+                                <div class="blogitem-header">
+                                    <div class="blogitem-meta">
+                                        <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
+                                        <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
+                                    </div>
+                                </div>
+                                <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
+                                <div>@blogs[i].Content</div>
+                                <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
+                                <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    @for (int i = (blogs.Count - 1) / 2+1; i < blogs.Count; i++)
+                    {
+                        <div class="blogitem mb-5">
+                            <div class="blogitem-image">
+                                <a href="/blog/edit/@blogs[i].Id">
+                                    <img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image"></a>
+                                    <span class="blogitem-date">@blogs[i].Created_At</span>
+                            </div>
+                            <div class="blogitem-content">
+                                <div class="blogitem-header">
+                                    <div class="blogitem-meta">
+                                        <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
+                                        <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
+                                    </div>
+                              
+                                </div>
+                                <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
+                                <div>@blogs[i].Content</div>      
+                                <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
+                                <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

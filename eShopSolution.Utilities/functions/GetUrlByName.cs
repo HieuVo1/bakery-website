@@ -19,7 +19,7 @@ namespace eShopSolution.Utilities.functions
         };
         public static char[] replaceChar = { 'a', 'e', 'i', 'o', 'u', 'y', 'd', '-' };
 
-        public static char getReplaceChar(char c)
+        public static char GetReplaceChar(char c)
         {
             for (int i = 0; i < vnChar.Length; i++)
             {
@@ -28,13 +28,13 @@ namespace eShopSolution.Utilities.functions
             return c;
         }
 
-        public static string converts(string text)
+        public static string Converts(string text)
         {
             string s = text.ToLower();
             string result = "";
             for (int i = 0; i < s.Length; i++)
             {
-                result += getReplaceChar(s[i]);
+                result += GetReplaceChar(s[i]);
             }
             return result;
 

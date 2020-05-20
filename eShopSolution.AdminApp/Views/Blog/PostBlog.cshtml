@@ -1,0 +1,118 @@
+﻿@model eShopSolution.ViewModel.Blog.BlogCreateRequest
+@{
+    var categories = (List<CategoryViewModel>)ViewData["categories"];
+    var blog = (BlogViewModel)ViewData["blog"];
+    ViewData["Title"] = "PostBlog";
+}
+@section Header{
+    <link rel="stylesheet" href="/assets/plugins/summernote/dist/summernote.css" />
+    <link rel="stylesheet" href="/assets/plugins/bootstrap-select/css/bootstrap-select.css" />
+    <link rel="stylesheet" href="/assets/plugins/dropify/css/dropify.min.css">
+}
+<div class="body_scroll">
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h2>Blog Post</h2>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                    <li class="breadcrumb-item"><a href="blog-dashboard.html">Blog</a></li>
+                    <li class="breadcrumb-item active">New Post</li>
+                </ul>
+                <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">
+                <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    @if (blog == null)
+    {
+        <div class="container-fluid">
+            <form asp-action="PostBlog" asp-controller="Blog" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="body">
+                                <div class="form-group">
+                                    <input type="text" asp-for="Title" class="form-control" placeholder="Enter Blog title" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                                <select class="form-control  show-tick" asp-for="CategoryId">
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="body">
+                                <input type="file" class="dropify" asp-for="ThumbnailImage" data-height="300px" multiple
+                                       data-default-file=""
+                                       data-allowed-file-extensions="jpg png">
+                                <span asp-validation-for="ThumbnailImage" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="body">
+                                <textarea class="summernote" name="Content"></textarea>
+                                <span asp-validation-for="Content" class="text-danger"></span>
+                                <button type="submit" class="btn btn-info waves-effect m-t-20">POST</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="container-fluid">
+            <form asp-action="Edit" asp-controller="Blog" asp-route-blogId="@blog.Id" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="body">
+                                <div class="form-group">
+                                    <input type="text" asp-for="Title" value="@blog.Title" class="form-control" placeholder="Enter Blog title" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                                <select class="form-control  show-tick" asp-for="CategoryId">
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="body">
+                                <input type="file" class="dropify" asp-for="ThumbnailImage" data-height="300px" multiple
+                                       data-default-file="@blog.ImagePath"
+                                       data-allowed-file-extensions="jpg png">
+                                <span asp-validation-for="ThumbnailImage" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="body">
+                                <textarea class="summernote" name="Content">@blog.Content</textarea>
+                                <span asp-validation-for="Content" class="text-danger"></span>
+                                <button type="submit" class="btn btn-info waves-effect m-t-20">POST</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    }
+
+</div>
+@section Scripts{
+    <script src="/assets/plugins/dropzone/dropzone.js"></script> <!-- Dropzone Plugin Js -->
+    <script src="/assets/plugins/summernote/dist/summernote.js"></script>
+    <script src="/assets/plugins/dropify/js/dropify.min.js"></script>
+    <script src="/assets/js/pages/forms/dropify.js"></script>
+}

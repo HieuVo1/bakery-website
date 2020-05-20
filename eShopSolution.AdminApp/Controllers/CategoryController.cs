@@ -8,34 +8,21 @@ using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.Catalog.Categories;
 using eShopSolution.ViewModel.Language;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopSolution.AdminApp.Controllers
 {
     public class CategoryController : BaseController
     {
-        private readonly ICategoryService _categoryService;
-        private readonly ILanguageService _languageService;
-        public CategoryController(ICategoryService categoryService, ILanguageService languageService)
+        public CategoryController(ICategoryService categoryService,
+            ILanguageService languageService,
+            IConfiguration configuration):base(languageService,categoryService, configuration)
         {
-            _categoryService = categoryService;
-            _languageService = languageService;
         }
         public async Task<IActionResult> Index([FromRoute] string id)
-        {
-            var categories = await _categoryService.GetAll(id);
-            var result = await _languageService.GetAll();
-            var indexVN = result.ResultObject.FindIndex(x => x.Name == "VIETNAM");
-            if (indexVN != -1)
-            {
-                SwapGeneric<LanguageViewModel>.Swap(result.ResultObject, indexVN, 0);
-            }
-            if (TempData["result"] != null)
-            {
-                ViewBag.result = TempData["result"];
-                ViewBag.IsSuccess = TempData["IsSuccess"];
-            }
-            ViewData["categories"] = categories.ResultObject;
-            ViewData["languages"] = result.ResultObject;
+        { 
+            ViewData["categories"] = await GetListCategoryAsync(id);
+            ViewData["languages"] = await GetListLanguageAsync();
             return View();
         }
         [HttpPost]

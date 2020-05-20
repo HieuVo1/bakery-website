@@ -112,6 +112,46 @@ namespace eShopSolution.Data.Migrations
                     b.ToTable("UserTokens");
                 });
 
+            modelBuilder.Entity("eShopSolution.Data.Entities.Blog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Date")
+                        .HasDefaultValueSql("GetDate()");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LikeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Blogs");
+                });
+
             modelBuilder.Entity("eShopSolution.Data.Entities.Cart", b =>
                 {
                     b.Property<int>("Id")
@@ -245,6 +285,35 @@ namespace eShopSolution.Data.Migrations
                             CategoryUrl = "cake",
                             Name = "Cake"
                         });
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BlogId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Date")
+                        .HasDefaultValueSql("GetDate()");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Contact", b =>
@@ -620,7 +689,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "b8eb1358-33d6-4190-96f2-765d2af6ef1d",
+                            ConcurrencyStamp = "242cffad-9275-44a6-b1d4-4cbf66413ebb",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -628,7 +697,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
-                            ConcurrencyStamp = "db9c262c-4942-47b8-9490-a2249d6871ae",
+                            ConcurrencyStamp = "9cc18814-6c22-4d23-b5d4-23158401836d",
                             Description = "Client role",
                             Name = "client",
                             NormalizedName = "client"
@@ -706,20 +775,35 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "aa5be8d3-c6ac-449d-b8bb-c186cb9bbbec",
+                            ConcurrencyStamp = "ec8703b3-abc4-4478-96a9-5b9208f407b7",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGMjKK+6ZewEKkLPpVvgWFsyNOYqunvRMQ+efywMb5vm4jMJDopPhH2RgpQZ+1rdjA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGqU2V8dPvbGAtj4v8K6ARWC49PGYMv8MHsTWR20zrrLokwqoxvF7B+US/COyVVBxw==",
                             PhoneNumberConfirmed = false,
                             RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.Blog", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.Category", "Categories")
+                        .WithMany("Blogs")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eShopSolution.Data.Entities.UserApp", "UserApp")
+                        .WithMany("Blogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.Cart", b =>
@@ -755,6 +839,15 @@ namespace eShopSolution.Data.Migrations
                     b.HasOne("eShopSolution.Data.Entities.Language", "Language")
                         .WithMany("CategoryTranslations")
                         .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eShopSolution.Data.Entities.Comment", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.UserApp", "UserApp")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

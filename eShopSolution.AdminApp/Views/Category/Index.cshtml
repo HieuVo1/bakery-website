@@ -129,7 +129,7 @@
                                         {
                                             foreach (var category in @categories)
                                             {
-                                                var imagePath = "https://localhost:5001/user-content/" + (category.ImagePath ?? "image-not-found.jpg");
+                                                var imagePath =(category.ImagePath ?? "https://localhost:5001/user-content/image-not-found.jpg");
                                                 <tr>
                                                     <td>@category.Id</td>
                                                     <td>@category.Name</td>

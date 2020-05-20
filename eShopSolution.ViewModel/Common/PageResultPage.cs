@@ -17,7 +17,7 @@ namespace eShopSolution.ViewModel.Common
                 {
                     return 1;
                 }
-                return (TotalRecords / PageSize)==0? TotalRecords / PageSize : TotalRecords / PageSize + 1;
+                return (TotalRecords / PageSize) == 0 ? TotalRecords / PageSize : TotalRecords / PageSize + 1;
             }
         }
     }

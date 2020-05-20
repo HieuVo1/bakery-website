@@ -19,15 +19,18 @@ namespace eShopSolution.WebApp.Services.Categorys
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
-        public CategoryService(IHttpClientFactory httpClientFactory)
+        private IHttpContextAccessor _accessor;
+        public CategoryService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
         {
             _httpClientFactor = httpClientFactory;
             _client = _httpClientFactor.CreateClient();
             _client.BaseAddress = new Uri("https://localhost:5001");
+            _accessor = httpContextAccessor;
         }
       
         public async Task<ApiResult<List<CategoryViewModel>>> GetAll(string languageId, int pageIndex, int pageSize)
         {
+            var x = _accessor.HttpContext.User;
             var client = _httpClientFactor.CreateClient();
             client.BaseAddress = new Uri("https://localhost:5001");
             var response = await client.GetAsync($"/api/categories/{languageId}?PageIndex={pageIndex}&pageSize={pageSize}");

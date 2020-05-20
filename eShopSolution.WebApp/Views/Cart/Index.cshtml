@@ -1,0 +1,190 @@
+﻿
+@{
+    ViewData["Header"] = "header--2";
+    ViewData["Image-logo"] = "/assets/images/logo-2.png";
+}
+<div class="ps-section--hero">
+    <img src="/assets/images/hero/01.jpg" alt="">
+    <div class="ps-section__content text-center">
+        <h3 class="ps-section__title">OUR BAKERY</h3>
+        <div class="ps-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li class="active">Cart</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="ps-section--cart pt-100 pb-100">
+    <div class="container">
+        <div class="ps-cart-listing">
+            <p class="hidden-lg"><i>Slide right to view</i></p>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>All Products</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.cart != null)
+                        {
+                            @foreach (var item in ViewBag.cart)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="ps-product--cart"><img src="@item.Product.ImagePath" alt=""><a asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id">@item.Product.Name</a></div>
+                                    </td>
+                                    <td>@item.Product.Price</td>
+                                    <td>
+                                        <div class="form-group--number" data-id="@item.Product.Id">
+                                            <button class="minus"><span>-</span></button>
+                                            <input class="form-control quantity"  type="number" min="0" value="@item.Quantity">
+                                            <button class="plus"><span>+</span></button>
+                                        </div>
+                                    </td>
+                                    <td><span class="total-row" data-price="@item.Product.Price" >@(item.Product.Price*item.Quantity)</span></td>
+                                    <td>
+                                        <div class="ps-cart-listing__remove" data-id="@item.Product.Id"></div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="ps-cart__process">
+                <div class="row">
+                    <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12 ">
+                        <div class="form-group form-group--icon ps-cart__promotion">
+                            <div class="icon-wrap">
+                                <i class="fa fa-angle-right"></i>
+                                <input class="form-control" type="text" placeholder="promotion code">
+                            </div>
+                        </div>
+                        <div class="form-groupform-order">
+                            <button class="ps-cart__shopping">Continue Shopping</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+                        <div class="ps-cart__total">
+                            <p>Total Price: <span data-price="@ViewBag.total" class="ps-cart__totalPrice">@ViewBag.total</span></p>
+                            <button class="ps-btn ps-btn--sm ps-btn--fullwidth">Process to checkout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="../Shared/_Partner.cshtml">
+    <partial name="../Shared/_Subscribe.cshtml">
+        <partial name="../Shared/_Footer.cshtml" />
+        @section Scripts{
+                <script>
+                    $(document).ready(function () {
+                        $(".plus").click(function (e) {
+                            e.preventDefault();
+                            var productId = $(this).parent().attr("data-id");
+                            var quantity = $(this).prev().val();
+                            var newValue = parseInt(quantity) + 1;
+                            var price = parseInt($(this).parent().parent().next().children().attr("data-price"));
+                            var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
+                            $(this).parent().parent().next().children().html(price * newValue);
+                            
+                            $('.ps-cart__totalPrice').html(total + price);
+                            $(".ps-cart__totalPrice").attr("data-price", total + price);
+                            $(this).prev().val(newValue);
+                            $.post("https://localhost:5002/cart/update",
+                                {
+                                    Quantity: newValue,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    updateCart();
+                                });
+
+                        });
+                        $(".minus").click(function (e) {
+                            e.preventDefault();
+                            var productId = $(this).parent().attr("data-id");
+                            var quantity = $(this).next().val();
+                            var newValue = (parseInt(quantity) - 1 >= 0) ? (parseInt(quantity) - 1) : 0;
+                            var price = $(this).parent().parent().next().children().attr("data-price");
+                            var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
+                            //updatePriceForProduct
+                            $(this).parent().parent().next().children().html(parseInt(price) * newValue);
+                            //updatePriceForAll
+                            $('.ps-cart__totalPrice').html(total - price);
+                            $(".ps-cart__totalPrice").attr("data-price", total - price);
+                            //UpdateValueOfInput
+                            $(this).next().val(newValue);
+                            $.post("https://localhost:5002/cart/update",
+                                {
+                                    Quantity: newValue,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    updateCart();
+                                });
+
+                        });
+                        $(".ps-cart-listing__remove").click(function () {
+                            var productId = $(this).attr("data-id");
+                            var price = parseInt($(this).parent().prev().children().html());
+                            var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
+                            $('.ps-cart__totalPrice').html(total - price);
+                            $(".ps-cart__totalPrice").attr("data-price", total - price);
+                            var that = this;
+                            $.post("https://localhost:5002/cart/delete",
+                                {
+                                    productId: productId,
+                                    cartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    $(that).parent().parent().remove();
+                                    updateCart();
+                                });
+
+                        });
+                        function updateCart() {
+                            $.get("https://localhost:5002/cart/getcart",
+                                function (data, status) {
+                                    $(".ps-cart").replaceWith(data);
+                                });
+                        }
+                        $(".quantity").on("input", function () {
+                            // Print entered value in a div box
+                            var newValue = parseInt($(this).val());
+                            var productId = $(this).parent().attr("data-id");
+                            var price = parseInt($(this).parent().parent().next().children().attr("data-price"));
+                            var oldPrice = parseInt($(this).parent().parent().next().children().html());
+                            var newPrice = price * newValue
+                            if (isNaN(newPrice)) {
+                                newPrice = 0;
+                            }
+                            var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
+                            console.log(oldPrice)
+                            console.log(newPrice)
+                            $(this).parent().parent().next().children().html(newPrice);
+                            $('.ps-cart__totalPrice').html(total + newPrice - oldPrice);
+                            $(".ps-cart__totalPrice").attr("data-price", total + newPrice - oldPrice);
+                            $.post("https://localhost:5002/cart/update",
+                                {
+                                    Quantity: newValue,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    updateCart();
+                                });
+                        });
+                    });
+                </script>
+        }

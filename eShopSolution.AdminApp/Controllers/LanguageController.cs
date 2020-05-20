@@ -6,24 +6,21 @@ using Microsoft.AspNetCore.Mvc;
 using eShopSolution.AdminApp.Service.Languages;
 using eShopSolution.ViewModel.Language;
 using eShopSolution.AdminApp.Service.Categorys;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopSolution.AdminApp.Controllers
 {
     public class LanguageController : BaseController
     {
-        private readonly ILanguageService _languageService;
-        private readonly ICategoryService _categoryService;
-        public LanguageController(ILanguageService languageService,ICategoryService categoryService)
+        public LanguageController(ILanguageService languageService,
+            ICategoryService categoryService,
+            IConfiguration configuration) : base(languageService, categoryService, configuration)
         {
-            _categoryService = categoryService;
-            _languageService = languageService;
         }
         public async Task<IActionResult> Index()
         {
-            var categories = await _categoryService.GetAll("vn");
-            var languages = await _languageService.GetAll();
-            ViewData["languages"] = languages.ResultObject;
-            ViewData["categories"] = categories.ResultObject;
+            ViewData["languages"] = await GetListLanguageAsync();
+            ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);
             if (TempData["result"] != null)
             {
                 ViewBag.result = TempData["result"];

@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Identity;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using Microsoft.AspNetCore.Http;
+using eShopSolution.AdminApp.Service.Blogs;
+using eShopSolution.AdminApp.Service.Comments;
 
 namespace eShopSolution.AdminApp
 {
@@ -57,6 +59,8 @@ namespace eShopSolution.AdminApp
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IImageProductService, ImageProductService>();
             services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IBlogService, BlogService>();
+            services.AddTransient<ICommentService, CommentService>();
             IMvcBuilder builder = services.AddRazorPages();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -105,6 +109,14 @@ namespace eShopSolution.AdminApp
                 endpoints.MapControllerRoute(name: "editProduct",
                 pattern: "product/{categoryUrl}/edit/{productId}/{languageId}",
                 defaults: new { controller = "product", action = "edit" });
+                //edit blog
+                endpoints.MapControllerRoute(name: "editBlog",
+                pattern: "blog/delete/{blogId}/",
+                defaults: new { controller = "blog", action = "delete" });
+                //edit blog
+                endpoints.MapControllerRoute(name: "editProduct",
+                pattern: "blog/edit/{blogId}/",
+                defaults: new { controller = "blog", action = "edit" });
                 //get image product
                 endpoints.MapControllerRoute(name: "imageProduct",
                 pattern: "product/{productId}/Images",

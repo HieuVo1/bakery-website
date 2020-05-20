@@ -13,7 +13,7 @@ namespace eShopSolution.BackEndAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "admin")]
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _ProductService;

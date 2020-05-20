@@ -194,7 +194,7 @@
                                             int i = 0;
                                             foreach (var user in users)
                                             {
-                                                var imagePath = "https://localhost:5001/user-content/" + (user.ImagePath ?? "image-not-found.jpg");
+                                                var imagePath =(user.ImagePath ?? "https://localhost:5001/user-content/image-not-found.jpg");
                                                 i++;
                                                 <tr>
                                                     <td>@i</td>
@@ -270,7 +270,7 @@
                         $(".select2").prop("disabled", true);
                         $(".modal-body [name=Caption]").val(res.caption);
                         $(".modal-body [name=FullName]").val(res.fullName);
-                        $(".modal-body [name=Email]").val(res.email);
+                        $(".modal-body [name=Email]").val(res.email).prop("disabled", true);;
                         $(".modal-body [name=UserName]").val(res.userName).prop("disabled", true);
                         $(".modal-body [name=Phone]").val(res.phone);
                         $(".form-group.Passwork").css("display", "none");
@@ -278,7 +278,7 @@
                         $(".form-group.Role").css("display", "none");
                         $(".form-group.Dob").css("display", "none");
                         $("#exampleModal .form-group-image .dropify-wrapper").remove();
-                        var src = "https://localhost:5001/user-content/" + res.imagePath;
+                        var src = res.imagePath;
                         $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
                         $('.dropify').dropify();
                     }

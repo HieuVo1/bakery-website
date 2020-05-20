@@ -1,11 +1,21 @@
+using eShopSolution.Application.Catelog.Carts;
+using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.ViewModel.System.Users;
+using eShopSolution.WebApp.Services.Blogs;
+using eShopSolution.WebApp.Services.Carts;
 using eShopSolution.WebApp.Services.Categorys;
+using eShopSolution.WebApp.Services.Comments;
+using eShopSolution.WebApp.Services.Contacts;
+using eShopSolution.WebApp.Services.Emails;
+using eShopSolution.WebApp.Services.ImageProducts;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.products;
 using eShopSolution.WebApp.Services.Users;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +24,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace eShopSolution.WebApp
 {
@@ -33,12 +45,48 @@ namespace eShopSolution.WebApp
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
               .AddCookie(options =>
               {
+                  options.Cookie.Name = "UserLoginCookie";
                   options.LoginPath = "/Login/index/";
                   options.AccessDeniedPath = "/User/Forbidden/";
               });
-            
+
+            services.AddDbContext<EShopDbContext>();
+            services.AddIdentity<UserApp, RoleApp>()
+                .AddEntityFrameworkStores<EShopDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddControllersWithViews()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
+            services.AddAuthentication()
+           .AddGoogle(options =>
+           {
+               IConfigurationSection googleAuthNSection =
+                Configuration.GetSection("Authentication:Google");
+               options.ClientId = googleAuthNSection["ClientId"];
+               options.ClientSecret = googleAuthNSection["ClientSecret"];
+               options.ClaimActions.MapJsonKey("picture", "picture", "url");
+               options.ClaimActions.MapJsonKey("locale", "locale", "string");
+               options.SaveTokens = true;
+           })
+           .AddFacebook(options =>
+           {
+               IConfigurationSection faceBookAuthNSection =
+                Configuration.GetSection("Authentication:FaceBook");
+               options.AppId = faceBookAuthNSection["AppId"];
+               options.AppSecret = faceBookAuthNSection["AppSecret"];
+               options.Fields.Add("picture");
+               options.Events = new OAuthEvents
+               {
+                   OnCreatingTicket = context =>
+                   {
+                       var identity = (ClaimsIdentity)context.Principal.Identity;
+                       var profileImg = context.User.GetProperty("picture").GetProperty("data").GetProperty("url").ToString();
+                       identity.AddClaim(new Claim("picture", profileImg));
+                       return Task.CompletedTask;
+                   }
+               };
+           });
+
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -49,6 +97,14 @@ namespace eShopSolution.WebApp
             services.AddTransient<ILanguageService, LanguageService>();
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IUserAPIClient, UserAPIClient>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<IContactService, ContactService>();
+            services.AddTransient<IBlogService, BlogService>();
+            services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IImageProductService, ImageProductService>();
+
+            services.AddTransient<SignInManager<UserApp>, SignInManager<UserApp>>();
             IMvcBuilder builder = services.AddRazorPages();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -89,6 +145,12 @@ namespace eShopSolution.WebApp
                 pattern: "product/{categoryUrl}",
                 defaults: new { controller = "product", action = "GetByURl" });
 
+                endpoints.MapControllerRoute(name: "detaileBlog",
+                pattern: "blog/detail/{blogId}/",
+                defaults: new { controller = "blog", action = "detail" });
+                endpoints.MapControllerRoute(name: "detaileCmt",
+                pattern: "blog/deleteComment/{blogId}/{commentId}",
+                defaults: new { controller = "blog", action = "deleteComment" });
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

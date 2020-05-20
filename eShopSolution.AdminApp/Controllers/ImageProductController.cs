@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Categorys;
 using eShopSolution.AdminApp.Service.ImageProducts;
+using eShopSolution.AdminApp.Service.Languages;
 using eShopSolution.AdminApp.Service.Products;
 using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.Catalog.ProductImages;
 using eShopSolution.ViewModel.Catalog.Products;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopSolution.AdminApp.Controllers
 {
@@ -17,19 +19,20 @@ namespace eShopSolution.AdminApp.Controllers
     {
         private readonly IProductService _productServive;
         private readonly IImageProductService _imageProductServive;
-        private readonly ICategoryService _categoryService;
-        public ImageProductController(IProductService productService,ICategoryService categoryService, IImageProductService imageProductServive)
+        public ImageProductController(IProductService productService,
+            ICategoryService categoryService, 
+            IImageProductService imageProductServive,
+            ILanguageService languageService,
+            IConfiguration configuration) : base(languageService, categoryService, configuration)
         {
             _productServive = productService;
             _imageProductServive = imageProductServive;
-            _categoryService = categoryService;
         }
         public async Task<IActionResult> IndexAsync(int productId)
         {
-            var categories = await _categoryService.GetAll("vn");
             var paggingRequest = new GetProductPaggingRequest()
             {
-                LanguageId = "vn",
+                LanguageId = languageDefauleId,
             };
             var products = await _productServive.getAllPagging(paggingRequest);
             var images = await _imageProductServive.GetListImage(productId);
@@ -38,14 +41,9 @@ namespace eShopSolution.AdminApp.Controllers
             {
                 SwapGeneric<ProductViewModel>.Swap(products.ResultObject.Items, productSelected, 0);
             }
-            ViewData["categories"] = categories.ResultObject;
+            ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);
             ViewData["products"] = products.ResultObject.Items;
             ViewData["images"] = images.ResultObject;
-            if (TempData["result"] != null)
-            {
-                ViewBag.result = TempData["result"];
-                ViewBag.IsSuccess = TempData["IsSuccess"];
-            }
             return View();
         }
         [HttpPost]
@@ -54,7 +52,7 @@ namespace eShopSolution.AdminApp.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _imageProductServive.AddImage(request.productId,request);
+                var result = await _imageProductServive.AddImage(request.ProductId,request);
                 if (result.IsSuccessed == true)
                 {
                     TempData["result"] = "Create Success";
@@ -65,7 +63,7 @@ namespace eShopSolution.AdminApp.Controllers
                     TempData["result"] = result.Message;
                     TempData["IsSuccess"] = false;
                 }
-                return Redirect($"/product/{request.productId}/images");
+                return Redirect($"/product/{request.ProductId}/images");
             }
             else
             {

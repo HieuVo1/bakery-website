@@ -1,7 +1,9 @@
 ﻿using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Roles;
 using eShopSolution.ViewModel.System.Users;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -39,7 +41,6 @@ namespace eShopSolution.WebApp.Services.Users
             }
             return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
         }
-
         public async Task<ApiResult<UserViewModel>> GetUserByEmail(string email)
         { 
             var response = await _client.GetAsync($"/api/users/GetByEmail/{email}");
@@ -75,7 +76,21 @@ namespace eShopSolution.WebApp.Services.Users
             return JsonConvert.DeserializeObject<ApiResultErrors<UserViewModel>>(data);
         }
 
-        public async Task<ApiResult<string>> Register(RegisterRequest request)
+
+        public async Task<ApiResult<string>> ExternalLoginCallback(ExternalLoginRequest request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/api/users/ExternalSignIn/", httpContent);
+            var data = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(data);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(data);
+        }
+
+        public async Task<ApiResult<VerificationViewModel>> Register(RegisterRequest request)
         {
             //_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             MultipartFormDataContent form = new MultipartFormDataContent();
@@ -97,6 +112,58 @@ namespace eShopSolution.WebApp.Services.Users
             }
 
             var response = await _client.PostAsync($"/api/users/register", form);
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<VerificationViewModel>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<VerificationViewModel>>(result);
+        }
+
+        public async Task<ApiResult<string>> ConfirmEmail(VerificationViewModel request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/api/users/confirmEmail", httpContent);
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+        }
+
+        public async Task<ApiResult<string>> GetPasswordResetToken(string email)
+        {
+            var response = await _client.GetAsync($"/api/users/getPasswordResetToken/{email}");
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+        }
+
+        public async Task<ApiResult<string>> ResetPassword(ResetPasswordViewModel request)
+        {
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/api/users/ResetPassword", httpContent);
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+        }
+
+        public async Task<ApiResult<string>> ChangePassword(ChangePasswordViewModel request)
+        {
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
+            var json = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync($"/api/users/ChangePassword", httpContent);
             var result = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {

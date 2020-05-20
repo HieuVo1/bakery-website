@@ -4,6 +4,8 @@ using eShopSolution.Utilities.Exceptions;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Roles;
 using eShopSolution.ViewModel.System.Users;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,23 +49,19 @@ namespace eShopSolution.Application.System.Users
             var user = await _userManager.FindByNameAsync(request.UserName);
             if (user == null) return new ApiResultErrors<string>("UserName not found");
             var result = await _signInManager.PasswordSignInAsync(user, request.Passwork, request.RememberMe, true);
-            if (!result.Succeeded) return new ApiResultErrors<string>("UserName or Password is incorrect");
+            if (result.IsLockedOut) return new ApiResultErrors<string>("You login faild more five. Your Account is locked");
+            if (!result.Succeeded) return new ApiResultErrors<string>("UserName or Password is incorrect"); 
             var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
-            var claims = new[]
+            var userToken = new UserToken
             {
-                new Claim(ClaimTypes.Email,user.Email),
-                new Claim(ClaimTypes.Role,string.Join(";",role.Result.Name)),
-                new Claim(ClaimTypes.Name, request.UserName),
+                UserId = user.Id.ToString(),
+                UserName =user.UserName,
+                Role= string.Join(";", role.Result.Name),
+                ImagePath = user.ImagePath,
+                Email = user.Email,
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(_configuration["Tokens:Issuer"],
-                _configuration["Tokens:Issuer"],
-                claims,
-                expires: DateTime.Now.AddHours(3),
-                signingCredentials: creds);
-            return new ApiResultSuccess<string>(new JwtSecurityTokenHandler().WriteToken(token));
+            var token = CreateToken(userToken);
+            return new ApiResultSuccess<string>(token);
         }
 
         public async Task<ApiResult<bool>> Delete(Guid userId)
@@ -141,6 +140,66 @@ namespace eShopSolution.Application.System.Users
             return new ApiResultSuccess<UserViewModel>(userViewModel);
         }
 
+        public async Task<ApiResult<string>> ExternalLoginCallback(ExternalLoginRequest request)
+        {
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(request.LoginProvider,
+                request.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+            if (signInResult.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(request.Email);
+                var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+                var userToken = new UserToken
+                {
+                    UserId = user.Id.ToString(),
+                    UserName = user.UserName,
+                    Role = string.Join(";", role.Result.Name),
+                    ImagePath = user.ImagePath,
+                    Email = user.Email,
+                };
+                var token = CreateToken(userToken);
+                return new ApiResultSuccess<string>(token);
+            }
+            else
+            {
+                var email = request.Email;
+                if (email != null)
+                {
+
+                    var user = await _userManager.FindByEmailAsync(email);
+                    var roleDefault = await _roleManager.FindByNameAsync("client");
+                    
+                    if (user == null)
+                    {
+                        user = new UserApp
+                        {
+                            FullName = request.FullName,
+                            ImagePath = request.ImagePath,
+                            Email = request.Email,
+                            RoleID = roleDefault.Id,
+                            UserName = request.Email,
+
+                        };
+                       var result =  await _userManager.CreateAsync(user);
+                    }
+                    var info = new UserLoginInfo(request.LoginProvider, request.ProviderKey, request.ProviderDisPlayName);
+                    await _userManager.AddLoginAsync(user, info);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+                    var userToken = new UserToken
+                    {
+                        UserId = user.Id.ToString(),
+                        UserName = user.UserName,
+                        Role = string.Join(";", role.Result.Name),
+                        ImagePath = user.ImagePath,
+                        Email = user.Email,
+                    };
+                    var token = CreateToken(userToken);
+                    return new ApiResultSuccess<string>(token);
+                }
+                return new ApiResultErrors<string>($"Email claim not received from:{request.LoginProvider}");
+            }
+        }
+
         public async Task<ApiResult<PageViewModel<RoleViewModel>>> GetListRole()
         {
             var query = _roleManager.Roles;
@@ -216,14 +275,15 @@ namespace eShopSolution.Application.System.Users
             }
         }
 
-        public async Task<ApiResult<bool>> Register(RegisterRequest request)
+
+        public async Task<ApiResult<VerificationViewModel>> Register(RegisterRequest request)
         {
             if (await _userManager.FindByNameAsync(request.UserName) != null) {
-                return new ApiResultErrors<bool>("UserName is already");
+                return new ApiResultErrors<VerificationViewModel>("UserName is already");
             }
             if (await _userManager.FindByEmailAsync(request.Email) != null)
             {
-                return new ApiResultErrors<bool>("Email is already");
+                return new ApiResultErrors<VerificationViewModel>("Email is already");
             }
             var roleDefault = await _roleManager.FindByNameAsync("client");
             if (request.RoleId == new Guid("00000000-0000-0000-0000-000000000000"))
@@ -247,25 +307,28 @@ namespace eShopSolution.Application.System.Users
                 user.ImagePath = await this.SaveFile(request.ThumbnailImage);
             }
             var result = await _userManager.CreateAsync(user, request.Passwork);
+
+
             if (result.Succeeded)
             {
-                return new ApiResultSuccess<bool>();
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                VerificationViewModel model = new VerificationViewModel
+                {
+                    Token = token,
+                    UserId = user.Id,
+                };
+                return new ApiResultSuccess<VerificationViewModel>(model);
             }
-            return new ApiResultErrors<bool>("Register failed");
+            return new ApiResultErrors<VerificationViewModel>("Register failed");
 
         }
 
         public async Task<ApiResult<bool>> Update(Guid userId, UserUpdateRequest request)
         {
-            if (await _userManager.Users.AnyAsync(x => x.Email == request.Email && x.Id != userId))
-            {
-                return new ApiResultErrors<bool>("Emai already");
-            }
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null ) return new ApiResultErrors<bool>($"Can not find user with id: {userId}");
 
             user.FullName = request.FullName;
-            user.Email = request.Email;
             user.PhoneNumber = request.Phone;
 
             //Save Image
@@ -289,7 +352,122 @@ namespace eShopSolution.Application.System.Users
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
-            return fileName;
+            return _storageService.GetFileUrl(fileName);
+        }
+
+        public async Task<ApiResult<bool>> ConfirmEmail(VerificationViewModel request)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null)
+            {
+                return new ApiResultErrors<bool>($"Can not find user with id: {request.UserId}");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, request.Token);
+            if (result.Succeeded)
+            {
+                return new ApiResultSuccess<bool>();
+            }
+            return new ApiResultErrors<bool>("Confirm email faild");
+        }
+
+        public async Task<ApiResult<string>> GetPasswordResetToken(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && await _userManager.IsEmailConfirmedAsync(user))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                return new ApiResultSuccess<string>(token);
+            }
+            return new ApiResultErrors<string>($"User not found");
+        }
+
+        public async Task<ApiResult<bool>> ResetPassword(ResetPasswordViewModel request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return new ApiResultErrors<bool>("Can not found user");
+            }
+            var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+            if (result.Succeeded)
+            {
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now);
+                }
+                return new ApiResultSuccess<bool>();
+            }
+            return new ApiResultErrors<bool>("Reset Password faild");
+        }
+
+        public async Task<ApiResult<string>> ChangePassword(ChangePasswordViewModel request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return new ApiResultErrors<string>("Can not found user");
+            }
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+            if (!hasPassword)
+            {
+                var result = await _userManager.AddPasswordAsync(user, request.NewPassword);
+                if (result.Succeeded)
+                {
+                    var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+                    var userToken = new UserToken
+                    {
+                        UserId = user.Id.ToString(),
+                        UserName = user.UserName,
+                        Role = string.Join(";", role.Result.Name),
+                        ImagePath = user.ImagePath,
+                        Email = user.Email,
+                    };
+                    var token = CreateToken(userToken);
+                    return new ApiResultSuccess<string>(token);
+                }
+                return new ApiResultErrors<string>("Change Password faild");
+            }
+            var change = await _userManager.ChangePasswordAsync(user, request.CurentPassword, request.NewPassword);
+            if (change.Succeeded)
+            {
+                var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+                var userToken = new UserToken
+                {
+                    UserId = user.Id.ToString(),
+                    UserName = user.UserName,
+                    Role = string.Join(";", role.Result.Name),
+                    ImagePath = user.ImagePath,
+                    Email = user.Email,
+                };
+                var token = CreateToken(userToken);
+                return new ApiResultSuccess<string>(token);
+            }
+            string errors = string.Empty;
+            foreach(var error in change.Errors)
+            {
+                errors += error.Description;
+            }
+            return new ApiResultErrors<string>(errors);
+        }
+        public string CreateToken(UserToken user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email,user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim("Picture", (user.ImagePath!=null?user.ImagePath:"")),
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId),
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_configuration["Tokens:Issuer"],
+                _configuration["Tokens:Issuer"],
+                claims,
+                expires: DateTime.Now.AddHours(3),
+                signingCredentials: creds);
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

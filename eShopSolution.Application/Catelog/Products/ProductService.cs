@@ -49,7 +49,7 @@ namespace eShopSolution.Application.Catelog.Products
                     {
                         Name=request.Name,
                         Description=request.Description,
-                        ProductUrl=GetUrlByName.converts(request.Name),
+                        ProductUrl=GetUrlByName.Converts(request.Name),
                         LanguageId=request.LanguageId,
                         
                     }
@@ -186,9 +186,9 @@ namespace eShopSolution.Application.Catelog.Products
             {
                 query = query.Where(x => x.pt.Name.Contains(request.Keyword));
             }
-            if (request.minPrice != 0 || request.maxPrice != 0)
+            if (request.MinPrice != 0 || request.MaxPrice != 0)
             {
-                query = query.Where(x => (x.p.Price >= request.minPrice && x.p.Price <= request.maxPrice));
+                query = query.Where(x => (x.p.Price >= request.MinPrice && x.p.Price <= request.MaxPrice));
             }
             if (request.CategoryId.HasValue && request.CategoryId.Value > 0)
             {
@@ -283,7 +283,7 @@ namespace eShopSolution.Application.Catelog.Products
             if (product == null || productTranslation == null) return new ApiResultErrors<bool>($"Cannot find a product with id: {request.Id}");
 
             productTranslation.Name = request.Name;
-            productTranslation.ProductUrl = GetUrlByName.converts(request.Name);
+            productTranslation.ProductUrl = GetUrlByName.Converts(request.Name);
             productTranslation.Description = request.Description;
             //Save Image
             if (request.ThumbnailImage != null)
@@ -340,7 +340,7 @@ namespace eShopSolution.Application.Catelog.Products
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
-            return fileName;
+            return _storageService.GetFileUrl(fileName);
         }
     }
 }

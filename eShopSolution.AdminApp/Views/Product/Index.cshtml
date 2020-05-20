@@ -86,7 +86,7 @@
                                         {
                                             foreach (var product in products)
                                             {
-                                                var imagePath = "https://localhost:5001/user-content/" + (product.ImagePath ?? "image-not-found.jpg");
+                                                var imagePath = (product.ImagePath ?? "https://localhost:5001/user-content/image-not-found.jpg");
                                                 <tr>
                                                     <td>@product.Id</td>
                                                     <td>@product.Name</td>

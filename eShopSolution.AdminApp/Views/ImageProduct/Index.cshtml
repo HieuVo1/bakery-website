@@ -41,7 +41,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Product Name</label>
-                            <select asp-for="productId" class="form-control show-tick ms select2" data-placeholder="Select">
+                            <select asp-for="ProductId" class="form-control show-tick ms select2" data-placeholder="Select">
                                 @{
                                     if (products != null)
                                     {
@@ -109,7 +109,7 @@
                                 {
                                     foreach (var image in images)
                                     {
-                                        var imagePath = "https://localhost:5001/user-content/" + (image.ImagePath ?? "image-not-found.jpg");
+                                        var imagePath = (image.ImagePath ?? "https://localhost:5001/user-content/image-not-found.jpg");
                                         <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 m-b-30 card file_manager">
                                             <div class="file">
                                                 <div class="hover">
@@ -162,7 +162,7 @@
                         $(".select2").prop("disabled", true);
                         $(".modal-body [name=Caption]").val(data.caption);
                         $("#exampleModal .form-group-image .dropify-wrapper").remove();
-                        var src = "https://localhost:5001/user-content/" + data.imagePath;
+                        var src =data.imagePath;
                         $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
                         $('.dropify').dropify();
                         //$(".dropify").attr("data-default-file", src);

@@ -1,0 +1,86 @@
+﻿@model ContactViewModel
+@{
+    ViewData["Header"] = "header--2";
+    ViewData["Image-logo"] = "/assets/images/logo-2.png";
+    var returnUrl = @Context.Request.Query["ReturnUrl"];
+}
+<div class="ps-section--hero" style="height: 175px">
+</div>
+<div class="ps-section pt-80 pb-80">
+    <div class="container">
+        <div class="ps-section__header text-center mb-50">
+            <div class="ps-section__top">Making People Happy</div>
+            <h3 class="ps-section__title ps-section__title--full">Contact</h3>
+        </div>
+        <div class="ps-section__content">
+            <div class="ps-contact">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                        <div class="ps-contact__info">
+                            <div class="ps-contact__block">
+                                <h4>OFFICE AT AMERICA</h4>
+                                <p><strong>BASEMENT COMPANY, NEW YORK</strong></p>
+                                <p><i class="fa fa-envelope-o"></i><a href="http://nouthemes.net/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ff9a918e8a968d86bf9d9e949a8d86d19c9092">[email&#160;protected]</a></p>
+                                <p><i class="fa fa-phone"></i>+1 650-253-0000</p>
+                                <ul class="ps-contact__social">
+                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="ps-contact__block">
+                                <h4>OFFICE AT PARIS</h4>
+                                <p><strong>189/32 BASEMENT COMPANY, PARIS, FRANCE</strong></p>
+                                <p><i class="fa fa-envelope-o"></i><a href="http://nouthemes.net/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ec89829d99859e95ac8e8d87899e95c28f8381">[email&#160;protected]</a></p>
+                                <p><i class="fa fa-phone"></i>+1 650-253-0000</p>
+                                <ul class="ps-contact__social">
+                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="ps-contact__block">
+                                <h4>OFFICE AT VIETNAM</h4>
+                                <p><strong>189/32 BASEMENT COMPANY, PARIS, FRANCE</strong></p>
+                                <p><i class="fa fa-envelope-o"></i><a href="http://nouthemes.net/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a2c7ccd3d7cbd0dbe2c0c3c9c7d0db8cc1cdcf">[email&#160;protected]</a></p>
+                                <p><i class="fa fa-phone"></i>+1 650-253-0000</p>
+                                <ul class="ps-contact__social">
+                                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                    <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                        <div class="ps-contact__form">
+                            <form method="post" asp-action="index" asp-controller="contact">
+                                <div class="form-group">
+                                    <input class="form-control" asp-for="FullName"  type="text" placeholder="FullName">
+                                    <span asp-validation-for="FullName" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" type="email" asp-for="Email" placeholder="Email">
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" type="text" asp-for="Phone" placeholder="Phone">
+                                    <span asp-validation-for="Phone" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="form-control" asp-for="Messmage" rows="5" placeholder="Text your message here..."></textarea>
+                                    <span asp-validation-for="Messmage" class="text-danger"></span>
+                                </div>
+                                <div class="form-group text-center mt-30 row">
+                                    <button type="submit" class="ps-btn ps-btn--sm ps-contact__submit">SUBMIT</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<partial name="../Shared/_Footer.cshtml">

@@ -54,11 +54,17 @@ namespace eShopSolution.AdminApp.Controllers
                 ModelState.AddModelError("", result.Message);
                 return View();
             }
+           
+            var userPrincipal = this.ValidateToken(result.ResultObject);
+            var isAdmin = userPrincipal.IsInRole("admin");
+            if (isAdmin == false)
+            {
+                TempData["message"] = "You do not have persmission";
+                ModelState.AddModelError("", "You do not have persmission");
+                return View();
+            }
             TempData["Succes"] = "Login Succsess!";
             HttpContext.Session.SetString("Token", result.ResultObject);
-
-            var userPrincipal = this.ValidateToken(result.ResultObject);
-
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),

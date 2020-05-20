@@ -37,7 +37,7 @@ namespace eShopSolution.Application.Catelog.Categories
                     new CategoryTranslation()
                     {
                         Name=request.Name,
-                        CategoryUrl= GetUrlByName.converts(request.Name),
+                        CategoryUrl= GetUrlByName.Converts(request.Name),
                         LanguageId=request.LanguageId
                     }
                 },
@@ -62,7 +62,7 @@ namespace eShopSolution.Application.Catelog.Categories
 
         public async Task<ApiResult<List<CategoryViewModel>>> GetAll(GetCategoryPaggingReqest request, string languageId)
         {
-            var query = from p in _context.Categories
+            var query = from p in _context.Categories 
                         join pt in _context.CategoryTranslations on p.Id equals pt.CategoryId
                         where pt.LanguageId == languageId
                         join l in _context.Languages on languageId equals l.Id
@@ -140,7 +140,7 @@ namespace eShopSolution.Application.Catelog.Categories
             if (category == null || categoryTranslation == null) return new ApiResultErrors<bool>($"Cannot find a category with id: {categoryId}");
 
             categoryTranslation.Name = request.Name;
-            categoryTranslation.CategoryUrl = GetUrlByName.converts(request.Name);
+            categoryTranslation.CategoryUrl = GetUrlByName.Converts(request.Name);
             category.IsShowOnHome = request.IsShowOnHome;
             
             //Save Image
@@ -181,7 +181,7 @@ namespace eShopSolution.Application.Catelog.Categories
             var originalFileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(originalFileName)}";
             await _storageService.SaveFileAsync(file.OpenReadStream(), fileName);
-            return fileName;
+            return _storageService.GetFileUrl(fileName);
         }
     }
 }

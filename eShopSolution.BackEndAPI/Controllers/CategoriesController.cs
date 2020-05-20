@@ -13,6 +13,7 @@ namespace eShopSolution.BackEndAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _CategoryService;
@@ -23,6 +24,7 @@ namespace eShopSolution.BackEndAPI.Controllers
         }
         //https://locahost:port/api/categories/?PageIndex=1&pageSize=1
         [HttpGet("{LanguageId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetPagging(string LanguageId, [FromQuery] GetCategoryPaggingReqest request)
         {
             var result = await _CategoryService.GetAll( request, LanguageId);
@@ -34,6 +36,7 @@ namespace eShopSolution.BackEndAPI.Controllers
         }
         //https://locahost:port/product/id
         [HttpGet("{categoryId}/{languageId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int categoryId, string languageId)
         {
             var result = await _CategoryService.GetById(categoryId, languageId);
@@ -55,7 +58,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok( result);
         }
 
-        [HttpPut("{categoryId}")]
+        [HttpPatch("{categoryId}")]
         public async Task<IActionResult> Update([FromForm] CategoryUpdateRequest request,int categoryId)
         {
             if (ModelState.IsValid == false)

@@ -2,43 +2,136 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using eShopSolution.Application.Catelog.Carts;
+using eShopSolution.Data.Entities;
+using eShopSolution.Utilities.functions;
+using eShopSolution.ViewModel.Catalog.Carts;
+using eShopSolution.ViewModel.Catalog.Carts.CartItems;
+using eShopSolution.ViewModel.Email;
 using eShopSolution.ViewModel.System.Users;
+using eShopSolution.WebApp.Helpers;
+using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-
 namespace eShopSolution.WebApp.Controllers
 {
     public class LoginController : Controller
     {
         private readonly IUserAPIClient _userAPIClient;
         private readonly IConfiguration _configuration;
-        public LoginController(IUserAPIClient userAPIClient, IConfiguration configuration)
+        private readonly SignInManager<UserApp> _signInManager;
+        private readonly  IEmailService _emailService;
+        private readonly ICartService _cartService;
+        public LoginController(IUserAPIClient userAPIClient,
+            IConfiguration configuration,
+            SignInManager<UserApp> signInManager,
+            IEmailService emailService,
+            ICartService cartService)
         {
             _userAPIClient = userAPIClient;
             _configuration = configuration;
+            _signInManager = signInManager;
+            _emailService = emailService;
+            _cartService = cartService;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             await HttpContext.SignOutAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme);
+            GetCart();
             return View();
+        }
+        [HttpGet]
+        public IActionResult GoogleLogin(string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Login", new
+            { returnUrl = returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
+        }
+        [HttpGet]
+        public IActionResult FaceBookLogin(string returnUrl = null)
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Login", new
+            { returnUrl = returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);
+            return new ChallengeResult("Facebook", properties);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl, string remoteError = null)
+        {
+            ExternalLoginInfo info = await _signInManager.GetExternalLoginInfoAsync();
+            returnUrl = returnUrl ?? Url.Content("~/");
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider:{remoteError}");
+                return View("Index");
+            }
+            var externalLoginRequest = new ExternalLoginRequest
+            {
+                FullName = info.Principal.FindFirstValue(ClaimTypes.Name),
+                Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                ProviderKey = info.ProviderKey,
+                LoginProvider = info.LoginProvider,
+                ProviderDisPlayName = info.ProviderDisplayName,
+                ImagePath = info.Principal.Claims.FirstOrDefault(c => c.Type == "picture").Value,
+            };
+            var result = await _userAPIClient.ExternalLoginCallback(externalLoginRequest);
+            if (result.IsSuccessed == false)
+            {
+                TempData["message"] = result.Message;
+                ModelState.AddModelError("", result.Message);
+                ViewBag.ErrorServerSide = true;
+                return View();
+            }
+            TempData["Succes"] = "Login Succsess!";
+            //HttpContext.Session.SetString("Token", result.ResultObject);
+            CookieHelpers.SetObjectAsJson(Response.Cookies, "Token", result.ResultObject, 10);
+
+            var userPrincipal = this.ValidateToken(result.ResultObject);
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                IsPersistent = false // có sử dụng persistent cookie
+            };
+
+            await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    userPrincipal,
+                    authProperties);
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("index", "home");
+            }
+
         }
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme);
-            HttpContext.Session.Remove("Token");
+            var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+            CookieHelpers.RemoveCookie(Response.Cookies, CartSessionKey);
+            CookieHelpers.RemoveCookie(Response.Cookies, "CartId");
+            CookieHelpers.RemoveCookie(Response.Cookies, "Token");
             return RedirectToAction("index", "Login");
         }
         [HttpPost]
@@ -55,21 +148,37 @@ namespace eShopSolution.WebApp.Controllers
                 return View();
             }
             TempData["Succes"] = "Login Succsess!";
-            HttpContext.Session.SetString("Token", result.ResultObject);
-
+            CookieHelpers.SetObjectAsJson(Response.Cookies, "Token", result.ResultObject, 10);
             var userPrincipal = this.ValidateToken(result.ResultObject);
-
+            var UserId = new Guid(userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var cartResult = await _cartService.GetById(UserId);
+            if (cartResult.IsSuccessed == false)
+            {
+                var cart = new CartCreateRequest
+                {
+                    UserId = UserId,
+                    Price = 0,
+                };
+                var cartId = await _cartService.Create(cart);
+                CookieHelpers.SetObjectAsJson(Response.Cookies, "CartId", cartId, 10);
+            }
+            else
+            {
+                var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+                CookieHelpers.SetObjectAsJson(Response.Cookies, "CartId", cartResult.ResultObject.Id, 10);
+                CookieHelpers.RemoveCookie(Response.Cookies, CartSessionKey);
+                CookieHelpers.SetObjectAsJson(HttpContext.Response.Cookies, CartSessionKey, cartResult.ResultObject.CartItems, null);
+            }
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                IsPersistent = request.RememberMe // có sử dụng persistent cookie
+                IsPersistent = true // có sử dụng persistent cookie
             };
-
             await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     userPrincipal,
                     authProperties);
-
+           
             if (!string.IsNullOrEmpty(ReturnUrl))
             {
                 return Redirect(ReturnUrl);
@@ -80,7 +189,7 @@ namespace eShopSolution.WebApp.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
             return View();
         }
@@ -97,12 +206,48 @@ namespace eShopSolution.WebApp.Controllers
                     ViewBag.ErrorServerSide = true;
                     return View();
                 }
+                var verifycatioCode = VerificationCode.GetCode();
+                TempData["verifycatioCode"] = verifycatioCode;
+                var message = new EmailMessage
+                {
+                    To=request.Email,
+                    Subject = "Verifition Code",
+                    Content = verifycatioCode.ToString()
+                };
+                var sent = await _emailService.SendEmail(message);
+                if (sent.IsSuccessed == true)
+                {
+                    ViewBag.UserId = result.ResultObject.UserId;
+                    ViewBag.Token = result.ResultObject.Token;
+                    return View("ConfirmEmail");
+                }
+                ModelState.AddModelError(string.Empty, "Send Verifition code Faild");
                 return RedirectToAction("Index", "Login");
             }
             else
             {
                 return View();
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmail(VerificationViewModel verificationViewModel)
+        {
+            if (verificationViewModel.VerificationCode != TempData["verifycatioCode"].ToString())
+            {
+                ModelState.AddModelError(string.Empty, "Verificate code is invalid ");
+                return View();
+            }
+            if (verificationViewModel.UserId == null && verificationViewModel.Token == null)
+            {
+                return RedirectToAction("index", "register");
+            }
+            var result = await _userAPIClient.ConfirmEmail(verificationViewModel);
+            if (result.IsSuccessed)
+            {
+                return RedirectToAction("index", "login");
+            }
+            ModelState.AddModelError(string.Empty,result.Message);
+            return View();
         }
         [AcceptVerbs("Get", "post")]
         public async Task<IActionResult> IsUserNameUse(string userName)
@@ -146,6 +291,15 @@ namespace eShopSolution.WebApp.Controllers
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
 
             return principal;
+        }
+        public void GetCart()
+        {
+            List<CartItemViewModel> cart = new List<CartItemViewModel>();
+            var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+            cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
+            ViewBag.cart = cart;
+            ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
+            ViewBag.NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
         }
     }
 }

@@ -10,6 +10,8 @@ using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.Categorys;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using eShopSolution.WebApp.Helpers;
 
 namespace eShopSolution.WebApp.Controllers
 {
@@ -19,7 +21,10 @@ namespace eShopSolution.WebApp.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger, ILanguageService languageService, ICategoryService categoryService)
+        public HomeController(ILogger<HomeController> logger,
+            ILanguageService languageService, 
+            ICategoryService categoryService,
+            IConfiguration configuration) : base(configuration)
         {
             _languageService = languageService;
             _categoryService = categoryService;

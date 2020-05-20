@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using eShopSolution.AdminApp.Service.Categorys;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using eShopSolution.AdminApp.Service.Languages;
+using Microsoft.Extensions.Configuration;
 
 namespace eShopSolution.AdminApp.Controllers
 {
@@ -17,21 +19,19 @@ namespace eShopSolution.AdminApp.Controllers
     public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly ICategoryService _categoryService;
 
-        public HomeController(ILogger<HomeController> logger, ICategoryService categoryService)
+
+        public HomeController(ILogger<HomeController> logger, 
+            ICategoryService categoryService,
+            ILanguageService languageService,
+            IConfiguration configuration) : base(languageService, categoryService, configuration)
         {
-            _categoryService = categoryService;
             _logger = logger;
         }
 
         public async Task<IActionResult>Index()
         {
-            var categories = await _categoryService.GetAll("vn");
-            ViewData["categories"] = categories.ResultObject;
-            var user = User.Identity.Name;
-            var role = User.Identity.AuthenticationType;
-            
+            ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);       
             return View();
         }
    

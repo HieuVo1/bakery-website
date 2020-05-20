@@ -118,6 +118,8 @@ namespace eShopSolution.AdminApp.Service.Categorys
 
         public async Task<ApiResult<string>> Update(CategoryUpdateRequest request,int categoryId)
         {
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var json = JsonConvert.SerializeObject(request);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.LanguageId), "languageId");
@@ -132,7 +134,7 @@ namespace eShopSolution.AdminApp.Service.Categorys
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
             
-            var response = await _client.PutAsync($"/api/categories/{categoryId}", form);
+            var response = await _client.PatchAsync($"/api/categories/{categoryId}", form);
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());

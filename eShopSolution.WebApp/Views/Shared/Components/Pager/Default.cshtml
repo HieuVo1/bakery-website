@@ -2,7 +2,6 @@
 @{
     var urlTemplate = Url.Action() + "?pageIndex={0}";
     var request = ViewContext.HttpContext.Request;
-    var x = request.Body;
     foreach (var key in request.Query.Keys)
     {
         if (key == "pageIndex")
@@ -28,7 +27,6 @@
 @if (Model.PageCount > 1)
 {
 <div class="ps-pagination">
-    <p>@urlTemplate</p>
     <ul class="pagination">
         @if (Model.PageIndex != startIndex)
         {
