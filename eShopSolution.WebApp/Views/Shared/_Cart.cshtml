@@ -15,21 +15,24 @@
                     @foreach (var item in cart)
                     {
                         <div class="ps-cart-item">
-                            <a class="ps-cart-item__close" href="#"></a>
+                            <a class="ps-cart-item__close" data-id="@item.Product.Id" href="#"></a>
                             <div class="ps-cart-item__thumbnail"><a asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id"></a><img src="@item.Product.ImagePath" alt=""></div>
                             <div class="ps-cart-item__content">
                                 <a class="ps-cart-item__title" asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id">@item.Product.Name</a>
-                                <p><span>Quantity:<i>@item.Quantity</i></span><span>Total:<i>@(item.Product.Price*item.Quantity)</i></span></p>
+                                <p>
+                                    <span>Quantity:<i>@item.Quantity</i></span>
+                                    <span>Total:<i>@(item.Product.Price*item.Quantity)</i></span>
+                                </p>
                             </div>
                         </div>
                     }
                 }
             </div>
             <div class="ps-cart__total">
-                <p>Number of items:<span>@NumItem<span></p>
+                <p>Number of items:<span>@NumItem</span></p>
                 <p>Item Total:<span>@total</span></p>
             </div>
-            <div class="ps-cart__footer"><a class="ps-btn ps-btn--view-bag" href="cart.html">View bag</a></div>
+            <div class="ps-cart__footer"><a class="ps-btn ps-btn--view-bag" href="/cart/index">View bag</a></div>
         </div>
     </div>
 </div>

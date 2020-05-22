@@ -282,7 +282,6 @@
                                     var maxPrice = $(".ac-slider__value.ac-slider__max").text();
                                     var urlSearchPrice = `?minPrice=${minPrice.substring(1)}&maxPrice=${maxPrice.substring(1)}`;
                                     urlSearchPrice += "&@urlTemplate";
-                                    alert(urlSearchPrice);
                                     $(this).attr("action", urlSearchPrice);
                                 });
                             });
@@ -301,7 +300,7 @@
                                 function (data, status) {
                                     $.get("https://localhost:5002/cart/getcart",
                                         function (data, status) {
-                                            $(".ps-cart").replaceWith(data);
+                                            $(".ps-cart").before(data).detach();
                                         });
                                 });
                            

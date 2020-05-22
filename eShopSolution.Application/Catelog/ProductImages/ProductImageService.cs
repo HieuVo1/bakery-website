@@ -92,10 +92,13 @@ namespace eShopSolution.Application.Catelog.ProductImages
             image.IsDefault = request.IsDefault;
             if (request.ThumbnailImage != null)
             {
-                var oldImagePath = image.ImagePath;
+                var OldImagePath = image.ImagePath;
                 image.FileSize = request.ThumbnailImage.Length;
                 image.ImagePath = await this.SaveFile(request.ThumbnailImage);
-                await _storageService.DeleteFileAsync(oldImagePath);
+                if (OldImagePath != null)
+                {
+                    await _storageService.DeleteFileAsync(OldImagePath);
+                }
             }
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
 

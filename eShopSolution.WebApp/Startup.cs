@@ -11,6 +11,7 @@ using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.ImageProducts;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.products;
+using eShopSolution.WebApp.Services.ReViews;
 using eShopSolution.WebApp.Services.Users;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -103,6 +104,7 @@ namespace eShopSolution.WebApp
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IImageProductService, ImageProductService>();
+            services.AddTransient<IReviewService, ReviewService>();
 
             services.AddTransient<SignInManager<UserApp>, SignInManager<UserApp>>();
             IMvcBuilder builder = services.AddRazorPages();

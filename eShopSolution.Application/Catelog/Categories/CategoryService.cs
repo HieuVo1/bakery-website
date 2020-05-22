@@ -148,7 +148,10 @@ namespace eShopSolution.Application.Catelog.Categories
             {
                 var OldImagePath = category.ImagePath;
                 category.ImagePath = await this.SaveFile(request.ThumbnailImage);
-                await _storageService.DeleteFileAsync(OldImagePath);
+                if (OldImagePath != null)
+                {
+                    await _storageService.DeleteFileAsync(OldImagePath);
+                }
             }
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }

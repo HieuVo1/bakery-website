@@ -294,7 +294,10 @@ namespace eShopSolution.Application.Catelog.Products
                     var OldImagePath = thumbnailImage.ImagePath;
                     thumbnailImage.FileSize = request.ThumbnailImage.Length;
                     thumbnailImage.ImagePath = await this.SaveFile(request.ThumbnailImage);
-                    await _storageService.DeleteFileAsync(OldImagePath);
+                    if (OldImagePath != null)
+                    {
+                        await _storageService.DeleteFileAsync(OldImagePath);
+                    }
                     _context.ProductImages.Update(thumbnailImage);
                 }
                 else

@@ -2,11 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eShopSolution.ViewModel.Email;
+using eShopSolution.ViewModel.Review;
 using eShopSolution.WebApp.Helpers;
 using eShopSolution.WebApp.Services.Categorys;
+using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.ImageProducts;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.products;
+using eShopSolution.WebApp.Services.ReViews;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -18,17 +22,23 @@ namespace eShopSolution.WebApp.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ILanguageService _languageService;
         private readonly IImageProductService _imageProductService;
+        private readonly IReviewService _reviewService;
+        private readonly IEmailService _emailService;
         private readonly int _pageSize = 6;
         public ProductController(IProductService productService, 
             ICategoryService categoryService,
             ILanguageService languageService,
             IImageProductService imageProductService,
+            IReviewService reviewService,
+            IEmailService emailService,
             IConfiguration configuration):base(configuration)
         {
             _productService = productService;
             _categoryService = categoryService;
             _languageService = languageService;
             _imageProductService = imageProductService;
+            _reviewService = reviewService;
+            _emailService = emailService;
         }
         public async Task<IActionResult> IndexAsync([FromQuery] int minPrice, int maxPrice,int pageIndex=1,string Name=null)
         
@@ -63,8 +73,35 @@ namespace eShopSolution.WebApp.Controllers
         {
             var result = await _productService.GetById(productId, languageDefauleId);
             var images = await _imageProductService.GetListImage(productId);
+            var reviews = await _reviewService.GetAll(productId);
             ViewBag.ListImage = images.ResultObject;
+            ViewBag.ListReview = reviews.ResultObject;
             return View(result.ResultObject);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateReview(ReviewCreateRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _reviewService.Create(request);
+                if (result.IsSuccessed)
+                {
+                    var message = new EmailMessage
+                    {
+                        To = request.Email,
+                        Subject = "Thank for review",
+                        Content = "Thank you for reaching out to me. I really enjoyed my stay in your apartment and will make sure to come back next year.",
+                    };
+                    await _emailService.SendEmail(message);
+                    return RedirectToAction("detail", new { productId = request.ProductId });
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, result.Message);
+                    return View(request);
+                }
+            }
+            return View(request);
         }
     }
 }

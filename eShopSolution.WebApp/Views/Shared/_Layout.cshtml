@@ -54,7 +54,7 @@
                 <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
                         <div class="ps-product--list ps-product--list-light mt-60">
-                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="images/cake/img-cr-1.jpg" alt=""></div>
+                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cr-1.jpg" alt=""></div>
                             <div class="ps-product__content">
                                 <h4 class="ps-product__title"><a href="product-detail.html">Amazin’ Glazin’</a></h4>
                                 <p>Lollipop dessert donut marzipan cookie bonbon sesame snaps chocolate.</p>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="ps-product--list ps-product--list-light mt-60">
-                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="images/cake/img-cr-2.jpg" alt=""></div>
+                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cr-2.jpg" alt=""></div>
                             <div class="ps-product__content">
                                 <h4 class="ps-product__title"><a href="product-detail.html">The Crusty Croissant</a></h4>
                                 <p>Lollipop dessert donut marzipan cookie bonbon sesame snaps chocolate.</p>
@@ -76,7 +76,7 @@
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
                         <div class="ps-product--list ps-product--list-light mt-60">
-                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="images/cake/img-cr-3.jpg" alt=""></div>
+                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cr-3.jpg" alt=""></div>
                             <div class="ps-product__content">
                                 <h4 class="ps-product__title"><a href="product-detail.html">Amazin’ Glazin’</a></h4>
                                 <p>Lollipop dessert donut marzipan cookie bonbon sesame snaps chocolate.</p>
@@ -86,7 +86,7 @@
                             </div>
                         </div>
                         <div class="ps-product--list ps-product--list-light mt-60">
-                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="images/cake/img-cr-4.jpg" alt=""></div>
+                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cr-4.jpg" alt=""></div>
                             <div class="ps-product__content">
                                 <h4 class="ps-product__title"><a href="product-detail.html">The Crusty Croissant</a></h4>
                                 <p>Lollipop dessert donut marzipan cookie bonbon sesame snaps chocolate.</p>
@@ -121,6 +121,8 @@
     <div class="page-wrap">
         @RenderBody()
     </div>
+    <div class="text"><p>Hello</p><button class="replace">replace</button></div>
+    
     <!-- JS Library-->
     <script type="text/javascript" src="/assets/plugins/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -171,6 +173,43 @@
             });
         </script>
     }
+    <script>
+        var p,q;
+         $(".replace").click(function () {
+                alert(123);
+             p = $('.text').children().detach();
+             q = $('.text').children().remove();
+             console.log(p.replaceWith('<p>Hello</p><button class="replace">replace</button>'));
+             console.log(q);
+             $('.text').append(p);
+            });
+        $(document).ready(function () {
+           
+            $(".ps-cart-item__close").click(function (e) {
+                e.preventDefault();
+                var productId = $(this).attr("data-id");
+                var quantity = parseInt($(this).next().next().children().eq(1).children().eq(0).children().html());
+                var totalPrice = parseInt($(this).next().next().children().eq(1).children().eq(1).children().html());
+                var $numberItems = $(this).parent().parent().next().children().eq(0).children();
+                var numberItems = parseInt($numberItems.html());
+                var that = this;
+                var $priceAll = $(this).parent().parent().next().children().eq(1).children();
+                var priceAll = parseInt($priceAll.html());
+                $.post("https://localhost:5002/cart/delete",
+                    {
+                        productId: productId,
+                        cartId: "@ViewBag.CartId"
+                    },
+                    function (data, status) {
+                        $numberItems.html(numberItems - quantity);
+                        $priceAll.html(priceAll - totalPrice);
+                        $(that).parent().parent().parent().parent().prev().children().eq(0).children().html(numberItems - quantity);
+                        $(that).parent().remove();
+                    });
+
+            });
+        });
+</script>
 
     @RenderSection("Scripts", required: false)
 </body>

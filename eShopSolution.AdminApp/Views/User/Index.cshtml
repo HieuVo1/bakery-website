@@ -208,7 +208,7 @@
                                                     </td>
                                                     <td>@user.Role</td>
                                                     <td class="text-center">
-                                                        <img src="@imagePath" asp-append-version="true" width="48" alt="user img">
+                                                        <img src="@imagePath" asp-append-version="true" width="48" height="48" alt="user img">
                                                     </td>
                                                     <td width="15%" class="footable-last-visible" style="display: table-cell;">
                                                         <a>
@@ -260,7 +260,7 @@
                 var id = $(this).attr("data-id");
                 $.ajax({
                     type: "get",
-                    url: "https://localhost:5002/user/GetById/" + id,
+                    url: "https://localhost:5003/user/GetById/" + id,
                     dataType: "json",
 
                     success: function (res) {

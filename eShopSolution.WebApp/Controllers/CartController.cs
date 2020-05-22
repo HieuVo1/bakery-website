@@ -46,15 +46,15 @@ namespace eShopSolution.WebApp.Controllers
                 var add = await _cartService.AddToCart(request);
                 if (add.IsSuccessed)
                 {
-                    SaveToCookie(product.ResultObject);
-                    return Ok();
+                    SaveToCookie(product.ResultObject,request.Quantity);
+                    return RedirectToAction("index","cart");
                 }
-                return BadRequest();
+                return RedirectToAction("index", "cart");
             }
             else
             {
-                SaveToCookie(product.ResultObject);
-                return Ok();
+                SaveToCookie(product.ResultObject, request.Quantity);
+                return RedirectToAction("index", "cart");
             }
         }
         [HttpPost]
@@ -95,7 +95,7 @@ namespace eShopSolution.WebApp.Controllers
                 return Ok();
             }
         }
-        public void SaveToCookie(ProductViewModel product)
+        public void SaveToCookie(ProductViewModel product,int quantity)
         {
             if (CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey) == null)
             {
@@ -109,7 +109,7 @@ namespace eShopSolution.WebApp.Controllers
                 int index = cart.FindIndex(x => x.Product.Id == product.Id);
                 if (index != -1)
                 {
-                    cart[index].Quantity++;
+                    cart[index].Quantity+= quantity;
                 }
                 else
                 {

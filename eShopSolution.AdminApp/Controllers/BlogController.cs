@@ -28,7 +28,7 @@ namespace eShopSolution.AdminApp.Controllers
         {
             var blogs = await _blogService.GetAll();
             ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);
-            ViewData["blogs"] = blogs.ResultObject;
+            ViewData["blogs"] = blogs.ResultObject.Items;
             return View();
         }
         [HttpGet]

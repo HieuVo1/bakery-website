@@ -57,26 +57,18 @@
                             <option value="1">4</option>
                             <option value="5">5</option>
                         </select>
-                        <p class="ps-product__price">@Model.Price</p><a class="ps-product__quickview popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out">QUICK OVERVIEW</a>
+                        <p class="ps-product__price" data-price="@Model.Price">@Model.Price</p>
+                        @*<a class="ps-product__quickview popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out">QUICK OVERVIEW</a>*@
                         <div class="ps-product__description">
                             @Model.Description
                         </div>
                         <div class="ps-product__meta">
                             <p><span> Availability: </span> In stock</p>
                         </div>
-                        @*<div class="form-group ps-product__size">
-                            <label>Size:</label>
-                            <select class="ps-select" data-placeholder="Popupar product">
-                                <option value="01">CHOOSE AN OPTION</option>
-                                <option value="01">Item 01</option>
-                                <option value="02">Item 02</option>
-                                <option value="03">Item 03</option>
-                            </select>
-                        </div>*@
                         <div class="ps-product__shop">
                             <div class="form-group--number">
                                 <button class="minus"><span>-</span></button>
-                                <input class="form-control" type="text" value="1">
+                                <input class="form-control quantity" type="number" min="0" value="1">
                                 <button class="plus"><span>+</span></button>
                             </div>
                             <ul class="ps-product__action">
@@ -88,7 +80,11 @@
                     <footer>
                         <div class="row">
                             <div class="col-lg-6 col-md-5 col-sm-6 col-xs-12 ">
-                                <a class="ps-btn--fullwidth ps-btn" href="#">Purchase Now<i class="fa fa-angle-right"></i></a>
+                                <form asp-action="Buy" id="formOrder" asp-controller="Cart" method="post">
+                                    <input type="hidden" name="ProductId" value="@Model.Id" />
+                                    <input type="hidden" class="inputQuantity" name="Quantity" value="" />
+                                    <button class="ps-btn--fullwidth ps-btn" type="submit">Order Now<i class="fa fa-angle-right"></i></button>
+                                </form>
                             </div>
                             <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12 ">
                                 <p class="ps-product__sharing">Share with:<a href="#"><i class="fa fa-facebook"></i></a><a href="#"><i class="fa fa-google-plus"></i></a><a href="#"><i class="fa fa-twitter"></i></a></p>
@@ -99,54 +95,69 @@
             </div>
             <div class="ps-product__info">
                 <ul class="tab-list" role="tablist">
-                    <li class="active"><a href="#tab_01" aria-controls="tab_01" role="tab" data-toggle="tab">Overview</a></li>
-                    <li><a href="#tab_02" aria-controls="tab_02" role="tab" data-toggle="tab">Review</a></li>
-                    <li><a href="#tab_03" aria-controls="tab_03" role="tab" data-toggle="tab">PRODUCT TAG</a></li>
+                    <li class="active"><a href="#tab_02" aria-controls="tab_02" role="tab" data-toggle="tab">Review</a></li>
                     <li><a href="#tab_04" aria-controls="tab_04" role="tab" data-toggle="tab">ADDITIONAL</a></li>
                 </ul>
             </div>
             <div class="tab-content mb-60">
-                <div class="tab-pane active" role="tabpanel" id="tab_01">
+                @*<div class="tab-pane active" role="tabpanel" id="tab_01">
                     <p>Caramels tootsie roll carrot cake sugar plum. Sweet roll jelly bear claw liquorice. Gingerbread lollipop dragée cake. Pie topping jelly-o. Fruitcake dragée candy canes tootsie roll. Pastry jelly-o cupcake. Bonbon brownie soufflé muffin.</p>
                     <p>Sweet roll soufflé oat cake apple pie croissant. Pie gummi bears jujubes cake lemon drops gummi bears croissant macaroon pie. Fruitcake tootsie roll chocolate cake Carrot cake cake bear claw jujubes topping cake apple pie. Jujubes gummi bears soufflé candy canes topping gummi bears cake soufflé cake. Cotton candy soufflé sugar plum pastry sweet roll..</p>
-                </div>
-                <div class="tab-pane" role="tabpanel" id="tab_02">
-                    <p>1 review for Cupcakes Red Flowers</p>
-                    <div class="ps-review-box">
-                        <div class="ps-review-box__thumbnail"><img src="/assets/images/blog/people.png" alt=""></div>
-                        <div class="ps-review-box__content">
-                            <header>
-                                <select class="ps-rating">
-                                    <option value="1">1</option>
-                                    <option value="1">2</option>
-                                    <option value="1">3</option>
-                                    <option value="1">4</option>
-                                    <option value="5">5</option>
-                                </select>
-                                <p>By<a href="#"> Alena Studio</a> - November 25, 2017</p>
-                            </header>
-                            <p>Soufflé danish gummi bears tart. Pie wafer icing. Gummies jelly beans powder. Chocolate bar pudding macaroon candy canes chocolate apple pie chocolate cake. Sweet caramels sesame snaps halvah bear claw wafer. Sweet roll soufflé muffin topping muffin brownie. Tart bear claw cake tiramisu chocolate bar gummies dragée lemon drops brownie.</p>
-                        </div>
-                    </div>
-                    <form class="ps-product__review" action="http://nouthemes.net/html/bakery/_action" method="post">
+                </div>*@
+                <div class="tab-pane active" role="tabpanel" id="tab_02">
+                    @{
+                        if (ViewBag.ListReview != null)
+                        {
+                            foreach (var review in ViewBag.ListReview)
+                            {
+                                var imagePath = (review.ImagePath ?? "https://localhost:5001/user-content/user-not-found.png");
+                                <div class="ps-review-box">
+                                    <div class="ps-review-box__thumbnail"><img src="@imagePath" alt=""></div>
+                                    <div class="ps-review-box__content">
+                                        <header>
+                                            <select class="ps-rating">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= review.Rating)
+                                                    {
+                                                        <option value="1">@i</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i">@i</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <p>By<a href="#"> @review.Name</a> - @review.Created_At.ToShortDateString()</p>
+                                        </header>
+                                        <p>@review.Content</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+
+                    }
+
+                    <form class="ps-product__review" asp-controller="product" asp-action="createReview" method="post">
                         <h4>ADD YOUR REVIEW</h4>
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 ">
+                                <input type="hidden" name="ProductId" value="@Model.Id" />
                                 <div class="form-group">
-                                    <label>Name:*<span>*</span></label>
-                                    <input class="form-control" type="text" placeholder="">
+                                    <label>Name:<span>*</span></label>
+                                    <input name="Name" class="form-control" type="text" placeholder="">
                                 </div>
                                 <div class="form-group">
-                                    <label>Email: *<span>*</span></label>
-                                    <input class="form-control" type="email" placeholder="">
+                                    <label>Email:<span>*</span></label>
+                                    <input name="Email" class="form-control" type="email" placeholder="">
                                 </div>
                                 <div class="form-group">
                                     <label>Your rating<span></span></label>
-                                    <select class="ps-rating">
+                                    <select class="ps-rating" name="Rating">
                                         <option value="1">1</option>
-                                        <option value="1">2</option>
-                                        <option value="1">3</option>
-                                        <option value="1">4</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
                                         <option value="5">5</option>
                                     </select>
                                 </div>
@@ -154,21 +165,12 @@
                             <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12 ">
                                 <div class="form-group">
                                     <label>Your Review:</label>
-                                    <textarea class="form-control" rows="6"></textarea>
+                                    <textarea class="form-control" name="Content" rows="6"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <button class="ps-btn ps-btn--sm">Submit</button>
+                                    <button type="submit" class="ps-btn ps-btn--sm">Submit</button>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="tab-pane" role="tabpanel" id="tab_03">
-                    <p>Add your tag <span> *</span></p>
-                    <form class="ps-product__tags" action="http://nouthemes.net/html/bakery/_action" method="post">
-                        <div class="form-group">
-                            <input class="form-control" type="text" placeholder="">
-                            <button class="ps-btn ps-btn--sm">Add Tag</button>
                         </div>
                     </form>
                 </div>
@@ -298,4 +300,47 @@
 </section>
 <partial name="../Shared/_Partner.cshtml">
     <partial name="../Shared/_Subscribe.cshtml">
-        <partial name="../Shared/_Footer.cshtml">
+        <partial name="../Shared/_Footer.cshtml" />
+
+        @section Scripts{
+                <script>
+                    $(document).ready(function () {
+                        $(".plus").click(function (e) {
+                            e.preventDefault();
+                            var quantity = $(this).prev().val();
+                            var newValue = parseInt(quantity) + 1;
+                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                            $('.ps-product__price').html(price * newValue);
+                            $(this).prev().val(newValue);
+                        });
+                        $(".minus").click(function (e) {
+                            e.preventDefault();
+                            var quantity = $(this).next().val();
+                            var newValue = (parseInt(quantity) - 1 >= 0) ? (parseInt(quantity) - 1) : 0;
+                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                            $('.ps-product__price').html(price * newValue);
+                            $(this).next().val(newValue);
+                        });
+                        function updateCart() {
+                            $.get("https://localhost:5002/cart/getcart",
+                                function (data, status) {
+                                    $(".ps-cart").replaceWith(data);
+                                });
+                        }
+                        $(".quantity").on("input", function () {
+                            // Print entered value in a div box
+                            var newValue = parseInt($(this).val());
+                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                            var newPrice = price * newValue
+                            if (isNaN(newPrice)) {
+                                newPrice = 0;
+                            }
+                            $('.ps-product__price').html(newPrice);
+                        });
+                        $("#formOrder").submit(function (e) {
+                            var quantity = parseInt($('.quantity').val());
+                            $('.inputQuantity').val(quantity);
+                        });
+                    });
+                </script>
+        }

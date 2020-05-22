@@ -63,7 +63,7 @@ namespace eShopSolution.AdminApp.Service.Blogs
             return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<ApiResult<List<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0)
         {
             var response = await _client.GetAsync($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}");
             using (HttpContent content = response.Content)
@@ -76,9 +76,9 @@ namespace eShopSolution.AdminApp.Service.Blogs
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<List<BlogViewModel>>>(data);
+                        return JsonConvert.DeserializeObject<ApiResultSuccess<PageViewModel<BlogViewModel>>>(data);
                     }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<List<BlogViewModel>>>(data);
+                    return JsonConvert.DeserializeObject<ApiResultErrors<PageViewModel<BlogViewModel>>>(data);
 
                 }
                 else

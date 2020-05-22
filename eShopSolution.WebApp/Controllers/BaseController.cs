@@ -48,6 +48,7 @@ namespace eShopSolution.WebApp.Controllers
             ViewBag.cart = cart;
             ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
             ViewBag.NumItem = (cart != null)?cart.Sum(x=>x.Quantity):0;
+            ViewBag.CartId = CookieHelpers.GetObjectFromJson<string>(Request.Cookies, "CartId");
         }
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {

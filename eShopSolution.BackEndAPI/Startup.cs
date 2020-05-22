@@ -11,6 +11,7 @@ using eShopSolution.Application.Comments;
 using eShopSolution.Application.Comom;
 using eShopSolution.Application.Contacts;
 using eShopSolution.Application.Languages;
+using eShopSolution.Application.Reviews;
 using eShopSolution.Application.System.Users;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
@@ -88,6 +89,7 @@ namespace eShopSolution.BackEndAPI
             services.AddTransient<IBlogService, BlogService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IReviewService, ReviewService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 

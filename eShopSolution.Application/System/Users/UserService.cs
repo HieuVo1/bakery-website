@@ -336,7 +336,11 @@ namespace eShopSolution.Application.System.Users
             {
                 var OldImagePath = user.ImagePath;
                 user.ImagePath = await this.SaveFile(request.ThumbnailImage);
-                await _storageService.DeleteFileAsync(OldImagePath);
+                if (OldImagePath != null)
+                {
+                    await _storageService.DeleteFileAsync(OldImagePath);
+                }
+                
             }
 
            var result= await _userManager.UpdateAsync(user);
