@@ -17,7 +17,7 @@ namespace eShopSolution.BackEndAPI.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _ProductService;
-        public ProductsController( IProductService manageProductService)
+        public ProductsController(IProductService manageProductService)
         {
 
             _ProductService = manageProductService;
@@ -51,7 +51,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(product);
         }
 
-      
+
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductCreateRequest request)
         {
@@ -60,7 +60,7 @@ namespace eShopSolution.BackEndAPI.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _ProductService.Create(request);
-            if (result.IsSuccessed==false) return BadRequest(result);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
 
@@ -72,15 +72,15 @@ namespace eShopSolution.BackEndAPI.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _ProductService.Update(request);
-            if (result.IsSuccessed==false) return BadRequest(result);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
 
         [HttpPatch("{productId}/{newPrice}")]
-        public async Task<IActionResult> UpdatePrice(int productId, decimal newPrice )
+        public async Task<IActionResult> UpdatePrice(int productId, decimal newPrice)
         {
             var result = await _ProductService.UpdatePrice(productId, newPrice);
-            if (result.IsSuccessed==false) return BadRequest(result);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
 
@@ -88,10 +88,18 @@ namespace eShopSolution.BackEndAPI.Controllers
         public async Task<IActionResult> Delete(int productId)
         {
             var result = await _ProductService.Delete(productId);
-            if (result.IsSuccessed==false) return BadRequest(result);
+            if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
-
+        [HttpGet("Search/{keyword}")]
+        [AllowAnonymous]
+        public async Task<IActionResult>Search(string keyword)
+        {
+            var result = await _ProductService.Search(keyword);
+            if (result.IsSuccessed == false)
+                return BadRequest(result);
+            return Ok(result);
+        }
         
     }
 }

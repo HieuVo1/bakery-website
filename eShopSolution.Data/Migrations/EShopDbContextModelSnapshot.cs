@@ -724,7 +724,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "e0cf0d1f-6f9c-46c7-a328-9be1306d4d3e",
+                            ConcurrencyStamp = "c844f6e8-9d24-4a41-9c1d-b57a492f9ef4",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -732,7 +732,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
-                            ConcurrencyStamp = "b5841857-fc4c-4fb1-9b5c-003d3571eac2",
+                            ConcurrencyStamp = "2ab59bbe-d656-444a-880e-205059c2ea25",
                             Description = "Client role",
                             Name = "client",
                             NormalizedName = "client"
@@ -810,14 +810,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "744a48af-36f0-4bcf-aa05-10c2bb44c7f0",
+                            ConcurrencyStamp = "e3a5664d-01b1-43d5-be26-6c6f4191504a",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJOdS5yX7OKKdh/SKLQHamiV2WWG/T+vHvwF7udYVnXhWabMI8ZuSOP7U1UXvLMBzg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB21Q4xKUJ1DE7kitp80bsqVmJX8wgJfWOobMZXIOGIyAYmyB1Vjtvqcx+KGGHVmcQ==",
                             PhoneNumberConfirmed = false,
                             RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",

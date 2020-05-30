@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace eShopSolution.Data.Migrations
 {
-    public partial class UserRole : Migration
+    public partial class test : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -67,6 +67,24 @@ namespace eShopSolution.Data.Migrations
                 {
                     table.PrimaryKey("PK_Promotions", x => x.Id);
                     table.UniqueConstraint("AK_Promotions_Code", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(nullable: false),
+                    Created_At = table.Column<DateTime>(type: "Date", nullable: false, defaultValueSql: "GetDate()"),
+                    Content = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Rating = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -288,6 +306,37 @@ namespace eShopSolution.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Blogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    LikeCount = table.Column<int>(nullable: false),
+                    ImagePath = table.Column<string>(nullable: true),
+                    Created_At = table.Column<DateTime>(type: "Date", nullable: false, defaultValueSql: "GetDate()"),
+                    UserId = table.Column<Guid>(nullable: false),
+                    CategoryId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Blogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Blogs_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Blogs_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Carts",
                 columns: table => new
                 {
@@ -307,6 +356,28 @@ namespace eShopSolution.Data.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(nullable: false),
+                    BlogId = table.Column<int>(nullable: false),
+                    Created_At = table.Column<DateTime>(type: "Date", nullable: false, defaultValueSql: "GetDate()"),
+                    Content = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -437,8 +508,8 @@ namespace eShopSolution.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "b8eb1358-33d6-4190-96f2-765d2af6ef1d", "Administrator role", "admin", "admin" },
-                    { new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"), "db9c262c-4942-47b8-9490-a2249d6871ae", "Client role", "client", "client" }
+                    { new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "c844f6e8-9d24-4a41-9c1d-b57a492f9ef4", "Administrator role", "admin", "admin" },
+                    { new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"), "2ab59bbe-d656-444a-880e-205059c2ea25", "Client role", "client", "client" }
                 });
 
             migrationBuilder.InsertData(
@@ -458,7 +529,7 @@ namespace eShopSolution.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Dob", "Email", "EmailConfirmed", "FullName", "ImagePath", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "RoleID", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), 0, "aa5be8d3-c6ac-449d-b8bb-c186cb9bbbec", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "hieuvo044@gmail.com", true, null, null, false, null, "hieuvo044@gmail.com", "admin", "AQAAAAEAACcQAAAAEGMjKK+6ZewEKkLPpVvgWFsyNOYqunvRMQ+efywMb5vm4jMJDopPhH2RgpQZ+1rdjA==", null, false, new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "", false, "admin" });
+                values: new object[] { new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), 0, "e3a5664d-01b1-43d5-be26-6c6f4191504a", new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), "hieuvo044@gmail.com", true, null, null, false, null, "hieuvo044@gmail.com", "admin", "AQAAAAEAACcQAAAAEB21Q4xKUJ1DE7kitp80bsqVmJX8wgJfWOobMZXIOGIyAYmyB1Vjtvqcx+KGGHVmcQ==", null, false, new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "CartProducts",
@@ -485,6 +556,16 @@ namespace eShopSolution.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Blogs_CategoryId",
+                table: "Blogs",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Blogs_UserId",
+                table: "Blogs",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CartProducts_ProductID",
                 table: "CartProducts",
                 column: "ProductID");
@@ -498,6 +579,11 @@ namespace eShopSolution.Data.Migrations
                 name: "IX_CategoryTranslations_LanguageId",
                 table: "CategoryTranslations",
                 column: "LanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_OrderId",
@@ -545,10 +631,16 @@ namespace eShopSolution.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Blogs");
+
+            migrationBuilder.DropTable(
                 name: "CartProducts");
 
             migrationBuilder.DropTable(
                 name: "CategoryTranslations");
+
+            migrationBuilder.DropTable(
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "Contact");
@@ -561,6 +653,9 @@ namespace eShopSolution.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductTranslations");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");

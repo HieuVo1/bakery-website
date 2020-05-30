@@ -14,6 +14,7 @@ namespace eShopSolution.Application.Catelog.Products
         Task<ApiResult<ProductViewModel>> GetById(int productId, string languageId);
         Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllPagging(GetProductPaggingRequest request);
         Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryUrl(GetProductPaggingRequest request, string LanguageId);
+        Task<ApiResult<PageViewModel<ProductViewModel>>>Search(String keyword);
         Task<ApiResult<bool>> Create(ProductCreateRequest request);
         Task<ApiResult<bool>> Update(ProductUpdateRequest request);
         Task<ApiResult<bool>> Delete(int ProductId);

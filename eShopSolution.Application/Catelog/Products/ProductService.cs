@@ -27,7 +27,7 @@ namespace eShopSolution.Application.Catelog.Products
             _storageService = storageService;
         }
 
-       
+
 
         public Task AddViewCount(int ProductId)
         {
@@ -51,7 +51,7 @@ namespace eShopSolution.Application.Catelog.Products
                         Description=request.Description,
                         ProductUrl=GetUrlByName.Converts(request.Name),
                         LanguageId=request.LanguageId,
-                        
+
                     }
                 },
 
@@ -97,14 +97,14 @@ namespace eShopSolution.Application.Catelog.Products
             //Select
             var query = from p in _context.Products
                         join img in _context.ProductImages on p.Id equals img.ProductId into imgNull
-                        from m in imgNull.DefaultIfEmpty() 
+                        from m in imgNull.DefaultIfEmpty()
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join l in _context.Languages on pt.LanguageId equals l.Id
                         join c in _context.Categories on p.CategoryId equals c.Id
                         join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
-                        where ct.CategoryUrl == request.CategoryUrl  &&
-                        pt.LanguageId == LanguageId 
-                        select new { p, pt, c,l,m,ct};
+                        where ct.CategoryUrl == request.CategoryUrl &&
+                        pt.LanguageId == LanguageId
+                        select new { p, pt, c, l, m, ct };
             //filter
             if (!String.IsNullOrEmpty(request.Keyword))
             {
@@ -130,8 +130,8 @@ namespace eShopSolution.Application.Catelog.Products
                     CategoryId = x.c.Id,
                     ProductUrl = x.pt.ProductUrl,
                     Language = x.l.Name,
-                    ImagePath=x.m.ImagePath,
-                    categoryUrl=x.ct.CategoryUrl
+                    ImagePath = x.m.ImagePath,
+                    categoryUrl = x.ct.CategoryUrl
                 }).ToListAsync();
                 //Select and  projection
                 var pageViewModel = new PageViewModel<ProductViewModel>()
@@ -252,6 +252,44 @@ namespace eShopSolution.Application.Catelog.Products
 
         }
 
+        public async Task<ApiResult<PageViewModel<ProductViewModel>>> Search(string keyword)
+        {
+            var query = from p in _context.Products
+                        join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        join img in _context.ProductImages on p.Id equals img.ProductId
+                        join c in _context.Categories on p.CategoryId equals c.Id
+                        select new { p, pt, c, img };
+
+        
+
+            query = query.Where(x => x.p.Price.ToString() == keyword || x.p.OriginalPrice.ToString() == keyword||x.pt.Name==keyword||x.pt.ProductUrl==keyword||x.pt.Description==keyword);
+            int totalRow = await query.CountAsync();
+            var data = await query
+               .Select(x => new ProductViewModel()
+               {
+                   Id = x.p.Id,
+                   Name = x.pt.Name,
+                   Created_At = x.p.Created_At,
+                   Description = x.pt.Description,
+                   LanguageId = x.pt.LanguageId,
+                   OriginalPrice = x.p.OriginalPrice,
+                   Price = x.p.Price,
+                   Stock = x.p.Stock,
+                   CategoryId = x.c.Id,
+                   ProductUrl = x.pt.ProductUrl,
+                   ImagePath = x.img.ImagePath
+               }).Distinct().ToListAsync();
+                var pageViewModel = new PageViewModel<ProductViewModel>()
+                {
+                    TotalRecords = totalRow,
+                    Items = data,
+                    PageSize = totalRow,
+                    PageIndex = 1
+                };
+                return new ApiResultSuccess<PageViewModel<ProductViewModel>>(pageViewModel);
+            
+
+        }
         public async Task<ApiResult<ProductViewModel>> GetById(int productId, string languageId)
         {
             var product = await _context.Products.FindAsync(productId);
@@ -275,6 +313,9 @@ namespace eShopSolution.Application.Catelog.Products
             };
             return new ApiResultSuccess<ProductViewModel>(productViewModel);
         }
+
+     
+
         public async Task<ApiResult<bool>> Update(ProductUpdateRequest request)
         {
             var product = await _context.Products.FindAsync(request.Id);

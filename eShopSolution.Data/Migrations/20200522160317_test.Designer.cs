@@ -10,8 +10,8 @@ using eShopSolution.Data.EF;
 namespace eShopSolution.Data.Migrations
 {
     [DbContext(typeof(EShopDbContext))]
-    [Migration("20200513002645_addblogForeign")]
-    partial class addblogForeign
+    [Migration("20200522160317_test")]
+    partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -664,6 +664,41 @@ namespace eShopSolution.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("eShopSolution.Data.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created_At")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("Date")
+                        .HasDefaultValueSql("GetDate()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("eShopSolution.Data.Entities.RoleApp", b =>
                 {
                     b.Property<Guid>("Id")
@@ -691,7 +726,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "242cffad-9275-44a6-b1d4-4cbf66413ebb",
+                            ConcurrencyStamp = "c844f6e8-9d24-4a41-9c1d-b57a492f9ef4",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -699,7 +734,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
-                            ConcurrencyStamp = "9cc18814-6c22-4d23-b5d4-23158401836d",
+                            ConcurrencyStamp = "2ab59bbe-d656-444a-880e-205059c2ea25",
                             Description = "Client role",
                             Name = "client",
                             NormalizedName = "client"
@@ -777,14 +812,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ec8703b3-abc4-4478-96a9-5b9208f407b7",
+                            ConcurrencyStamp = "e3a5664d-01b1-43d5-be26-6c6f4191504a",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGqU2V8dPvbGAtj4v8K6ARWC49PGYMv8MHsTWR20zrrLokwqoxvF7B+US/COyVVBxw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB21Q4xKUJ1DE7kitp80bsqVmJX8wgJfWOobMZXIOGIyAYmyB1Vjtvqcx+KGGHVmcQ==",
                             PhoneNumberConfirmed = false,
                             RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",
