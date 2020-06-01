@@ -4,6 +4,7 @@ using eShopSolution.ViewModel.System.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,12 +23,17 @@ namespace eShopSolution.WebApp.Services.Users
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
         private IHttpContextAccessor _httpContextAccessor;
-        public UserAPIClient(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        private readonly IConfiguration _configuration;
+        public UserAPIClient(IHttpClientFactory httpClientFactory, 
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Authenticate(LoginRequest request)
         {
@@ -102,6 +108,7 @@ namespace eShopSolution.WebApp.Services.Users
             form.Add(new StringContent(request.Email), "Email");
             form.Add(new StringContent(request.Dob.ToString()), "Dob");
             form.Add(new StringContent(request.ConfirmPasswork), "ConfirmPasswork");
+            form.Add(new StringContent(request.Address), "Address");
             if (request.ThumbnailImage != null)
             {
                 byte[] data;
@@ -164,6 +171,31 @@ namespace eShopSolution.WebApp.Services.Users
             var json = JsonConvert.SerializeObject(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync($"/api/users/ChangePassword", httpContent);
+            var result = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+        }
+
+        public async Task<ApiResult<string>> Update(Guid userId, UpdateProfile request)
+        { 
+            MultipartFormDataContent form = new MultipartFormDataContent();
+            form.Add(new StringContent(request.FullName), "FullName");
+            form.Add(new StringContent(request.Phone), "Phone");
+            form.Add(new StringContent(request.Address), "Address");
+            form.Add(new StringContent(request.Dob.ToString()), "Dob");
+            if (request.ThumbnailImage != null)
+            {
+                byte[] data;
+                using (var br = new BinaryReader(request.ThumbnailImage.OpenReadStream()))
+                    data = br.ReadBytes((int)request.ThumbnailImage.OpenReadStream().Length);
+                ByteArrayContent bytes = new ByteArrayContent(data);
+                form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
+            }
+
+            var response = await _client.PatchAsync($"/api/users/userUpdate/{userId}", form);
             var result = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {

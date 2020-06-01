@@ -3,6 +3,7 @@ using eShopSolution.ViewModel.Catalog.Carts;
 using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,18 @@ namespace eShopSolution.WebApp.Services.Carts
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
+        private readonly IConfiguration _configuration;
         private IHttpContextAccessor _httpContextAccessor;
         public CartService(IHttpClientFactory httpClientFactory,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> AddToCart(CartItemCreateRequest request)
         {
@@ -60,6 +65,18 @@ namespace eShopSolution.WebApp.Services.Carts
             var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var response = await _client.DeleteAsync($"/api/carts/{cartId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
+            }
+            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<ApiResult<string>> DeleteAll(int cartId)
+        {
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
+            var response = await _client.DeleteAsync($"/api/carts/DeleteAll?cartId={cartId}");
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());

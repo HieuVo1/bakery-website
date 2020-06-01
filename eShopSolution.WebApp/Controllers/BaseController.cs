@@ -36,6 +36,7 @@ namespace eShopSolution.WebApp.Controllers
                 ViewBag.UserName = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 ViewBag.Email = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                 ViewBag.UserId = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                ViewBag.CartId = userPrincipal.Claims.FirstOrDefault(c => c.Type == "CartId").Value;
             }
             languageDefauleId = _configuration.GetSection("LanguageDefaultId").Value;
             base.OnActionExecuting(context);
@@ -48,7 +49,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewBag.cart = cart;
             ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
             ViewBag.NumItem = (cart != null)?cart.Sum(x=>x.Quantity):0;
-            ViewBag.CartId = CookieHelpers.GetObjectFromJson<string>(Request.Cookies, "CartId");
         }
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {

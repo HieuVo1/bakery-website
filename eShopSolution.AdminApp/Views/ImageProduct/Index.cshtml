@@ -74,7 +74,7 @@
                         </div>
                         <div class="form-group-image">
                             <label>Image</label>
-                            <input type="file" asp-for="ThumbnailImage" class="dropify" multiple data-allowed-file-extensions="png jpg">
+                            <input type="file" asp-for="ThumbnailImage" class="dropify"  multiple data-allowed-file-extensions="png jpg">
                             <span asp-validation-for="ThumbnailImage" class="text-danger"></span>
                         </div>
                     </div>
@@ -186,7 +186,7 @@
                 $('#exampleModalLabel').text("Add Image")
                 $("#exampleModal form").attr('action', "/imageproduct/create/");
                 $("#exampleModal .form-group-image .dropify-wrapper").remove();
-                $("#exampleModal .form-group-image").append('<input type="file" name="ThumbnailImage" class="dropify" multiple  data-allowed-file-extensions="png jpg">');
+                $("#exampleModal .form-group-image").append('<input type="file" name="ThumbnailImage" required class="dropify" multiple  data-allowed-file-extensions="png jpg">');
                 $('.dropify').dropify();
             });
         });

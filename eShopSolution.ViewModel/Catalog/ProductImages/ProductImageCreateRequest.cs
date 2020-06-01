@@ -14,7 +14,7 @@ namespace eShopSolution.ViewModel.Catalog.ProductImages
         public int ProductId { set; get; }
         [Required]
         public bool IsDefault { get; set; }
-        [Required]
+       
         public IFormFile ThumbnailImage { get; set; }
     }
 }

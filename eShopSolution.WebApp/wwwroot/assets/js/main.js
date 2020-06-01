@@ -604,7 +604,7 @@
         subMenuToggle();
         masonry();
         rating();
-        mapConfig();
+        //mapConfig();
         niceSelect();
         countDown();
         revolution();

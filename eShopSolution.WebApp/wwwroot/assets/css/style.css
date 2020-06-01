@@ -1338,24 +1338,24 @@ ul, ol {
 }
 
 .form-control {
-  padding: 0 20px;
-  background-color: #f1f1f1;
-  height: 50px;
-  font-family: "Varela Round", sans-serif;
-  font-size: 14px;
-  border-color: #f1f1f1;
-  opacity: 1;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  border-radius: 4px;
-  -webkit-transition: all 0.4s ease;
-  -moz-transition: all 0.4s ease;
-  transition: all 0.4s ease;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  -ms-box-shadow: none;
-  box-shadow: none;
+    padding: 0 20px;
+    background-color: #ffffff;
+    height: 50px;
+    font-family: "Varela Round", sans-serif;
+    font-size: 14px;
+    border-color: #cecece;
+    opacity: 1;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -ms-box-shadow: none;
+    box-shadow: none;
 }
 
 .form-control::-webkit-input-placeholder {
@@ -2826,7 +2826,7 @@ textarea.form-control {
 
 .ps-product--detail .tab-list {
   margin-bottom: 25px;
-  border-top: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
 }
 
 .ps-product--detail .tab-list::after {
@@ -2850,7 +2850,7 @@ textarea.form-control {
 .ps-product--detail .tab-list a:before {
   content: '';
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 0;
   right: 0;
   margin: 0 auto;
@@ -6080,10 +6080,12 @@ textarea.form-control {
 
 .navigation__left {
   float: left;
+  margin-left:60px;
 }
 
 .navigation__right {
   float: right;
+  margin-right:60px;
 }
 
 .navigation__right::after {
@@ -7135,7 +7137,7 @@ textarea.form-control {
 
 .ps-checkout__billing .form-group .form-control {
   float: right;
-  max-width: 570px;
+  /*max-width: 570px;*/
 }
 
 @media (max-width: 767px) {
@@ -7152,7 +7154,7 @@ textarea.form-control {
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
   border-radius: 4px;
-  background-color: #f5f3f0;
+  /*background-color: #f5f3f0;*/
 }
 
 .ps-checkout__order h3 {
@@ -7160,18 +7162,30 @@ textarea.form-control {
   border-bottom: 1px solid #d9d9d9;
 }
 
-.ps-checkout__order table thead tr th {
-  border: none;
-}
-
-.ps-checkout__order table tbody tr td {
-  padding: 5px;
-  border: none;
-  font-family: "Varela Round", sans-serif;
-  font-size: 14px;
-  line-height: 1.2em;
-  color: #31363d;
-}
+    .ps-checkout__order table thead tr th {
+        border: none;
+        padding: 15px;
+    }
+    .ps-checkout__order table tfoot tr td {
+        border: none;
+        padding: 15px;
+    }
+    .ps-checkout__order table thead tr {
+        background: #332740;
+        color: #fff;
+    }
+    .ps-checkout__order table tfoot tr {
+        background: #332740;
+        color: #fff;
+    }
+    .ps-checkout__order table tbody tr td {
+        padding: 15px;
+        font-family: "Varela Round", sans-serif;
+        font-size: 14px;
+        line-height: 1.2em;
+        color: #31363d;
+        vertical-align: middle;
+    }
 
 .ps-checkout__order p {
   font-family: "Varela Round", sans-serif;

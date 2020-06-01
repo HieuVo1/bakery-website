@@ -15,7 +15,7 @@ namespace eShopSolution.Data.Configurations
             builder.Property(x => x.ShipAddress).IsRequired();
             builder.Property(x => x.ShipPhone).IsRequired();
             builder.Property(x => x.ShipEmail).IsRequired().IsUnicode(false).HasMaxLength(50);
-            builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.InStock);
+            builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.InProgress);
             builder.Property(x => x.Created_At)
             .IsRequired()
             .HasColumnType("Date")

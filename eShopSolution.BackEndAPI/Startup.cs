@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using eShopSolution.Application.Blogs;
 using eShopSolution.Application.Catelog.Carts;
 using eShopSolution.Application.Catelog.Categories;
+using eShopSolution.Application.Catelog.Orders;
 using eShopSolution.Application.Catelog.ProductImages;
 using eShopSolution.Application.Catelog.Products;
+using eShopSolution.Application.Catelog.Promotions;
 using eShopSolution.Application.Comments;
 using eShopSolution.Application.Comom;
 using eShopSolution.Application.Contacts;
@@ -52,7 +54,7 @@ namespace eShopSolution.BackEndAPI
                 options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("https://localhost:5002");
+                        builder.WithOrigins("https://localhost:5002", "https://localhost:5003");
                     });
 
             });
@@ -90,6 +92,8 @@ namespace eShopSolution.BackEndAPI
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IReviewService, ReviewService>();
+            services.AddTransient<IPromotionService, PromotionService>();
+            services.AddTransient<IOrderService, OrderService>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
 

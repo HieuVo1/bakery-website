@@ -13,5 +13,6 @@ namespace eShopSolution.Data.Entities
         public DateTime Created_At { set; get; }
         public string Content{ set; get; }
         public UserApp UserApp { set; get; }
+       
     }
 }

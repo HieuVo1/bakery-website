@@ -10,7 +10,7 @@ using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.ImageProducts;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.products;
-using eShopSolution.WebApp.Services.ReViews;
+using eShopSolution.WebApp.Services.Reviews;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -43,17 +43,19 @@ namespace eShopSolution.WebApp.Controllers
         public async Task<IActionResult> IndexAsync([FromQuery] int minPrice, int maxPrice,int pageIndex=1,string Name=null)
         
         {
+            
+            var topSelling = await _productService.GetTopSelling(languageDefauleId, 3);
             var products = await _productService.GetAll("vn", Name, pageIndex, _pageSize, minPrice,maxPrice);
             var categories = await _categoryService.GetAll("vn");
+            ViewBag.CategoryUrl = "index";
             ViewData["products"] = products.ResultObject.Items;
             ViewData["minPrice"] = minPrice;
             ViewData["maxPrice"] = maxPrice;
             ViewData["categories"] = categories.ResultObject;
+            ViewBag.top = topSelling.ResultObject.Items;
             if (section != null)
             {
-                var cartId = CookieHelpers.GetObjectFromJson<string>(Request.Cookies, "CartId");
                 ViewBag.IsLogged = true;
-                ViewBag.CartId = cartId;
             }
             return View(products.ResultObject);
         }
@@ -62,6 +64,7 @@ namespace eShopSolution.WebApp.Controllers
         {
             var products = await _productService.GetByCategoryUrl( "vn", categoryUrl, page,_pageSize);
             var categories = await _categoryService.GetAll("vn");
+            ViewBag.CategoryUrl = categoryUrl;
             ViewData["products"] = products.ResultObject.Items;
             ViewData["categories"] = categories.ResultObject;
             ViewData["total"] = products.ResultObject.TotalRecords;
@@ -71,11 +74,13 @@ namespace eShopSolution.WebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> DetailAsync(int productId)
         {
+            var topSelling = await _productService.GetTopSelling(languageDefauleId, 4);
             var result = await _productService.GetById(productId, languageDefauleId);
             var images = await _imageProductService.GetListImage(productId);
             var reviews = await _reviewService.GetAll(productId);
             ViewBag.ListImage = images.ResultObject;
             ViewBag.ListReview = reviews.ResultObject;
+            ViewBag.top = topSelling.ResultObject.Items;
             return View(result.ResultObject);
         }
         [HttpPost]

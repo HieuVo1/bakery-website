@@ -6,7 +6,8 @@ namespace eShopSolution.Data.Enums
 {
     public enum OrderStatus
     {
-        InStock,
-        OutOfStock
+        InProgress,
+        Shipping,
+        Delivered
     }
 }

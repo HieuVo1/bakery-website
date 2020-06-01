@@ -1,6 +1,9 @@
 ﻿using eShopSolution.Application.Comom;
+using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.Exceptions;
+using eShopSolution.ViewModel.Catalog.Carts;
+using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Roles;
 using eShopSolution.ViewModel.System.Users;
@@ -31,11 +34,13 @@ namespace eShopSolution.Application.System.Users
         private readonly RoleManager<RoleApp> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IStorageService _storageService;
+        private readonly EShopDbContext _context;
 
-        public UserService(UserManager<UserApp> userManager, 
-            SignInManager<UserApp> signInManager, 
-            RoleManager<RoleApp> roleManager, 
+        public UserService(UserManager<UserApp> userManager,
+            SignInManager<UserApp> signInManager,
+            RoleManager<RoleApp> roleManager,
             IConfiguration configuration,
+            EShopDbContext context,
             IStorageService storageService)
         {
             _userManager = userManager;
@@ -43,6 +48,7 @@ namespace eShopSolution.Application.System.Users
             _roleManager = roleManager;
             _configuration = configuration;
             _storageService = storageService;
+            _context = context;
         }
         public async Task<ApiResult<string>> Authencate(LoginRequest request)
         {
@@ -50,25 +56,28 @@ namespace eShopSolution.Application.System.Users
             if (user == null) return new ApiResultErrors<string>("UserName not found");
             var result = await _signInManager.PasswordSignInAsync(user, request.Passwork, request.RememberMe, true);
             if (result.IsLockedOut) return new ApiResultErrors<string>("You login faild more five. Your Account is locked");
-            if (!result.Succeeded) return new ApiResultErrors<string>("UserName or Password is incorrect"); 
-            var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+            if (!result.Succeeded) return new ApiResultErrors<string>("UserName or Password is incorrect");
+            var role = await _roleManager.FindByIdAsync(user.RoleID.ToString());
+            var cart = await _context.Carts.FirstOrDefaultAsync(x => x.UserId == user.Id);
             var userToken = new UserToken
             {
                 UserId = user.Id.ToString(),
-                UserName =user.UserName,
-                Role= string.Join(";", role.Result.Name),
+                UserName = user.UserName,
+                Role = string.Join(";", role.Name),
                 ImagePath = user.ImagePath,
                 Email = user.Email,
+                CartId = cart.Id.ToString(),
             };
             var token = CreateToken(userToken);
             return new ApiResultSuccess<string>(token);
+
         }
 
         public async Task<ApiResult<bool>> Delete(Guid userId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null) new ApiResultErrors<bool>($"Can not find user with id: {userId}");
-            var result=await _userManager.DeleteAsync(user);
+            var result = await _userManager.DeleteAsync(user);
             await _storageService.DeleteFileAsync(user.ImagePath);
             if (result.Succeeded)
             {
@@ -89,6 +98,7 @@ namespace eShopSolution.Application.System.Users
                 Email = user.Email,
                 FullName = user.FullName,
                 Phone = user.PhoneNumber,
+                Address = user.Address,
                 UserName = user.UserName,
                 Dob = user.Dob,
                 Id = user.Id,
@@ -103,13 +113,14 @@ namespace eShopSolution.Application.System.Users
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user == null)
             {
-               return new ApiResultErrors<UserViewModel>($"Can not find user with id: {userId}");
+                return new ApiResultErrors<UserViewModel>($"Can not find user with id: {userId}");
             }
             var userViewModel = new UserViewModel()
             {
                 Email = user.Email,
                 FullName = user.FullName,
                 Phone = user.PhoneNumber,
+                Address = user.Address,
                 UserName = user.UserName,
                 Dob = user.Dob,
                 Id = user.Id,
@@ -132,6 +143,7 @@ namespace eShopSolution.Application.System.Users
                 FullName = user.FullName,
                 Phone = user.PhoneNumber,
                 UserName = user.UserName,
+                Address = user.Address,
                 Dob = user.Dob,
                 Id = user.Id,
                 ImagePath = user.ImagePath,
@@ -167,7 +179,7 @@ namespace eShopSolution.Application.System.Users
 
                     var user = await _userManager.FindByEmailAsync(email);
                     var roleDefault = await _roleManager.FindByNameAsync("client");
-                    
+
                     if (user == null)
                     {
                         user = new UserApp
@@ -179,7 +191,7 @@ namespace eShopSolution.Application.System.Users
                             UserName = request.Email,
 
                         };
-                       var result =  await _userManager.CreateAsync(user);
+                        var result = await _userManager.CreateAsync(user);
                     }
                     var info = new UserLoginInfo(request.LoginProvider, request.ProviderKey, request.ProviderDisPlayName);
                     await _userManager.AddLoginAsync(user, info);
@@ -207,9 +219,9 @@ namespace eShopSolution.Application.System.Users
             var data = await query
                 .Select(x => new RoleViewModel()
                 {
-                    Name=x.Name,
-                    Description=x.Description,
-                    Id=x.Id
+                    Name = x.Name,
+                    Description = x.Description,
+                    Id = x.Id
                 }).ToListAsync();
             var result = new PageViewModel<RoleViewModel>
             {
@@ -229,15 +241,16 @@ namespace eShopSolution.Application.System.Users
                 query = query.Where(x => x.u.UserName.Contains(request.Keyword));
             }
             int totalRow = await query.CountAsync();
-            if(request.PageIndex!=0|| request.PageSize != 0)
+            if (request.PageIndex != 0 || request.PageSize != 0)
             {
                 var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select( x => new UserViewModel()
+                .Select(x => new UserViewModel()
                 {
                     Email = x.u.Email,
                     FullName = x.u.FullName,
                     Phone = x.u.PhoneNumber,
+                    Address = x.u.Address,
                     UserName = x.u.UserName,
                     Dob = x.u.Dob,
                     Id = x.u.Id,
@@ -252,13 +265,15 @@ namespace eShopSolution.Application.System.Users
                 };
                 return new ApiResultSuccess<PageViewModel<UserViewModel>>(pageResult);
             }
-            else { 
+            else
+            {
                 var data = await query
                     .Select(x => new UserViewModel()
                     {
                         Email = x.u.Email,
                         FullName = x.u.FullName,
                         Phone = x.u.PhoneNumber,
+                        Address = x.u.Address,
                         UserName = x.u.UserName,
                         Dob = x.u.Dob,
                         Id = x.u.Id,
@@ -278,7 +293,8 @@ namespace eShopSolution.Application.System.Users
 
         public async Task<ApiResult<VerificationViewModel>> Register(RegisterRequest request)
         {
-            if (await _userManager.FindByNameAsync(request.UserName) != null) {
+            if (await _userManager.FindByNameAsync(request.UserName) != null)
+            {
                 return new ApiResultErrors<VerificationViewModel>("UserName is already");
             }
             if (await _userManager.FindByEmailAsync(request.Email) != null)
@@ -295,12 +311,13 @@ namespace eShopSolution.Application.System.Users
                 Dob = request.Dob,
                 Email = request.Email,
                 PhoneNumber = request.Phone,
+                Address = request.Address,
                 UserName = request.UserName,
                 FullName = request.FullName,
-                RoleID=request.RoleId
+                RoleID = request.RoleId
             };
 
-            
+
             //Save Image
             if (request.ThumbnailImage != null)
             {
@@ -317,6 +334,16 @@ namespace eShopSolution.Application.System.Users
                     Token = token,
                     UserId = user.Id,
                 };
+                var cart = new Cart
+                {
+                    Created_At = DateTime.Now,
+                    UserId = user.Id,
+                    Price = 0,
+                    CartProducts = new List<CartProduct>(),
+                };
+                _context.Carts.Add(cart);
+                await _context.SaveChangesAsync();
+
                 return new ApiResultSuccess<VerificationViewModel>(model);
             }
             return new ApiResultErrors<VerificationViewModel>("Register failed");
@@ -326,7 +353,7 @@ namespace eShopSolution.Application.System.Users
         public async Task<ApiResult<bool>> Update(Guid userId, UserUpdateRequest request)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null ) return new ApiResultErrors<bool>($"Can not find user with id: {userId}");
+            if (user == null) return new ApiResultErrors<bool>($"Can not find user with id: {userId}");
 
             user.FullName = request.FullName;
             user.PhoneNumber = request.Phone;
@@ -340,10 +367,10 @@ namespace eShopSolution.Application.System.Users
                 {
                     await _storageService.DeleteFileAsync(OldImagePath);
                 }
-                
+
             }
 
-           var result= await _userManager.UpdateAsync(user);
+            var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
                 return new ApiResultSuccess<bool>();
@@ -447,7 +474,7 @@ namespace eShopSolution.Application.System.Users
                 return new ApiResultSuccess<string>(token);
             }
             string errors = string.Empty;
-            foreach(var error in change.Errors)
+            foreach (var error in change.Errors)
             {
                 errors += error.Description;
             }
@@ -455,11 +482,13 @@ namespace eShopSolution.Application.System.Users
         }
         public string CreateToken(UserToken user)
         {
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("Picture", (user.ImagePath!=null?user.ImagePath:"")),
+                new Claim("CartId", user.CartId),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim(ClaimTypes.NameIdentifier, user.UserId),
             };
@@ -472,6 +501,36 @@ namespace eShopSolution.Application.System.Users
                 expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<ApiResult<bool>> UserUpdateProfile(Guid userId, UpdateProfile request)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null) return new ApiResultErrors<bool>($"Can not find user with id: {userId}");
+
+            user.FullName = request.FullName;
+            user.PhoneNumber = request.Phone;
+            user.Address = request.Address;
+            user.Dob = request.Dob;
+
+            //Save Image
+            if (request.ThumbnailImage != null)
+            {
+                var OldImagePath = user.ImagePath;
+                user.ImagePath = await this.SaveFile(request.ThumbnailImage);
+                if (OldImagePath != null)
+                {
+                    await _storageService.DeleteFileAsync(OldImagePath);
+                }
+
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return new ApiResultSuccess<bool>();
+            }
+            return new ApiResultErrors<bool>("update failed");
         }
     }
 }

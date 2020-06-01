@@ -35,6 +35,7 @@ namespace eShopSolution.Data.EF
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
             modelBuilder.ApplyConfiguration(new CommentConfiguration());
             modelBuilder.ApplyConfiguration(new ReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new LikeConfiguration());
             modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
             modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins").HasKey(x=>x.UserId);
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles").HasNoKey();
@@ -60,5 +61,6 @@ namespace eShopSolution.Data.EF
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Review> ReViews { get; set; }
+        public DbSet<Like> Likes { get; set; }
     }
 }

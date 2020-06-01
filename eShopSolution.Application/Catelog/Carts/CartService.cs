@@ -42,7 +42,7 @@ namespace eShopSolution.Application.Catelog.Carts
             
         }
 
-        public async Task<ApiResult<string>> Create(CartCreateRequest request)
+        public async Task<ApiResult<bool>> Create(CartCreateRequest request)
         {
             var cart = new Cart
             {
@@ -60,8 +60,7 @@ namespace eShopSolution.Application.Catelog.Carts
                 cart.CartProducts.Add(cartProduct);
             }
             _context.Carts.Add(cart);
-            _context.Entry(cart).GetDatabaseValues();
-            return new ApiResultSuccess<string>(cart.Id.ToString());
+            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
 
         public async Task<ApiResult<bool>> Delete(int cartId)
@@ -80,16 +79,22 @@ namespace eShopSolution.Application.Catelog.Carts
             _context.CartProducts.Remove(cartItem);
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
+        public async Task<ApiResult<bool>> DeleteAll(int cartId)
+        {
+            var cartItems =  _context.CartProducts.Where(x => x.CartID == cartId);
+            _context.CartProducts.RemoveRange(cartItems);
+            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
+        }
 
         public async Task<ApiResult<CartViewModel>> GetById(Guid userId)
         {
-            
             var cart = await _context.Carts.FirstOrDefaultAsync(x => x.UserId == userId);
             if (cart == null) return new ApiResultErrors<CartViewModel>($"Can not find cart with id: {userId}");
             var query = from c in _context.CartProducts where c.CartID == cart.Id
                         join p in _context.Products on c.ProductID equals p.Id
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join img in _context.ProductImages on p.Id equals img.ProductId
+                        where img.IsDefault == true
                         select new { c, p,pt,img };
             var cartViewModel = new CartViewModel
             {

@@ -17,13 +17,12 @@
                     if (ViewBag.IsLogged == true)
                     {
                         <a class="ps-img-user-btn" href="#">
-                            <img height="30" width="30" class="img-user" src="https://localhost:5001/user-content/@ViewBag.ImagePath" />
+                            <img height="30" width="30" class="img-user" src="@ViewBag.ImagePath" />
                         </a>
                         <div class="btn-group ps-dropdown">
                             <a class="dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@ViewBag.UserName<i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Profile</a></li>
-                                <li><a href="#">Order</a></li>
+                                <li><a asp-action="Profile" asp-controller="user">Profile</a></li>
                                 <li><a asp-action="changePassword" asp-controller="user" >Change Password</a></li>
                                 <li><a href="/login/logout">Logout</a></li>
 

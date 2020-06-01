@@ -90,21 +90,19 @@ namespace eShopSolution.Application.Catelog.Products
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
 
         }
-
-
         public async Task<ApiResult<PageViewModel<ProductViewModel>>> GetAllByCategoryUrl(GetProductPaggingRequest request, string LanguageId)
         {
             //Select
             var query = from p in _context.Products
-                        join img in _context.ProductImages on p.Id equals img.ProductId into imgNull
-                        from m in imgNull.DefaultIfEmpty() 
+                        join img in _context.ProductImages on p.Id equals img.ProductId
+                        where img.IsDefault == true
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join l in _context.Languages on pt.LanguageId equals l.Id
                         join c in _context.Categories on p.CategoryId equals c.Id
                         join ct in _context.CategoryTranslations on c.Id equals ct.CategoryId
                         where ct.CategoryUrl == request.CategoryUrl  &&
                         pt.LanguageId == LanguageId 
-                        select new { p, pt, c,l,m,ct};
+                        select new { p, pt, c,l, img, ct};
             //filter
             if (!String.IsNullOrEmpty(request.Keyword))
             {
@@ -130,7 +128,7 @@ namespace eShopSolution.Application.Catelog.Products
                     CategoryId = x.c.Id,
                     ProductUrl = x.pt.ProductUrl,
                     Language = x.l.Name,
-                    ImagePath=x.m.ImagePath,
+                    ImagePath=x.img.ImagePath,
                     categoryUrl=x.ct.CategoryUrl
                 }).ToListAsync();
                 //Select and  projection
@@ -158,7 +156,7 @@ namespace eShopSolution.Application.Catelog.Products
                     CategoryId = x.c.Id,
                     ProductUrl = x.pt.ProductUrl,
                     Language = x.l.Name,
-                    ImagePath = x.m.ImagePath
+                    ImagePath = x.img.ImagePath
                 }).ToListAsync();
                 //Select and  projection
                 var pageViewModel = new PageViewModel<ProductViewModel>()
@@ -177,6 +175,7 @@ namespace eShopSolution.Application.Catelog.Products
             var query = from p in _context.Products
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
                         join img in _context.ProductImages on p.Id equals img.ProductId
+                        where img.IsDefault == true
                         join c in _context.Categories on p.CategoryId equals c.Id
                         where pt.LanguageId
                         == request.LanguageId
@@ -257,7 +256,7 @@ namespace eShopSolution.Application.Catelog.Products
             var product = await _context.Products.FindAsync(productId);
             var productTranslation = await _context.ProductTranslations.FirstOrDefaultAsync(x => x.ProductId == productId
             && x.LanguageId == languageId);
-            var imageproduct = await _context.ProductImages.FirstOrDefaultAsync(x => x.ProductId == productId);
+            var imageproduct = await _context.ProductImages.FirstOrDefaultAsync(x => x.ProductId == productId && x.IsDefault==true);
 
             var productViewModel = new ProductViewModel()
             {
@@ -275,6 +274,58 @@ namespace eShopSolution.Application.Catelog.Products
             };
             return new ApiResultSuccess<ProductViewModel>(productViewModel);
         }
+
+        public async Task<ApiResult<PageViewModel<ProductViewModel>>> GetTopSelling(GetProductPaggingRequest request)
+        {
+            var query = from OrderDetails in _context.OrderDetails
+                        group OrderDetails by new
+                        {
+                            OrderDetails.ProductId
+                        } into g
+                        orderby
+                          (int?)g.Sum(p => p.Quantity) descending
+                        select new
+                        {
+                            g.Key.ProductId,
+                            SL = (int?)g.Sum(p => p.Quantity)
+                        } into t
+                        join p in _context.Products on t.ProductId equals p.Id
+                        join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        where pt.LanguageId
+                        == request.LanguageId
+                        join img in _context.ProductImages on p.Id equals img.ProductId
+                        where img.IsDefault == true
+                        select new
+                        {
+                            t,
+                            pt,
+                            img,
+                            p
+                        };
+            var data = await query.Take(request.PageSize)
+               .Select(x => new ProductViewModel()
+               {
+                   Id = x.p.Id,
+                   Name = x.pt.Name,
+                   Created_At = x.p.Created_At,
+                   Description = x.pt.Description,
+                   LanguageId = x.pt.LanguageId,
+                   OriginalPrice = x.p.OriginalPrice,
+                   Price = x.p.Price,
+                   Stock = x.p.Stock,
+                   ProductUrl = x.pt.ProductUrl,
+                   ImagePath = x.img.ImagePath
+               }).ToListAsync();
+            var pageViewModel = new PageViewModel<ProductViewModel>()
+            {
+                TotalRecords = request.PageSize,
+                Items = data
+            };
+
+            return new ApiResultSuccess<PageViewModel<ProductViewModel>>(pageViewModel);
+
+        }
+
         public async Task<ApiResult<bool>> Update(ProductUpdateRequest request)
         {
             var product = await _context.Products.FindAsync(request.Id);
@@ -333,7 +384,7 @@ namespace eShopSolution.Application.Catelog.Products
             var product = await _context.Products.FindAsync(ProductId);
             if (product == null) return new ApiResultErrors<bool>($"Cannot find a product with id: {ProductId}");
             product.Stock += addedQuantity;
-            await _context.SaveChangesAsync() ;
+            await _context.SaveChangesAsync();
             return new ApiResultSuccess<bool>();
         }
 

@@ -22,6 +22,8 @@ using eShopSolution.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using eShopSolution.AdminApp.Service.Blogs;
 using eShopSolution.AdminApp.Service.Comments;
+using eShopSolution.AdminApp.Service.Promotions;
+using eShopSolution.AdminApp.Service.Orders;
 
 namespace eShopSolution.AdminApp
 {
@@ -61,6 +63,8 @@ namespace eShopSolution.AdminApp
             services.AddTransient<IProductService, ProductService>();
             services.AddTransient<IBlogService, BlogService>();
             services.AddTransient<ICommentService, CommentService>();
+            services.AddTransient<IPromotionService, PromotionService>();
+            services.AddTransient<IOrderService, OrderService>();
             IMvcBuilder builder = services.AddRazorPages();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -129,6 +133,14 @@ namespace eShopSolution.AdminApp
                 endpoints.MapControllerRoute(name: "RemoveImageProduct",
                 pattern: "product/{productId}/Images/delete/{imageId}",
                 defaults: new { controller = "imageProduct", action = "delete" });
+                //detail order
+                endpoints.MapControllerRoute(name: "DetailOrrder",
+                pattern: "order/detail/{orderId}",
+                defaults: new { controller = "order", action = "Detail" });
+                //delete order
+                endpoints.MapControllerRoute(name: "deleteOrrder",
+                pattern: "order/delete/{orderId}",
+                defaults: new { controller = "order", action = "delete" });
 
                 endpoints.MapControllerRoute(
                     name: "default",

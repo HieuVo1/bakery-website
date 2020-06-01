@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.ViewModel.Comment;
 using eShopSolution.WebApp.Services.Blogs;
+using eShopSolution.WebApp.Services.Categorys;
 using eShopSolution.WebApp.Services.Comments;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -14,18 +15,27 @@ namespace eShopSolution.WebApp.Controllers
     {
         private readonly IBlogService _blogService;
         private readonly ICommentService _commentService;
+        private readonly ICategoryService _categoryService; 
         private readonly int _pageSize = 5;
         public BlogController(IConfiguration configuration, 
             IBlogService blogService,
+            ICategoryService categoryService,
             ICommentService commentService):base(configuration)
         {
             _blogService = blogService;
             _commentService = commentService;
+            _categoryService = categoryService;
         }
-        public async Task<IActionResult> IndexAsync([FromQuery] int pageIndex = 1)
+        public async Task<IActionResult> IndexAsync(string categoryUrl,string keyword,[FromQuery] int pageIndex = 1)
         {
-            var blogs = await _blogService.GetAll(pageIndex, _pageSize);
+            
+            ViewBag.CategoryUrl = (categoryUrl == null)?"index":categoryUrl;
+            var categories = await _categoryService.GetAll("vn");
+            var blogs = await _blogService.GetAll(pageIndex, _pageSize,categoryUrl,keyword);
+            var top = await _blogService.GetAll(pageIndex, 3);
             ViewData["blogs"] = blogs.ResultObject.Items;
+            ViewBag.top = top.ResultObject.Items;
+            ViewData["categories"] = categories.ResultObject;
             if (section != null)
             {
                 ViewBag.IsLogged = true;
@@ -34,10 +44,14 @@ namespace eShopSolution.WebApp.Controllers
         }
         public async Task<IActionResult> DetailAsync(int blogId)
         {
+            var categories = await _categoryService.GetAll("vn");
+            var top = await _blogService.GetAll(1, 3);
             var result = await _blogService.GetById(blogId);
             var comments = await _commentService.GetAll(blogId);
             ViewData["blog"] = result.ResultObject;
             ViewData["comments"] = comments.ResultObject;
+            ViewData["categories"] = categories.ResultObject;
+            ViewBag.top = top.ResultObject.Items;
             if (section != null)
             {
                 ViewBag.IsLogged = true;

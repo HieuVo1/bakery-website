@@ -22,6 +22,7 @@ namespace eShopSolution.ViewModel.Catalog.Products
         public string Description { set; get; }
         public string ProductUrl { set; get; }
         public string LanguageId { set; get; }
+        [Required]
         public IFormFile ThumbnailImage { get; set; }
     }
 }

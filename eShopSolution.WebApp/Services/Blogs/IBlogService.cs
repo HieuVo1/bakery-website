@@ -14,6 +14,6 @@ namespace eShopSolution.WebApp.Services.Blogs
         Task<ApiResult<string>> Update(BlogUpdateRequest request, int blogId);
         Task<ApiResult<string>> Delete(int blogId);
         Task<ApiResult<string>> Liked(int blogId);
-        Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0);
+        Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0,string categoryUrl=null,string keyword=null);
     }
 }

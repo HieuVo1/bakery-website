@@ -22,6 +22,7 @@ namespace eShopSolution.WebApp.Services.Users
         Task<ApiResult<UserViewModel>> GetUserByEmail(string email);
         Task<ApiResult<UserViewModel>> GetUserByUserName(string userName);
         Task<ApiResult<VerificationViewModel>> Register(RegisterRequest request);
+        Task<ApiResult<string>> Update(Guid userId, UpdateProfile request);
 
 
     }

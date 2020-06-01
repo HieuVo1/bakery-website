@@ -17,6 +17,7 @@ namespace eShopSolution.ViewModel.System.Users
         public string ConfirmPassword { get; set; }
         [Required]
         public string Token { set; get; }
+        [Required]
         public string VerificationCode { set; get; }
     }
 }

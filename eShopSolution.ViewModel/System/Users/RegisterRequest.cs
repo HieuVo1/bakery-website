@@ -14,6 +14,7 @@ namespace eShopSolution.ViewModel.System.Users
         public string Email { set; get; }
         [Remote(action:("IsUserNameUse"),controller:("Login"))]
         public string UserName { set; get; }
+        public string Address { set; get; }
         public string Phone { set; get; }
         public string Passwork { set; get; }
         [Compare("Passwork", ErrorMessage = "password and confirmPassword is not match")]

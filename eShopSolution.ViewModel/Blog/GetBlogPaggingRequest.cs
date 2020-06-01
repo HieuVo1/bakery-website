@@ -7,6 +7,7 @@ namespace eShopSolution.ViewModel.Blog
 {
     public class GetBlogPaggingRequest : PaggingRequestBase
     {
-        public string Keywork { set; get; }
+        public string CategoryUrl { set; get; }
+        public string Keyword { set; get; }
     }
 }

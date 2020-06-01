@@ -84,6 +84,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(result);
         }
         [HttpGet("{userId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById([FromRoute] Guid userId)
         {
             var result = await _userService.GetById(userId);
@@ -114,6 +115,18 @@ namespace eShopSolution.BackEndAPI.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _userService.Update(userId,request);
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
+        }
+        [HttpPatch("userUpdate/{userId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UserUpdate([FromRoute] Guid userId, [FromForm] UpdateProfile request)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _userService.UserUpdateProfile(userId, request);
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }

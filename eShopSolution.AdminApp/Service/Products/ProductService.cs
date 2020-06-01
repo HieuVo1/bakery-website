@@ -3,6 +3,7 @@ using eShopSolution.ViewModel.Catalog.Products;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,18 @@ namespace eShopSolution.AdminApp.Service.Products
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
-        private IHttpContextAccessor _httpContextAccessor;
-        public ProductService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        private IHttpContextAccessor _httpContextAccessor; 
+        private readonly IConfiguration _configuration;
+        public ProductService(IHttpClientFactory httpClientFactory,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
 
         public async Task<ApiResult<string>> Create(ProductCreateRequest request)

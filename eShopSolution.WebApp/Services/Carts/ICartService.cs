@@ -16,6 +16,7 @@ namespace eShopSolution.Application.Catelog.Carts
         Task<ApiResult<string>> Delete(int cartId);
         Task<ApiResult<string>> AddToCart(CartItemCreateRequest request);
         Task<ApiResult<string>> UpdateQuantity(CartItemUpdateRequest request);
-        Task<ApiResult<string>> DeleteItem(int cartId,int productId);
+        Task<ApiResult<string>> DeleteItem(int cartId, int productId);
+        Task<ApiResult<string>> DeleteAll(int cartId);
     }
 }

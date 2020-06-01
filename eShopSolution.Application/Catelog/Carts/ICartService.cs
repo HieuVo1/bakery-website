@@ -11,11 +11,12 @@ namespace eShopSolution.Application.Catelog.Carts
     public interface ICartService
     {
         Task<ApiResult<CartViewModel>> GetById(Guid userId);
-        Task<ApiResult<string>> Create(CartCreateRequest request);
+        Task<ApiResult<bool>> Create(CartCreateRequest request);
         Task<ApiResult<bool>> Update(CartUpdateRequest request);
         Task<ApiResult<bool>> Delete(int cartId);
         Task<ApiResult<bool>> AddToCart(CartItemCreateRequest request);
         Task<ApiResult<bool>> UpdateQuantity(CartItemUpdateRequest request);
         Task<ApiResult<bool>> DeleteItem(int cartId,int productId);
+        Task<ApiResult<bool>> DeleteAll(int cartId);
     }
 }

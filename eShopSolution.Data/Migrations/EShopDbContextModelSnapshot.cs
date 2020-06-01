@@ -393,6 +393,26 @@ namespace eShopSolution.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("eShopSolution.Data.Entities.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BlogId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Likes");
+                });
+
             modelBuilder.Entity("eShopSolution.Data.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -400,15 +420,15 @@ namespace eShopSolution.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Created_At")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("Date")
                         .HasDefaultValueSql("GetDate()");
 
-                    b.Property<int>("PromotionId")
+                    b.Property<string>("OrderNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PromotionId")
                         .HasColumnType("int");
 
                     b.Property<string>("ShipAddress")
@@ -437,13 +457,14 @@ namespace eShopSolution.Data.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PromotionId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[PromotionId] IS NOT NULL");
 
                     b.HasIndex("UserId");
 
@@ -724,7 +745,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "e0cf0d1f-6f9c-46c7-a328-9be1306d4d3e",
+                            ConcurrencyStamp = "9f4b1fe4-a1c0-403c-be17-d14be310952e",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -732,7 +753,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
-                            ConcurrencyStamp = "b5841857-fc4c-4fb1-9b5c-003d3571eac2",
+                            ConcurrencyStamp = "e514956b-e424-467a-a117-a4160afa0b98",
                             Description = "Client role",
                             Name = "client",
                             NormalizedName = "client"
@@ -747,6 +768,9 @@ namespace eShopSolution.Data.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .HasColumnType("nvarchar(max)");
@@ -810,14 +834,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "744a48af-36f0-4bcf-aa05-10c2bb44c7f0",
+                            ConcurrencyStamp = "e2ee2004-f7db-4fb2-8c3a-4bfb2ab3cd43",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJOdS5yX7OKKdh/SKLQHamiV2WWG/T+vHvwF7udYVnXhWabMI8ZuSOP7U1UXvLMBzg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEB0OvivSxWHcIqWC8qLJOHL0jXjBpC48bQZ/Fq60OMrkBxye/1JEokkz2UN2gZh2Ig==",
                             PhoneNumberConfirmed = false,
                             RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",
@@ -887,19 +911,24 @@ namespace eShopSolution.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("eShopSolution.Data.Entities.Like", b =>
+                {
+                    b.HasOne("eShopSolution.Data.Entities.UserApp", "UserApp")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("eShopSolution.Data.Entities.Order", b =>
                 {
                     b.HasOne("eShopSolution.Data.Entities.Promotion", "Promotion")
                         .WithOne("Order")
-                        .HasForeignKey("eShopSolution.Data.Entities.Order", "PromotionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("eShopSolution.Data.Entities.Order", "PromotionId");
 
                     b.HasOne("eShopSolution.Data.Entities.UserApp", "UserApp")
                         .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("eShopSolution.Data.Entities.OrderDetail", b =>

@@ -20,15 +20,17 @@
     <link rel="stylesheet" href="/assets/plugins/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css" />
     <link rel="stylesheet" href="/assets/plugins/charts-c3/plugin.css" />
-
     <link rel="stylesheet" href="/assets/plugins/morrisjs/morris.min.css" />
+    <link href="~/lib/jquery-toast-plugin/jquery.toast.min.css" rel="stylesheet" />
     <!-- Custom Css -->
     <link rel="stylesheet" href="/assets/css/style.min.css">
     <style>
         .language-select {
             padding: 4px 0px;
         }
-
+        .radio-inline{
+            padding:0px 18px;
+        }
     </style>
     @RenderSection("Header", required: false)
 </head>
@@ -55,6 +57,9 @@
 
                         <section class="content">
                             @RenderBody()
+                            <div id="notify-sound">
+
+                            </div>
                         </section>
 
                         <!-- Jquery Core Js -->
@@ -70,8 +75,10 @@
                         <!--Jquery-validate-->
                         @*<script src="~/lib/jquery/jquery.js"></script>*@
                         <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+                        <script src="~/lib/jquery-toast-plugin/jquery.toast.js"></script>
                         <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
                         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+                        <script src="https://js.pusher.com/4.2/pusher.min.js"></script>
                         @* Swal delete*@
                         <script>
                             $(document).ready(function () {
@@ -125,6 +132,48 @@
                             }
 
                         }
+                    <script type="text/javascript">
+                        const pusher = new Pusher('dcba60eb11fd18857d17', {
+                            cluster: 'ap1'
+                        });
+                        const channel = pusher.subscribe('feed');
+                        channel.bind('new_feed', function (data) {
+                            $("#notify-sound").append('<audio src="assets/sound/pristine.mp3" autoplay></audio>');
+                            $.toast({
+                                text: "<a href='/order/detail/" + data.Id + "'>#" + data.Id + "</a>",
+                                heading: 'Have a new order',
+                                icon: 'info',
+                                showHideTransition: 'fade',
+                                allowToastClose: true,
+                                hideAfter: 8000,
+                                stack: 5,
+                                position: 'top-right',
+                                textAlign: 'left',
+                                loader: true,
+                                loaderBg: '#9EC600',
+                                beforeShow: function () { },
+                                afterShown: function () { },
+                                beforeHide: function () { },
+                                afterHidden: function () { }
+                            })
+                            $('.order-table').prepend(`<tr>
+                                                        <td>${data.Id}</td>
+                                                        <td>${data.Name}</td>
+                                                        <td>${data.Phone}</td>
+                                                        <td>${data.Address}</td>
+                                                        <td><span class="col-blue">${data.Status}</span></td>
+                                                        <td>${data.Total}</td>
+                                                        <td>${data.Create_At}</td>
+                                                        <td width="15%" class="footable-last-visible" style="display: table-cell;">
+                                                                        <a class="btn btn-primary btn-sm" href="order/Detail/${data.Id}">Detail </a>
+                                                                        <a class="delete" href="order/delete/${data.Id}">
+                                                                                <button class="btn btn-danger btn-sm">
+                                                                                    Delete
+                                                                                </button>
+                                                                            </a>
+                                                                        </td>`);
+                            });
+                    </script>
                         @RenderSection("Scripts", required: false)
 </body>
 

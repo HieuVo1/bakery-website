@@ -152,20 +152,9 @@ namespace eShopSolution.WebApp.Controllers
             var userPrincipal = this.ValidateToken(result.ResultObject);
             var UserId = new Guid(userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var cartResult = await _cartService.GetById(UserId);
-            if (cartResult.IsSuccessed == false)
-            {
-                var cart = new CartCreateRequest
-                {
-                    UserId = UserId,
-                    Price = 0,
-                };
-                var cartId = await _cartService.Create(cart);
-                CookieHelpers.SetObjectAsJson(Response.Cookies, "CartId", cartId, 10);
-            }
-            else
+            if (cartResult.IsSuccessed == true)
             {
                 var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-                CookieHelpers.SetObjectAsJson(Response.Cookies, "CartId", cartResult.ResultObject.Id, 10);
                 CookieHelpers.RemoveCookie(Response.Cookies, CartSessionKey);
                 CookieHelpers.SetObjectAsJson(HttpContext.Response.Cookies, CartSessionKey, cartResult.ResultObject.CartItems, null);
             }
@@ -206,17 +195,10 @@ namespace eShopSolution.WebApp.Controllers
                     ViewBag.ErrorServerSide = true;
                     return View();
                 }
-                var verifycatioCode = VerificationCode.GetCode();
-                TempData["verifycatioCode"] = verifycatioCode;
-                var message = new EmailMessage
+                var sent = await SendMailAsync(request.Email);
+                if (sent == true)
                 {
-                    To=request.Email,
-                    Subject = "Verifition Code",
-                    Content = verifycatioCode.ToString()
-                };
-                var sent = await _emailService.SendEmail(message);
-                if (sent.IsSuccessed == true)
-                {
+                    ViewBag.Email = request.Email;
                     ViewBag.UserId = result.ResultObject.UserId;
                     ViewBag.Token = result.ResultObject.Token;
                     return View("ConfirmEmail");
@@ -229,17 +211,31 @@ namespace eShopSolution.WebApp.Controllers
                 return View();
             }
         }
+        public async Task<bool> SendMailAsync(string email)
+        {
+            var verifycatioCode = VerificationCode.GetCode();
+            HttpContext.Session.SetObjectAsJson("verifycatioCode", verifycatioCode);
+            var message = new EmailMessage
+            {
+                To = email,
+                Subject = "Verifition Code",
+                Content = verifycatioCode.ToString()
+            };
+            var result = await _emailService.SendEmail(message);
+            return result.IsSuccessed;
+        }
         [HttpPost]
         public async Task<IActionResult> ConfirmEmail(VerificationViewModel verificationViewModel)
         {
-            if (verificationViewModel.VerificationCode != TempData["verifycatioCode"].ToString())
+            var veritifiCode = HttpContext.Session.GetObjectFromJson<string>("verifycatioCode");
+            if (verificationViewModel.VerificationCode != veritifiCode)
             {
                 ModelState.AddModelError(string.Empty, "Verificate code is invalid ");
-                return View();
+                return RedirectToAction("register", "login");
             }
             if (verificationViewModel.UserId == null && verificationViewModel.Token == null)
             {
-                return RedirectToAction("index", "register");
+                return RedirectToAction("register", "login");
             }
             var result = await _userAPIClient.ConfirmEmail(verificationViewModel);
             if (result.IsSuccessed)

@@ -1,0 +1,141 @@
+﻿@model UpdateProfile
+@using System.Globalization;
+@{
+    ViewData["Header"] = "header--2";
+    ViewData["Image-logo"] = "/assets/images/logo-2.png";
+    DateTime dob = ViewBag.UserInfo.Dob;
+    string date = dob.ToString("s", CultureInfo.CreateSpecificCulture("de-DE")).Substring(0,10);
+    string ImagePath = (ViewBag.UserInfo.ImagePath!=null)? ViewBag.UserInfo.ImagePath : "/assets/images/no-profile-picture-icon-13.png";
+}
+
+@section Header{
+    <link href="~/assets/css/card.css" rel="stylesheet" />
+}
+<div class="ps-section--hero" style="height: 175px">
+</div>
+<div class="ps-section ps-section--order-form pt-80 pb-80">
+    <div class="container">
+        <div class="ps-section__header text-center mb-50">
+            <div class="ps-section__top">Making People Happy</div>
+            <h3 class="ps-section__title ps-section__title--full">Profile</h3>
+        </div>
+        <div class="ps-product--detail">
+            <div class="ps-product__info">
+                <ul class="tab-list" role="tablist">
+                    <li class="active"><a href="#tab_01" aria-controls="tab_01" role="tab" data-toggle="tab">Profile</a></li>
+                    <li><a href="#tab_02" aria-controls="tab_02" role="tab" data-toggle="tab">Order</a></li>
+                    
+                </ul>
+            </div>
+            <div class="tab-content mb-60">
+                <div class="tab-pane active" role="tabpanel" id="tab_01">
+                    <div class="ps-section__content">
+                        <form asp-action="updateInfo" asp-controller="user" method="post" id="registerForm" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                                    <div class="form-group">
+                                        <div class="avatar-upload">
+                                            <div class="avatar-edit">
+                                                <input type='file' id="imageUpload" asp-for="ThumbnailImage" accept=".png, .jpg, .jpeg" />
+                                                <label for="imageUpload"></label>
+                                            </div>
+                                            <div class="avatar-preview">
+                                                <div id="imagePreview" style="background-image: url(@ImagePath);">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>User Name</label>
+                                        <input class="form-control" disabled value="@ViewBag.UserInfo.UserName" type="text" placeholder="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Your Email</label>
+                                        <input class="form-control" disabled value="@ViewBag.UserInfo.Email" type="text" placeholder="">
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                                    <div class="form-group">
+                                        <label>Your Name </label>
+                                        <input class="form-control" asp-for="FullName" value="@ViewBag.UserInfo.FullName" type="text" placeholder="">
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                   
+                                    <div class="form-group">
+                                        <label>Number Phone</label>
+                                        <input class="form-control" asp-for="Phone" value="@ViewBag.UserInfo.Phone" type="text" placeholder="">
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Address </label>
+                                        <input class="form-control" type="text" value="@ViewBag.UserInfo.Address" asp-for="Address" placeholder="">
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group form-group--icon">
+                                        <label>Date Of Birth</label>
+                                        <input class="form-control " asp-for="Dob" value="@date" id="dateofbirth" type="date" placeholder="">
+                                        <span asp-validation-for="Dob" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                @{
+                                    if (ViewBag.ErrorServerSide == true)
+                                    {
+                                        <div asp-validation-summary="All" class="text-danger"></div>
+                                    }
+                                }
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 ">
+                                    <div class="form-group text-center">
+                                        <button type="submit" class="ps-btn">Save Change</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="tab-pane" role="tabpanel" id="tab_02">
+                    <div class="ps-cart-listing " style="margin-top:50px">
+                        <p class="hidden-lg"><i>Slide right to view</i></p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>OrderID</th>
+                                        <th>Name</th>
+                                        <th>Adress</th>
+                                        <th>Status</th>
+                                        <th>Total</th>
+                                        <th>Discount</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ViewBag.Orders != null)
+                                    {
+                                        @foreach (var item in ViewBag.Orders)
+                                        {
+                                            <tr>
+                                                <td>@item.Id</td>
+                                                <td>@item.ShipName</td>
+                                                <td>@item.ShipAddress</td>
+                                                <td>@item.Status</td>
+                                                <td>@item.Total</td>
+                                                <td>@item.PromotionDiscount</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<partial name="../Shared/_Footer.cshtml">
+    @section Scripts{
+        <script src="~/assets/js/card.js"></script>
+    }
+

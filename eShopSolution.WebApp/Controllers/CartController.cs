@@ -31,6 +31,7 @@ namespace eShopSolution.WebApp.Controllers
             List<CartItemViewModel> cart = new List<CartItemViewModel>();
             cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
             ViewBag.cart = cart;
+            ViewBag.count = cart.Count();
             ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
             if (section != null)
             {
@@ -113,7 +114,7 @@ namespace eShopSolution.WebApp.Controllers
                 }
                 else
                 {
-                    cart.Add(new CartItemViewModel { Product = product, Quantity = 1 });
+                    cart.Add(new CartItemViewModel { Product = product, Quantity = quantity });
                 }
                 CookieHelpers.SetObjectAsJson(HttpContext.Response.Cookies, CartSessionKey, cart,null);
             }

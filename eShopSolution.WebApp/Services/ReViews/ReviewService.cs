@@ -1,5 +1,6 @@
 ﻿using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Review;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,21 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShopSolution.WebApp.Services.ReViews
+namespace eShopSolution.WebApp.Services.Reviews
 {
     public class ReviewService : IReviewService
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
-        public ReviewService(IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration _configuration;
+        public ReviewService(IHttpClientFactory httpClientFactory,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Create(ReviewCreateRequest request)
         {

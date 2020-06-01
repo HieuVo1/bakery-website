@@ -82,5 +82,13 @@ namespace eShopSolution.BackEndAPI.Controllers
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
+        [HttpDelete("DeleteAll")]
+        public async Task<IActionResult> DeleteItems([FromQuery]int cartId)
+        {
+            var result = await _cartService.DeleteAll(cartId);
+
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
+        }
     }
 }

@@ -7,9 +7,6 @@
     var maxP = ViewData["maxPrice"];
     ViewData["Header"] = "header--2";
     ViewData["Image-logo"] = "/assets/images/logo-2.png";
-    var url = @Context.Request.GetDisplayUrl();
-    string[] arrListUrl = url.Split('/');
-    string[] searchValue = url.Split('?');
 
     
     var urlTemplate ="";
@@ -164,22 +161,22 @@
                         <div class="ps-widget__content">
                             <ul class="ps-list--circle">
 
-                                @*<li class='@(arrListUrl[4].IndexOf("index")!=-1?"current":"")'><a href="/product/index"><span class="circle"></span>All bakery@(arrListUrl[4].IndexOf("index")!=-1? $"({@total})" : "" )</a></li>
+                                <li class='@(ViewBag.CategoryUrl=="index"?"current":"")'><a href="/product/index"><span class="circle"></span>All bakery</a></li>
                                     @{
                                         if (categories != null)
                                         {
                                             foreach (var category in categories)
                                             {
 
-                                                <li class='@(arrListUrl[4]==@category.CategoryUrl?"current":"")'>
+                                                <li class='@(ViewBag.CategoryUrl==@category.CategoryUrl?"current":"")'>
                                                     <a href="/product/@category.CategoryUrl">
-                                                        <span class="circle"></span>@category.Name@(arrListUrl[4]== @category.CategoryUrl ? $"({@total})" :"" )
+                                                        <span class="circle"></span>@category.Name@(ViewBag.CategoryUrl == @category.CategoryUrl ? $"({products.Count()})" :"" )
                                                     </a>
                                                 </li>
                                             }
                                         }
 
-                                    }*@
+                                    }
                             </ul>
                         </div>
                     </aside>
@@ -206,48 +203,25 @@
                             <h3 class="ps-widget__title">Best seller</h3>
                         </div>
                         <div class="ps-widget__content">
-                            <div class="ps-product--sidebar">
-                                <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-12.jpg" alt=""></div>
-                                <div class="ps-product__content">
-                                    <h4 class="ps-product__title"><a href="product-detail.html">Amazin’ Glazin’</a></h4>
-                                    <p class="ps-product__price">
-                                        <del>£25.00</del>£15.00
-                                    </p><a class="ps-btn ps-btn--xs" href="product-detail.html">Purchase</a>
-                                </div>
-                            </div>
-                            <div class="ps-product--sidebar">
-                                <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-3.jpg" alt=""></div>
-                                <div class="ps-product__content">
-                                    <h4 class="ps-product__title"><a href="product-detail.html">The Crusty Croissant</a></h4>
-                                    <p class="ps-product__price">
-                                        <del>£25.00</del>£15.00
-                                    </p><a class="ps-btn ps-btn--xs" href="product-detail.html">Purchase</a>
-                                </div>
-                            </div>
-                            <div class="ps-product--sidebar">
-                                <div class="ps-product__thumbnail"><a class="ps-product__overlay" href="product-detail.html"></a><img src="/assets/images/cake/img-cake-7.jpg" alt=""></div>
-                                <div class="ps-product__content">
-                                    <h4 class="ps-product__title"><a href="product-detail.html">The Rolling Pin</a></h4>
-                                    <p class="ps-product__price">
-                                        <del>£25.00</del>£15.00
-                                    </p><a class="ps-btn ps-btn--xs" href="product-detail.html">Purchase</a>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-                    <aside class="ps-widget ps-widget--sidebar ps-widget--tags">
-                        <div class="ps-widget__header">
-                            <h3 class="ps-widget__title">TAGS</h3>
-                        </div>
-                        <div class="ps-widget__content">
-                            <ul class="ps-tags">
-                                <li><a href="#">Cupcake</a></li>
-                                <li><a href="#">vanila</a></li>
-                                <li><a href="#">sugar flower</a></li>
-                                <li><a href="#">vanila</a></li>
-                                <li><a href="#">coconut</a></li>
-                                <li><a href="#">vanila</a></li>
-                            </ul>
+                            @{
+                                if (ViewBag.top != null)
+                                {
+                                    foreach (var product in ViewBag.top)
+                                    {
+                                        <div class="ps-product--sidebar">
+                                            <div class="ps-product__thumbnail"><a class="ps-product__overlay" asp-action="detail" asp-controller="product" asp-route-productId="@product.Id"></a><img src="@product.ImagePath" alt=""></div>
+                                            <div class="ps-product__content">
+                                                <h4 class="ps-product__title"><a asp-action="detail" asp-controller="product" asp-route-productId="@product.Id">@product.Name</a></h4>
+                                                <p class="ps-product__price">
+                                                    @product.Price VNĐ
+                                                </p><a class="ps-btn ps-btn--xs" asp-action="detail" asp-controller="product" asp-route-productId="@product.Id">Purchase</a>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                            }
+                     
                         </div>
                     </aside>
                 </div>
@@ -300,7 +274,7 @@
                                 function (data, status) {
                                     $.get("https://localhost:5002/cart/getcart",
                                         function (data, status) {
-                                            $(".ps-cart").before(data).detach();
+                                            $(".ps-cart").replaceWith(data);
                                         });
                                 });
                            

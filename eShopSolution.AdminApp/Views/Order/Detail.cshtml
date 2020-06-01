@@ -1,0 +1,131 @@
+﻿
+@{
+    var details = (List<OrderDetailViewModel>)ViewData["orderDetails"];
+    var order = (OrderViewModel)ViewData["order"];
+    ViewData["Title"] = "Detail";
+}
+
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Invoice</h2>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/"><i class="zmdi zmdi-home"></i> Aero</a></li>
+                        <li class="breadcrumb-item active">Pages</li>
+                        <li class="breadcrumb-item active">Invoice</li>
+                    </ul>
+                    <button class="btn btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">
+                    <button class="btn btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <!-- The Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Status</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form asp-controller="Order" asp-action="UpdateStatus" asp-route-orderId="@order.Id" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="radio-inline"><input type="radio" value="0" name="status" checked> <span class="col-blue">In Progress</span></label>
+                                <label class="radio-inline"><input type="radio" value="1" name="status"> <span class="col-amber"> Shipping</span></label>
+                                <label class="radio-inline"><input type="radio" value="2" name="status">  <span class="col-green">Delivered</span></label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row clearfix">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="body">
+                            <h5><strong>Order ID: </strong> #@order.Id</h5>
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6">
+                                    <p>
+                                        @order.ShipAddress<br>
+                                    </p>
+                                    <p>Phone: @order.ShipPhone</p>
+                                </div>
+                                <div class="col-md-6 col-sm-6 text-right">
+                                    <p class="mb-0"><strong>Order Date: </strong> @order.Created_At.ToShortDateString()</p>
+                                    <p class="mb-0"><strong>Order Status: </strong> <span class="badge badge-success">@order.Status</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <table class="table table-hover c_table theme-color">
+                                        <thead>
+                                            <tr>
+                                                <th>Id</th>
+                                                <th width="60px">Item</th>
+                                                <th>Product</th>
+                                                <th>Quantity</th>
+                                                <th class="hidden-sm-down">Unit Cost</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var i = 1;
+                                                @foreach (var item in details)
+                                                {
+
+                                                    <tr>
+                                                        <td>@i</td>
+                                                        <td><img src="@item.ImagePath" width="40" alt="Product img"></td>
+                                                        <td>@item.ProductName</td>
+                                                        <td>@item.Quantity</td>
+                                                        <td class="hidden-sm-down">@item.Price</td>
+                                                        <td>@(item.Price*item.Quantity)</td>
+                                                    </tr>
+                                                    i++;
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Note</h5>
+                                    <p>@order.OrderNotes</p>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <ul class="list-unstyled">
+                                        <li><strong>Sub-Total:</strong> @(order.Total+ @order.PromotionDiscount)</li>
+                                        <li class="text-danger"><strong>Discout:-</strong> @order.PromotionDiscount</li>
+
+                                    </ul>
+                                    <h3 class="mb-0 text-success">@order.Total</h3>
+                                    <button asp-action="index" asp-controller="order" class="btn btn-primary" data-toggle="modal"
+                                    data-target="#exampleModal">Update Status </button>
+                                    <a asp-action="index" asp-controller="order" class="btn btn-primary">Come back </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    

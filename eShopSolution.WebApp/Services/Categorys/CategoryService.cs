@@ -3,6 +3,7 @@ using eShopSolution.Data.Enums;
 using eShopSolution.ViewModel.Catalog.Categories;
 using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,22 +19,24 @@ namespace eShopSolution.WebApp.Services.Categorys
     public class CategoryService : ICategoryService
     {
         private readonly IHttpClientFactory _httpClientFactor;
+        private readonly IConfiguration _configuration;
         private HttpClient _client;
         private IHttpContextAccessor _accessor;
-        public CategoryService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public CategoryService(IHttpClientFactory httpClientFactory, 
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
             _accessor = httpContextAccessor;
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
       
         public async Task<ApiResult<List<CategoryViewModel>>> GetAll(string languageId, int pageIndex, int pageSize)
         {
-            var x = _accessor.HttpContext.User;
-            var client = _httpClientFactor.CreateClient();
-            client.BaseAddress = new Uri("https://localhost:5001");
-            var response = await client.GetAsync($"/api/categories/{languageId}?PageIndex={pageIndex}&pageSize={pageSize}");
+            var response = await _client.GetAsync($"/api/categories/{languageId}?PageIndex={pageIndex}&pageSize={pageSize}");
             using (HttpContent content = response.Content)
             {
                 //convert data content to string using await

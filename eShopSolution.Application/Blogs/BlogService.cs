@@ -73,9 +73,14 @@ namespace eShopSolution.Application.Blogs
                         select new { p, us, c };
                         
             //filter
-            if (!String.IsNullOrEmpty(request.Keywork))
+            if (!String.IsNullOrEmpty(request.Keyword))
             {
-                query = query.Where(x => x.p.Title.Contains(request.Keywork));
+                query = query.Where(x => x.p.Title.Contains(request.Keyword));
+            }
+            //filter
+            if (!String.IsNullOrEmpty(request.CategoryUrl))
+            {
+                query = query.Where(x => x.c.CategoryUrl.Equals(request.CategoryUrl));
             }
             int totalRow = await query.CountAsync();
             //Pagging

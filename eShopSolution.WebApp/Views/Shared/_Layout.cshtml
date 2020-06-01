@@ -45,9 +45,9 @@
         <div class="container">
             <header>
                 <p>Enter your keywords:</p>
-                <form method="post" action="http://nouthemes.net/product-grid.html">
-                    <input class="form-control" type="text" placeholder="">
-                    <button><i class="ps-icon--search"></i></button>
+                <form method="get" action="/product/index" id="findByKey">
+                    <input class="form-control" type="search" name="Name" id="Keyword" placeholder="Type here bakery name...">
+                    <button type="submit"><i class="ps-icon--search"></i></button>
                 </form>
             </header>
             <div class="ps-searchbox__result">
@@ -121,7 +121,6 @@
     <div class="page-wrap">
         @RenderBody()
     </div>
-    <div class="text"><p>Hello</p><button class="replace">replace</button></div>
     
     <!-- JS Library-->
     <script type="text/javascript" src="/assets/plugins/jquery/dist/jquery.min.js"></script>
@@ -137,7 +136,7 @@
     <script type="text/javascript" src="/assets/plugins/moment.js"></script>
     <script type="text/javascript" src="/assets/plugins/bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="/assets/plugins/slick/slick/slick.min.js"></script>
-    <script type="text/javascript" src="/assets/plugins/gmap3.min.js"></script>
+    @*<script type="text/javascript" src="/assets/plugins/gmap3.min.js"></script>*@
     <script type="text/javascript" src="/assets/plugins/lightGallery-master/dist/js/lightgallery-all.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB458d7lg9ttCaCfXKPEf-LBAebMMw5RaU&amp;region=GB"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
@@ -174,18 +173,8 @@
         </script>
     }
     <script>
-        var p,q;
-         $(".replace").click(function () {
-                alert(123);
-             p = $('.text').children().detach();
-             q = $('.text').children().remove();
-             console.log(p.replaceWith('<p>Hello</p><button class="replace">replace</button>'));
-             console.log(q);
-             $('.text').append(p);
-            });
         $(document).ready(function () {
-           
-            $(".ps-cart-item__close").click(function (e) {
+            $('body').on('click', '.ps-cart-item__close', function (e) {
                 e.preventDefault();
                 var productId = $(this).attr("data-id");
                 var quantity = parseInt($(this).next().next().children().eq(1).children().eq(0).children().html());

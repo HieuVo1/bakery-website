@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace eShopSolution.WebApp.Services.ReViews
+namespace eShopSolution.WebApp.Services.Reviews
 {
     public interface IReviewService
     {

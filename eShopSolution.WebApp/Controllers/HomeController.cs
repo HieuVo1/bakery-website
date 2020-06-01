@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using eShopSolution.WebApp.Helpers;
+using eShopSolution.WebApp.Services.products;
 
 namespace eShopSolution.WebApp.Controllers
 {
@@ -19,24 +20,29 @@ namespace eShopSolution.WebApp.Controllers
     {
         private readonly ILanguageService _languageService;
         private readonly ICategoryService _categoryService;
+        private readonly IProductService _productService;
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger,
             ILanguageService languageService, 
             ICategoryService categoryService,
+            IProductService productService,
             IConfiguration configuration) : base(configuration)
         {
             _languageService = languageService;
             _categoryService = categoryService;
+            _productService = productService;
             _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
+            var products = await _productService.GetTopSelling(languageDefauleId, 4);
             var categories = await _categoryService.GetAll("vn",1,6);
             var languages = await _languageService.GetAll();
             ViewData["languages"] = languages.ResultObject;
             ViewData["categories"] = categories.ResultObject;
+            ViewData["products"] = products.ResultObject.Items;
             if (section != null)
             {
                 ViewBag.IsLogged = true;

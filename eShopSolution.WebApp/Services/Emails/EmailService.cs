@@ -1,5 +1,6 @@
 ﻿using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Email;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,11 +15,15 @@ namespace eShopSolution.WebApp.Services.Emails
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
-        public EmailService(IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration _configuration;
+        public EmailService(IHttpClientFactory httpClientFactory,
+             IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> SendEmail(EmailMessage message)
         {

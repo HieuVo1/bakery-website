@@ -10,8 +10,10 @@ using eShopSolution.WebApp.Services.Contacts;
 using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.ImageProducts;
 using eShopSolution.WebApp.Services.Languages;
+using eShopSolution.WebApp.Services.Location;
+using eShopSolution.WebApp.Services.Orders;
 using eShopSolution.WebApp.Services.products;
-using eShopSolution.WebApp.Services.ReViews;
+using eShopSolution.WebApp.Services.Reviews;
 using eShopSolution.WebApp.Services.Users;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
@@ -105,6 +107,8 @@ namespace eShopSolution.WebApp
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IImageProductService, ImageProductService>();
             services.AddTransient<IReviewService, ReviewService>();
+            services.AddTransient<ILocationService, LocationService>();
+            services.AddTransient<IOrderService, OrderService>();
 
             services.AddTransient<SignInManager<UserApp>, SignInManager<UserApp>>();
             IMvcBuilder builder = services.AddRazorPages();
@@ -150,9 +154,18 @@ namespace eShopSolution.WebApp
                 endpoints.MapControllerRoute(name: "detaileBlog",
                 pattern: "blog/detail/{blogId}/",
                 defaults: new { controller = "blog", action = "detail" });
-                endpoints.MapControllerRoute(name: "detaileCmt",
-                pattern: "blog/deleteComment/{blogId}/{commentId}",
-                defaults: new { controller = "blog", action = "deleteComment" });
+                endpoints.MapControllerRoute(name: "detaileBlog",
+                pattern: "blog/detail/{blogId}/",
+                defaults: new { controller = "blog", action = "detail" });
+
+                endpoints.MapControllerRoute(name: "blog",
+                pattern: "blog/{categoryUrl?}",
+                defaults: new { controller = "blog", action = "index" });
+
+                endpoints.MapControllerRoute(name: "sendMail",
+               pattern: "login/sendmail/{email}",
+               defaults: new { controller = "login", action = "sendmail" });
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -1,6 +1,7 @@
 ﻿using eShopSolution.ViewModel.Blog;
 using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,14 +16,19 @@ namespace eShopSolution.WebApp.Services.Blogs
     public class BlogService : IBlogService
     {
         private readonly IHttpClientFactory _httpClientFactor;
+        private readonly IConfiguration _configuration;
         private HttpClient _client;
         private IHttpContextAccessor _httpContextAccessor;
-        public BlogService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public BlogService(IHttpClientFactory httpClientFactory, 
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Create(BlogCreateRequest request)
         {
@@ -63,9 +69,9 @@ namespace eShopSolution.WebApp.Services.Blogs
             return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0,string categoryUrl=null, string keyword = null)
         {
-            var response = await _client.GetAsync($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}");
+            var response = await _client.GetAsync($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}&categoryUrl={categoryUrl}&keyword={keyword}");
             using (HttpContent content = response.Content)
             {
                 //convert data content to string using await

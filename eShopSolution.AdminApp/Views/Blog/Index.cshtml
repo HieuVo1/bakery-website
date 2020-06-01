@@ -50,7 +50,7 @@
                                     </div>
                                 </div>
                                 <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
-                                <div>@blogs[i].Content</div>
+                                @Html.Raw(blogs[i].Content)
                                 <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
                                 <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
                             </div>
@@ -74,10 +74,10 @@
                                         <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
                                         <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
                                     </div>
-                              
+
                                 </div>
                                 <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
-                                <div>@blogs[i].Content</div>      
+                                @Html.Raw(blogs[i].Content)
                                 <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
                                 <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
                             </div>

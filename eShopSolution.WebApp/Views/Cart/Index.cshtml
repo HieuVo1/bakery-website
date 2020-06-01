@@ -17,22 +17,23 @@
 </div>
 <div class="ps-section--cart pt-100 pb-100">
     <div class="container">
-        <div class="ps-cart-listing">
-            <p class="hidden-lg"><i>Slide right to view</i></p>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>All Products</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (ViewBag.cart != null)
-                        {
+        @if (ViewBag.cart != null && ViewBag.count > 0)
+        {
+            <div class="ps-cart-listing">
+                <p class="hidden-lg"><i>Slide right to view</i></p>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>All Products</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
                             @foreach (var item in ViewBag.cart)
                             {
                                 <tr>
@@ -43,42 +44,66 @@
                                     <td>
                                         <div class="form-group--number" data-id="@item.Product.Id">
                                             <button class="minus"><span>-</span></button>
-                                            <input class="form-control quantity"  type="number" min="0" value="@item.Quantity">
+                                            <input class="form-control quantity" type="number" min="0" value="@item.Quantity">
                                             <button class="plus"><span>+</span></button>
                                         </div>
                                     </td>
-                                    <td><span class="total-row" data-price="@item.Product.Price" >@(item.Product.Price*item.Quantity)</span></td>
+                                    <td><span class="total-row" data-price="@item.Product.Price">@(item.Product.Price*item.Quantity)</span></td>
                                     <td>
                                         <div class="ps-cart-listing__remove" data-id="@item.Product.Id"></div>
                                     </td>
                                 </tr>
                             }
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="ps-cart__process">
-                <div class="row">
-                    <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12 ">
-                        <div class="form-group form-group--icon ps-cart__promotion">
-                            <div class="icon-wrap">
-                                <i class="fa fa-angle-right"></i>
-                                <input class="form-control" type="text" placeholder="promotion code">
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ps-cart__process">
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12 ">
+                            <div class="form-group form-group--icon ps-cart__promotion">
+                                <div class="icon-wrap">
+                                    <i class="fa fa-angle-right"></i>
+                                    <input class="form-control promotionCode" type="text" placeholder="promotion code">
+                                </div>
+                            </div>
+                            <div class="form-groupform-order">
+                                <button class="ps-cart__shopping">Continue Shopping</button>
                             </div>
                         </div>
-                        <div class="form-groupform-order">
-                            <button class="ps-cart__shopping">Continue Shopping</button>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
-                        <div class="ps-cart__total">
-                            <p>Total Price: <span data-price="@ViewBag.total" class="ps-cart__totalPrice">@ViewBag.total</span></p>
-                            <button class="ps-btn ps-btn--sm ps-btn--fullwidth">Process to checkout</button>
+                        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
+                            <div class="ps-cart__total">
+                                <p>Total Price: <span data-price="@ViewBag.total" class="ps-cart__totalPrice">@ViewBag.total</span></p>
+                                <form asp-controller="checkout" asp-action="index" method="post">
+                                    <input type="hidden" name="PromotionId" class="promotionId" />
+                                    <input type="hidden" name="PromotionPrice" class="promotionPrice" />
+                                    <button type="submit" class="ps-btn ps-btn--sm ps-btn--fullwidth">Process to checkout</button>
+                                </form>
+
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="ps-section__content">
+                <div class="ps-contact">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3"></div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+                            <div class="ps-contact__form text-center">
+                                <h4>Your cart is empty</h4>
+                                <a href="/product/index" class="ps-btn ps-btn--sm ps-contact__submit">Continue to buy</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+
     </div>
 </div>
 <partial name="../Shared/_Partner.cshtml">
@@ -95,7 +120,7 @@
                             var price = parseInt($(this).parent().parent().next().children().attr("data-price"));
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
                             $(this).parent().parent().next().children().html(price * newValue);
-                            
+
                             $('.ps-cart__totalPrice').html(total + price);
                             $(".ps-cart__totalPrice").attr("data-price", total + price);
                             $(this).prev().val(newValue);
@@ -184,6 +209,34 @@
                                 function (data, status) {
                                     updateCart();
                                 });
+                        });
+                        $(".promotionCode").on("input", function () {
+                            var code = $(this).val();
+                            var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
+                            $.ajax({
+                                type: "get",
+                                url: "https://localhost:5001/api/promotions/getcode/" + code,
+                                dataType: "json",
+                                success: function (res) {
+                                    if (res.isSuccessed == true) {
+                                        console.log(res)
+                                        $('.ps-cart__totalPrice').html(total - parseInt(res.resultObject.discountAmount));
+                                        $('.promotionId').val(res.resultObject.id);
+                                        $('.promotionPrice').val(res.resultObject.discountAmount);
+                                    }
+                                    else {
+                                        $('.ps-cart__totalPrice').html(total);
+                                        $('.promotionId').val();
+                                        $('.promotionPrice').val();
+                                    }
+                                },
+                                error: function () {
+                                    $('.ps-cart__totalPrice').html(total);
+                                    $('.promotionId').val();
+                                    $('.promotionPrice').val();
+                                }
+                                
+                            });
                         });
                     });
                 </script>

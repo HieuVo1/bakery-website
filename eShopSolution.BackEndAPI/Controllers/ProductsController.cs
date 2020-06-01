@@ -32,6 +32,14 @@ namespace eShopSolution.BackEndAPI.Controllers
             var products = await _ProductService.GetAllPagging(request);
             return Ok(products);
         }
+        [HttpGet("Top/{LanguageId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTopSelling(string LanguageId, [FromQuery] GetProductPaggingRequest request)
+        {
+            request.LanguageId = LanguageId;
+            var products = await _ProductService.GetTopSelling(request);
+            return Ok(products);
+        }
         //https://locahost:port/products/getbyUrl/languageId/?PageIndex=1&pageSize=1&categoryUrl=1
         [HttpGet("getByUrl/{LanguageId}")]
         [AllowAnonymous]

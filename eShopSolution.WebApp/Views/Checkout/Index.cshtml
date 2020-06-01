@@ -1,0 +1,224 @@
+﻿@model OrderCreateRequest
+@{
+    var cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(@Context.Request.Cookies, "CartSessionKey");
+    var total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
+    var NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
+    ViewData["Header"] = "header--2";
+    ViewData["Image-logo"] = "/assets/images/logo-2.png";
+    var promotionPrice = 0;
+    if (ViewBag.PromotionId != null)
+    {
+        promotionPrice = ViewBag.PromotionPrice;
+    }
+}
+@section Header{
+
+    <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="~/lib/select2-bootstrap-theme/select2-bootstrap.css" rel="stylesheet" />
+}
+<div class="ps-section--hero">
+    <img src="/assets/images/hero/01.jpg" alt="">
+    <div class="ps-section__content text-center">
+        <h3 class="ps-section__title">OUR BAKERY</h3>
+        <div class="ps-breadcrumb">
+            <ol class="breadcrumb">
+                <li><a href="index.html">Home</a></li>
+                <li class="active">About Us</li>
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="ps-section--checkout pt-80 pb-80">
+    <div class="container">
+        <form class="ps-checkout" asp-action="order" asp-controller="checkout" method="post">
+            <div class="row">
+                @if (ViewBag.UserInfo != null)
+                {
+                    <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 ">
+                        <div class="ps-checkout__billing">
+                            <h3>Billing Detail</h3>
+                            <div class="row">
+                                <input type="hidden" asp-for="PromotionId" value="@ViewBag.PromotionId" />
+                                <input type="hidden" asp-for="Total" value="@(total-promotionPrice)" />
+                                <input type="hidden" asp-for="UserId" value="@ViewBag.UserId" />
+                                <div class="form-group mr-15 ml-15">
+                                    <label>Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Full Name" asp-for="ShipName" class="form-control" value="@ViewBag.UserInfo.FullName" required="">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Phone Number <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Phone Number" asp-for="ShipPhone" class="form-control" value="@ViewBag.UserInfo.Phone" required="">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" placeholder="Email Address" asp-for="ShipEmail" class="form-control" value="@ViewBag.UserInfo.Email" required="">
+                                </div>
+                                <div class="form-group  mr-15 ml-15">
+                                    <label>Address <span class="text-danger">*</span></label>
+                                    <select class="js-example-basic-single form-control" id="shipAddress" asp-for="ShipAddress">
+                                        @*<option>Select Address</option>*@
+                                        @if (@ViewBag.UserInfo != null)
+                                        {
+                                            <option selected='selected' value="@ViewBag.UserInfo.Address">@ViewBag.UserInfo.Address</option>
+                                        }
+
+                                    </select>
+                                </div>
+                                <div class="form-group  mr-15 ml-15">
+                                    <label>Street <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Street" asp-for="Street" class="form-control" value="" required="">
+                                </div>
+                                <div class="form-group col-xl-12 mb-0 mr-15 ml-15">
+                                    <label>Order Notes</label>
+                                    <textarea asp-for="OrderNotes" rows="5" class="form-control" placeholder="Order Notes (Optional)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 ">
+                        <div class="ps-checkout__billing">
+                            <h3>Billing Detail</h3>
+                            <div class="row">
+                                <input type="hidden" asp-for="PromotionId" value="@ViewBag.PromotionId" />
+                                <input type="hidden" asp-for="Total" value="@(total-promotionPrice)" />
+                                <input type="hidden" asp-for="UserId" value="@ViewBag.UserId" />
+                                <div class="form-group mr-15 ml-15">
+                                    <label>Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Full Name" asp-for="ShipName" class="form-control" value="" required="">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Phone Number <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Phone Number" asp-for="ShipPhone" class="form-control" value="" required="">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" placeholder="Email Address" asp-for="ShipEmail" class="form-control" value="" required="">
+                                </div>
+                                <div class="form-group  mr-15 ml-15">
+                                    <label>Address <span class="text-danger">*</span></label>
+                                    <select class="js-example-basic-single form-control" asp-for="ShipAddress">
+                                        <option>Select Address</option>
+                                    </select>
+                                </div>
+                                <div class="form-group  mr-15 ml-15">
+                                    <label>Street <span class="text-danger">*</span></label>
+                                    <input type="text" placeholder="Street" asp-for="Street" class="form-control" value="" required="">
+                                </div>
+                                <div class="form-group col-xl-12 mb-0 mr-15 ml-15">
+                                    <label>Order Notes</label>
+                                    <textarea asp-for="OrderNotes" rows="5" class="form-control" placeholder="Order Notes (Optional)"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12 ">
+                    <div class="ps-checkout__order">
+                        <h3>Your Order</h3>
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th class="text-uppercase">Product</th>
+                                    <th class="text-uppercase">Quantity</th>
+                                    <th class="text-uppercase">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.cart != null)
+                                {
+                                    @foreach (var item in cart)
+                                    {
+                                        <tr>
+                                            <td> <strong>@item.Product.Name</strong> </td>
+                                            <td>@string.Concat("x", @item.Quantity)</td>
+                                            <td><strong>@(item.Product.Price*item.Quantity)</strong></td>
+                                        </tr>
+                                    }
+                                }
+                                <tr style="border-top: 2px solid black;">
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>@total</strong></td>
+                                </tr>
+                                @if (ViewBag.PromotionId != 0)
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td><strong>-@ViewBag.PromotionPrice</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-uppercase"><strong>Order Total</strong></td>
+                                        <td></td>
+                                        <td><strong>@(total-ViewBag.PromotionPrice)</strong></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <h3 style="padding-top: 60px">Payment Method</h3>
+                        <div class="form-group">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payment" value="0">Cheque Payment
+                                </label>
+                            </div>
+                            <p>Please send your cheque to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="payment" value="1">PAYPAL
+                                </label>
+                                <div class="card-list"></div>
+                            </div>
+                        </div>
+                        <button class="ps-btn ps-btn--sm">Place Order</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2({
+                theme: "bootstrap",
+                ajax: {
+                    url: '/checkout/getlocation',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            keyword: params.term,
+                        };
+                    },
+                    processResults: function (data, params) {
+                        return {
+                            results: $.map(data.predictions, function (item) {
+                                return {
+                                    text: item.description,
+                                    id: item.description,
+                                }
+                            })
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
+                minimumInputLength: 3,
+            });
+
+        });
+
+
+    </script>
+
+    @*<script src="~/lib/select2/js/select2.min.js"></script>*@
+    <script src="~/lib/select2/js/select2.js"></script>
+}

@@ -9,6 +9,7 @@ namespace eShopSolution.Data.Entities
     {
         public DateTime Dob { set; get; }
         public string FullName { set; get; }
+        public string Address { set; get; }
         public string ImagePath { get; set; }
         public Guid RoleID { set; get; }
         public RoleApp RoleApp { set; get; }
@@ -16,5 +17,6 @@ namespace eShopSolution.Data.Entities
         public List<Order> Orders { set; get; }
         public List<Blog> Blogs { set; get; }
         public List<Comment> Comments { set; get; }
+        public List<Like> Likes { set; get; }
     }
 }

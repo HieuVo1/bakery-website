@@ -3,6 +3,7 @@ using eShopSolution.Data.Enums;
 using eShopSolution.ViewModel.Catalog.Categories;
 using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,18 @@ namespace eShopSolution.AdminApp.Service.Categorys
     {
         private readonly IHttpClientFactory _httpClientFactor;
         private HttpClient _client;
+        private readonly IConfiguration _configuration;
         private IHttpContextAccessor _httpContextAccessor;
-        public CategoryService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor)
+        public CategoryService(IHttpClientFactory httpClientFactory, 
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _httpClientFactor = httpClientFactory;
             _httpContextAccessor = httpContextAccessor;
             _client = _httpClientFactor.CreateClient();
-            _client.BaseAddress = new Uri("https://localhost:5001");
+            _configuration = configuration;
+            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
+            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Create(CategoryCreateRequest request)
         {

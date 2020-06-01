@@ -26,6 +26,7 @@ namespace eShopSolution.Application.System.Users
         Task<ApiResult<UserViewModel>> GetByUserName(string  userName);
         Task<ApiResult<bool>> Delete(Guid userId);
         Task<ApiResult<bool>> Update(Guid userId,UserUpdateRequest request);
+        Task<ApiResult<bool>> UserUpdateProfile(Guid userId,UpdateProfile request);
         Task<ApiResult<PageViewModel<RoleViewModel>>> GetListRole();
       
     }
