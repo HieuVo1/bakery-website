@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.Application.Languages;
 using eShopSolution.ViewModel.Language;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.BackEndAPI.Controllers
@@ -44,7 +40,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{languageId}")]
+        [HttpPatch("{languageId}")]
         public async Task<IActionResult> Update([FromBody] LanguageUpdateRequest request,string languageId)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

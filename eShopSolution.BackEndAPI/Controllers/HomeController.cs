@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using eShopSolution.BackEndAPI.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace eShopSolution.BackEndAPI.Controllers
 {
- 
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

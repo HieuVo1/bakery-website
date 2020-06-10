@@ -364,3 +364,27 @@
 <partial name="../Shared/_Partner.cshtml">
     <partial name="../Shared/_Subscribe.cshtml">
         <partial name="../Shared/_Footer.cshtml">
+
+            @section Scripts{
+                <script>
+                    $(document).ready(function () {
+                        $(".AddToCart").click(function (e) {
+                            e.preventDefault();
+                            var productId = $(this).attr("data-id");
+                            $.post("https://localhost:5002/cart/buy",
+                                {
+                                    Quantity: 1,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    $.get("https://localhost:5002/cart/getcart",
+                                        function (data, status) {
+                                            $(".ps-cart").replaceWith(data);
+                                        });
+                                });
+
+                        });
+                    });
+                </script>
+            }

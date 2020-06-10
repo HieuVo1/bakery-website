@@ -3,37 +3,22 @@ using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Service.Blogs
 {
-    public class BlogService : IBlogService
+    public class BlogService :BaseService, IBlogService
     {
-        private readonly IHttpClientFactory _httpClientFactor;
-        private HttpClient _client;
-        private readonly IConfiguration _configuration;
-        private IHttpContextAccessor _httpContextAccessor;
         public BlogService(IHttpClientFactory httpClientFactory, 
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IConfiguration configuration):base(httpClientFactory,httpContextAccessor,configuration)
         {
-            _httpClientFactor = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
-            _client = _httpClientFactor.CreateClient();
-            _configuration = configuration;
-            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
-            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Create(BlogCreateRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
+         
             var json = JsonConvert.SerializeObject(request);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.Content), "Content");
@@ -48,91 +33,31 @@ namespace eShopSolution.AdminApp.Service.Blogs
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-
-            var response = await _client.PostAsync($"/api/blogs", form);
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await CreateWithImageAsync<ApiResult<string>>($"/api/blogs", form);
         }
 
         public async Task<ApiResult<string>> Delete(int blogId)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/blogs/{blogId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await DeleteAsync<ApiResult<string>>($"/api/blogs/{blogId}");
         }
 
-        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(int pageIndex = 0, int pageSize = 0,string languageId="vn")
         {
-            var response = await _client.GetAsync($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<PageViewModel<BlogViewModel>>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<PageViewModel<BlogViewModel>>>(data);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await GetAsync<ApiResult<PageViewModel<BlogViewModel>>>($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}&languageId={languageId}");
         }
 
         public async Task<ApiResult<BlogViewModel>> GetById(int blogId)
         {
-            var response = await _client.GetAsync($"/api/blogs/{blogId}");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<BlogViewModel>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<BlogViewModel>>(data);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await GetAsync<ApiResult<BlogViewModel>>($"/api/blogs/{blogId}");
         }
 
         public async Task<ApiResult<string>> Liked(int blogId)
         {
-            var response = await _client.GetAsync($"/api/blogs/{blogId}/like");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await GetAsync<ApiResult<string>>($"/api/blogs/{blogId}/like");
         }
 
         public async Task<ApiResult<string>> Update(BlogUpdateRequest request, int blogId)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var json = JsonConvert.SerializeObject(request);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.Content), "Content");
@@ -146,13 +71,7 @@ namespace eShopSolution.AdminApp.Service.Blogs
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-
-            var response = await _client.PatchAsync($"/api/blogs/{blogId}", form);
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await UpdateWithImageAsync<ApiResult<string>>($"/api/blogs/{blogId}", form);
         }
     }
 }

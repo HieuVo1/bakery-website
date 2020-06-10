@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using eShopSolution.WebApp.Models;
 using eShopSolution.WebApp.Services.Languages;
 using eShopSolution.WebApp.Services.Categorys;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using eShopSolution.WebApp.Helpers;
 using eShopSolution.WebApp.Services.products;
 
 namespace eShopSolution.WebApp.Controllers

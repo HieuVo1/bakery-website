@@ -10,7 +10,6 @@ using System.IO;
 using System.Net.Http.Headers;
 using System.Linq;
 using System.Threading.Tasks;
-using eShopSolution.Utilities.Exceptions;
 using eShopSolution.Data.Enums;
 using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.Common;

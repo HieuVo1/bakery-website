@@ -4,121 +4,47 @@ using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.WebApp.Services.Carts
 {
-    public class CartService : ICartService
+    public class CartService :BaseService, ICartService
     {
-        private readonly IHttpClientFactory _httpClientFactor;
-        private HttpClient _client;
-        private readonly IConfiguration _configuration;
-        private IHttpContextAccessor _httpContextAccessor;
         public CartService(IHttpClientFactory httpClientFactory,
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IConfiguration configuration) : base(httpClientFactory, httpContextAccessor, configuration)
         {
-            _httpClientFactor = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
-            _client = _httpClientFactor.CreateClient();
-            _configuration = configuration;
-            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
-            _client.BaseAddress = new Uri(baseUrl);
         }
-        public async Task<ApiResult<string>> AddToCart(CartItemCreateRequest request)
+        public async Task<ApiResult<string>> AddToCart(CartItemRequest request)
         {
-            var json = JsonConvert.SerializeObject(request);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/api/carts/Items", httpContent);
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await CreateAsync<ApiResult<string>, CartItemRequest>($"/api/carts/Items", request);
         }
 
         public async Task<ApiResult<string>> Create(CartCreateRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var json = JsonConvert.SerializeObject(request);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync($"/api/carts", httpContent);
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await CreateAsync<ApiResult<string>, CartCreateRequest>($"/api/carts", request);
         }
 
         public async Task<ApiResult<string>> Delete(int cartId)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/carts/{cartId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await DeleteAsync<ApiResult<string>>($"/api/carts/{cartId}");
         }
 
         public async Task<ApiResult<string>> DeleteAll(int cartId)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/carts/DeleteAll?cartId={cartId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await DeleteAsync<ApiResult<string>>($"/api/carts/DeleteAll?cartId={cartId}");
         }
 
-        public async Task<ApiResult<string>> DeleteItem(int cartId, int productId)
+        public async Task<ApiResult<string>> DeleteItem(CartItemRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/carts/Items?cartId={cartId}&productId={productId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await DeleteAsync<ApiResult<string>>($"/api/carts/Items?cartId={request.CartID}&productId={request.ProductID}&pricechange={request.PriceChange}");
         }
 
         public async Task<ApiResult<CartViewModel>> GetById(Guid userId)
         {
-            var response = await _client.GetAsync($"/api/carts/{userId}");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<CartViewModel>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<CartViewModel>>(data);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await GetAsync<ApiResult<CartViewModel>>($"/api/carts/{userId}");
         }
 
         public Task<ApiResult<string>> Update(CartUpdateRequest request)
@@ -126,19 +52,10 @@ namespace eShopSolution.WebApp.Services.Carts
             throw new NotImplementedException();
         }
 
-        public async Task<ApiResult<string>> UpdateQuantity(CartItemUpdateRequest request)
+        public async Task<ApiResult<string>> UpdateQuantity(CartItemRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var json = JsonConvert.SerializeObject(request);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _client.PutAsync($"/api/carts/items", httpContent);
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await UpdateAsync<ApiResult<string>, CartItemRequest>($"/api/carts/items", request);
+   
         }
     }
 }

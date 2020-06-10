@@ -3,8 +3,6 @@ using eShopSolution.ViewModel.Email;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Comom

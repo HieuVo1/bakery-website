@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.WebApp.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -27,7 +25,8 @@ namespace eShopSolution.WebApp.Controllers
         }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            section=CookieHelpers.GetObjectFromJson<string>(Request.Cookies,"Token");
+            //section =  CookieHelpers.GetObjectFromJson<string>(Request.Cookies, "Token");
+            section = HttpContext.Session.GetString("Token");
             GetCart();
             if (section != null)
             {
@@ -43,12 +42,13 @@ namespace eShopSolution.WebApp.Controllers
         }
         public void GetCart()
         {
-            List<CartItemViewModel> cart = new List<CartItemViewModel>();
+            List<CartItemViewModel> cartItems = new List<CartItemViewModel>();
             var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-            cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
-            ViewBag.cart = cart;
-            ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
-            ViewBag.NumItem = (cart != null)?cart.Sum(x=>x.Quantity):0;
+            //cartItems = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
+            cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey);
+            ViewBag.cart = cartItems;
+            ViewBag.total = (cartItems != null) ? cartItems.Sum(item => item.Product.Price * item.Quantity) : 0;
+            ViewBag.NumItem = (cartItems != null) ? cartItems.Sum(x => x.Quantity) : 0;
         }
         public ClaimsPrincipal ValidateToken(string jwtToken)
         {

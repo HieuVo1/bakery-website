@@ -63,18 +63,19 @@
                             <label>IsDefault:</label>
                             <div class="default" style="display: inline;margin-left: 66px;">
                                 <div class="radio inlineblock m-r-20">
-                                    <input type="radio" id="Isdefault" asp-for="IsDefault" class="with-gap" value="true">
-                                    <label for="Isdefault">True</label>
+                                    <input type="radio"  asp-for="IsDefault" id="Default" class="with-gap" value="true">
+                                    <label for="Default">True</label>
                                 </div>
                                 <div class="radio inlineblock">
-                                    <input type="radio" id="IsNotDefault" asp-for="IsDefault" class="with-gap" value="false" checked="">
-                                    <label for="IsNotDefault">False</label>
+                                    <input type="radio"  asp-for="IsDefault" id="NotDefault" checked="" class="with-gap" value="false">
+                                    <label for="NotDefault">False</label>
                                 </div>
                             </div>
                         </div>
+                        
                         <div class="form-group-image">
                             <label>Image</label>
-                            <input type="file" asp-for="ThumbnailImage" class="dropify"  multiple data-allowed-file-extensions="png jpg">
+                            <input type="file" asp-for="ThumbnailImage" class="dropify" multiple data-allowed-file-extensions="png jpg">
                             <span asp-validation-for="ThumbnailImage" class="text-danger"></span>
                         </div>
                     </div>
@@ -156,6 +157,7 @@
                     url: "https://localhost:5001/api/productimages/@arrListUrl[4]/images/"+id,
                     dataType: "json",
                     success: function (res) {
+                        console.log(res.resultObject.isDefault)
                         var data = res.resultObject;
                         $('#exampleModalLabel').text("Edit Image")
                         $("#exampleModal form").attr("action", "/product/"+@arrListUrl[4]+"/images/Update/" + id);
@@ -166,11 +168,11 @@
                         $("#exampleModal .form-group-image").append('<input type="file" data-allowed-file-extensions="png jpg" class="dropify" name="ThumbnailImage"  data-default-file="' + src + '" />');
                         $('.dropify').dropify();
                         //$(".dropify").attr("data-default-file", src);
-                        if (data.isDefault === true) {
-                            $("#Isdefault").prop('checked', true);
+                        if (data.isDefault == true) {
+                            $("#Default").prop('checked', true);
                         }
                         else {
-                            $("#IsNotdefault").prop('checked', true);
+                            $("#NotDefault").prop('checked', true);
                         }
                     }
                 });
@@ -181,7 +183,7 @@
         $(document).ready(function () {
             $('.insertProductImage').click(function (e) {
                 e.preventDefault();
-                $("#IsNotdefault").prop('checked', true);
+                $("#NotDefault").prop('checked', true);
                 $(".modal-body [name=Caption]").val("");
                 $('#exampleModalLabel').text("Add Image")
                 $("#exampleModal form").attr('action', "/imageproduct/create/");

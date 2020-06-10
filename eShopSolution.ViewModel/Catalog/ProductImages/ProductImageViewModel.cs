@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace eShopSolution.ViewModel.Catalog.ProductImages
+﻿namespace eShopSolution.ViewModel.Catalog.ProductImages
 {
     public class ProductImageViewModel
     {

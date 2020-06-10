@@ -22,28 +22,36 @@
         <div class="row">
             <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 ">
                 <div class="pt-80 pb-80">
-                    @foreach (var blog in blogs)
+                    @if (blogs != null)
                     {
-                        <div class="ps-blog-listing">
-                            <div class="ps-post">
-                                <div class="ps-post__thumbnail">
-                                    <a class="ps-post__overlay" href="/blog/detail/@blog.Id"></a>
-                                    <img height="450" width="850" src="@blog.ImagePath" alt="">
+                        @foreach (var blog in blogs)
+                        {
+                            <div class="ps-blog-listing">
+                                <div class="ps-post">
+                                    <div class="ps-post__thumbnail">
+                                        <a class="ps-post__overlay" href="/blog/detail/@blog.Id"></a>
+                                        <img height="450" width="850" src="@blog.ImagePath" alt="">
+                                    </div>
+                                    <div class="ps-post__header">
+                                        <a class="ps-post__title" href="/blog/detail/@blog.Id">@blog.Title</a>
+                                        <div class="ps-post__meta"><span><i class="fa fa-calendar-check-o"></i>@blog.Created_At.ToShortDateString()</span><span><i class="fa fa-comment-o"></i>24 Comments</span><span class="tags"><i class="fa fa-tags"></i><a href="blog-listing.html">Travel</a><a href="blog-listing.html">Summer</a><a href="blog-listing.html">Women</a></span></div>
+                                    </div>
+                                    <div class="ps-post__content">
+                                        @Html.Raw(blog.Content)
+                                    </div>
+                                    <footer class="ps-post__footer">
+                                        <a class="ps-btn ps-btn--sm ps-post__morelink" href="/blog/detail/@blog.Id">Read more</a>
+                                        <div class="ps-post__action">
+                                            <a class="like @((blog.Liked==true?"liked":""))" disabled data-id="@blog.Id" data-like="@blog.LikeCount" href="javascript:void(0)">Like<i class="fa fa-heart"></i><span><i>@blog.LikeCount</i></span></a>
+                                            <a class="facebook" href="#"><i class="fa fa-facebook"></i>Share</a>
+                                            <a class="twitter" href="#"><i class="fa fa-twitter"></i>Tweet</a>
+                                        </div>
+                                    </footer>
                                 </div>
-                                <div class="ps-post__header">
-                                    <a class="ps-post__title" href="/blog/detail/@blog.Id">@blog.Title</a>
-                                    <div class="ps-post__meta"><span><i class="fa fa-calendar-check-o"></i>@blog.Created_At.ToShortDateString()</span><span><i class="fa fa-comment-o"></i>24 Comments</span><span class="tags"><i class="fa fa-tags"></i><a href="blog-listing.html">Travel</a><a href="blog-listing.html">Summer</a><a href="blog-listing.html">Women</a></span></div>
-                                </div>
-                                <div class="ps-post__content">
-                                    @Html.Raw(blog.Content)
-                                </div>
-                                <footer class="ps-post__footer">
-                                    <a class="ps-btn ps-btn--sm ps-post__morelink" href="/blog/detail/@blog.Id">Read more</a>
-                                    <div class="ps-post__action"><a class="like" data-id="@blog.Id" data-like="@blog.LikeCount" href="#">Like<i class="fa fa-heart"></i><span><i>@blog.LikeCount</i></span></a><a class="facebook" href="#"><i class="fa fa-facebook"></i>Share</a><a class="twitter" href="#"><i class="fa fa-twitter"></i>Tweet</a></div>
-                                </footer>
                             </div>
-                        </div>
+                        }
                     }
+
                     @await Component.InvokeAsync("Pager", Model)
                 </div>
             </div>
@@ -118,48 +126,77 @@
         <partial name="../Shared/_Footer.cshtml" />
 
         @section Scripts{
-            <script>
-                $(document).ready(function () {
-                    var flag = true;
-
-                    $('.like').click(function (e) {
-                        e.preventDefault();
-                        var likeCount = $(this).attr("data-like");
-                        var id = $(this).attr("data-id");
-                        if (flag == true) {
+            @if (ViewBag.UserId != null)
+            {
+    <script>
+                    $(document).ready(function () {
+                        $('.like.liked').click(function (e) {
+                            e.preventDefault();
+                            var likeCount = $(this).attr("data-like");
+                            var id = $(this).attr("data-id");
+                            var newLikeCount = (parseInt(likeCount) - 1);
+                            var that = this;
+                             $.ajax({
+                                    type: "post",
+                                    url: "https://localhost:5001/api/blogs/like",
+                                    data: {
+                                        UserId:'@ViewBag.UserId',
+                                        BlogId:id
+                                    },
+                                    dataType: "json",
+                                    success: function (res) {
+                                        $(that).attr("data-like", newLikeCount);
+                                        $(that).children().remove();
+                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
+                                        $(that).removeClass("liked");
+                                    }
+                                });
+                        });
+                         $('.like').click(function (e) {
+                            e.preventDefault();
+                            var likeCount = $(this).attr("data-like");
+                            var id = $(this).attr("data-id");
                             var newLikeCount = (parseInt(likeCount) + 1);
-                            like();
-                        }
-                        else {
-                            var newLikeCount = (parseInt(likeCount) - 1)
-                            Dislike();
-                        }
-                        $(this).attr("data-like", newLikeCount);
-                        $(this).children().remove();
-                        $(this).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
-                        flag = !flag;
-                        function like() {
-                            $.ajax({
-                                type: "get",
-                                url: "https://localhost:5001/api/blogs/" + id + "/like",
-                                dataType: "json",
-                                success: function (res) {
-                                    console.log(res);
-                                }
-                            });
-                        }
-                        function Dislike() {
-                            $.ajax({
-                                type: "get",
-                                url: "https://localhost:5001/api/blogs/" + id + "/dislike",
-                                dataType: "json",
-                                success: function (res) {
-                                    console.log(res);
-                                }
-                            });
-                        }
+                            var that = this;
+                             $.ajax({
+                                    type: "post",
+                                    url: "https://localhost:5001/api/blogs/like",
+                                    data: {
+                                        UserId:'@ViewBag.UserId',
+                                        BlogId:id
+                                    },
+                                    dataType: "json",
+                                    success: function (res) {
+                                        $(that).attr("data-like", newLikeCount);
+                                        $(that).children().remove();
+                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
+                                        $(that).addClass("liked");
+                                    }
+                                });
+                        });
                     });
+    </script>
+            }
 
-                });
+            <script>
+                    $(document).ready(function () {
+                        $(".AddToCart").click(function (e) {
+                            e.preventDefault();
+                            var productId = $(this).attr("data-id");
+                            $.post("https://localhost:5002/cart/buy",
+                                {
+                                    Quantity: 1,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    $.get("https://localhost:5002/cart/getcart",
+                                        function (data, status) {
+                                            $(".ps-cart").replaceWith(data);
+                                        });
+                                });
+
+                        });
+                    });
             </script>
         }

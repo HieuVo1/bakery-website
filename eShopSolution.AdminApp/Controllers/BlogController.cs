@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Blogs;
 using eShopSolution.AdminApp.Service.Categorys;
@@ -26,7 +24,7 @@ namespace eShopSolution.AdminApp.Controllers
         }
         public async Task<IActionResult> IndexAsync()
         {
-            var blogs = await _blogService.GetAll();
+            var blogs = await _blogService.GetAll(0,0,languageDefauleId);
             ViewData["categories"] = await GetListCategoryAsync(languageDefauleId);
             ViewData["blogs"] = blogs.ResultObject.Items;
             return View();

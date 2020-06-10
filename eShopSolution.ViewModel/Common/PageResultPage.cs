@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace eShopSolution.ViewModel.Common
+﻿namespace eShopSolution.ViewModel.Common
 {
     public class PageResultPage
     {

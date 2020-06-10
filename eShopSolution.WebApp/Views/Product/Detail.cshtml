@@ -82,12 +82,11 @@
                             <div class="col-lg-6 col-md-5 col-sm-6 col-xs-12 ">
                                 <form asp-action="Buy" id="formOrder" asp-controller="Cart" method="post">
                                     <input type="hidden" name="ProductId" value="@Model.Id" />
+                                    <input type="hidden" name="PriceChange" class="PriceChange" value="" />
+                                    <input type="hidden" name="CartId" value="@ViewBag.CartId" />
                                     <input type="hidden" class="inputQuantity" name="Quantity" value="" />
                                     <button class="ps-btn--fullwidth ps-btn" type="submit">Order Now<i class="fa fa-angle-right"></i></button>
                                 </form>
-                            </div>
-                            <div class="col-lg-6 col-md-7 col-sm-6 col-xs-12 ">
-                                <p class="ps-product__sharing">Share with:<a href="#"><i class="fa fa-facebook"></i></a><a href="#"><i class="fa fa-google-plus"></i></a><a href="#"><i class="fa fa-twitter"></i></a></p>
                             </div>
                         </div>
                     </footer>
@@ -100,10 +99,6 @@
                 </ul>
             </div>
             <div class="tab-content mb-60">
-                @*<div class="tab-pane active" role="tabpanel" id="tab_01">
-                    <p>Caramels tootsie roll carrot cake sugar plum. Sweet roll jelly bear claw liquorice. Gingerbread lollipop dragée cake. Pie topping jelly-o. Fruitcake dragée candy canes tootsie roll. Pastry jelly-o cupcake. Bonbon brownie soufflé muffin.</p>
-                    <p>Sweet roll soufflé oat cake apple pie croissant. Pie gummi bears jujubes cake lemon drops gummi bears croissant macaroon pie. Fruitcake tootsie roll chocolate cake Carrot cake cake bear claw jujubes topping cake apple pie. Jujubes gummi bears soufflé candy canes topping gummi bears cake soufflé cake. Cotton candy soufflé sugar plum pastry sweet roll..</p>
-                </div>*@
                 <div class="tab-pane active" role="tabpanel" id="tab_02">
                     @{
                         if (ViewBag.ListReview != null)
@@ -276,7 +271,9 @@
                         });
                         $("#formOrder").submit(function (e) {
                             var quantity = parseInt($('.quantity').val());
+                            var price = parseInt($('.ps-product__price').val());
                             $('.inputQuantity').val(quantity);
+                            $('.PriceChange').val(price);
                         });
                     });
                 </script>

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Categorys;
-using eShopSolution.AdminApp.Service.ImageProducts;
 using eShopSolution.AdminApp.Service.Languages;
 using eShopSolution.AdminApp.Service.Products;
 using eShopSolution.Utilities.functions;

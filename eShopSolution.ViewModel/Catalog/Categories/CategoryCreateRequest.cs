@@ -1,9 +1,6 @@
 ﻿using eShopSolution.Data.Enums;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Catalog.Categories
 {
@@ -16,7 +13,6 @@ namespace eShopSolution.ViewModel.Catalog.Categories
         [Required(ErrorMessage = "Name is required")]
         public string Name { set; get; }
         public string CategoryUrl { set; get; }
-        [Required(ErrorMessage = "ThumbnailImage is required")]
         public IFormFile ThumbnailImage { get; set; }
     }
 }

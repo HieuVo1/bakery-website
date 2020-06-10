@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.ViewModel.Contact;
 using eShopSolution.ViewModel.Email;
 using eShopSolution.WebApp.Services.Contacts;

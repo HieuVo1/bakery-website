@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catelog.ProductImages
@@ -26,6 +25,16 @@ namespace eShopSolution.Application.Catelog.ProductImages
         }
         public async Task<ApiResult<bool>> AddImage(int ProductId, ProductImageCreateRequest request)
         {
+            if (request.IsDefault == true)
+            {
+                var some = _context.ProductImages.Where(x => x.ProductId==ProductId).ToList();
+                some.ForEach(a =>
+                {
+                    a.IsDefault = false;
+                }
+                            );
+                await _context.SaveChangesAsync();
+            }
             var image = new ProductImage()
             {
                 ProductId = ProductId,
@@ -78,16 +87,42 @@ namespace eShopSolution.Application.Catelog.ProductImages
         {
             var image = await _context.ProductImages.FindAsync(ImageId);
             if (image == null) return new ApiResultErrors<bool>($"Can not find image with id: {ImageId}");
+            if (image.IsDefault == true)
+            {
+                var images =  _context.ProductImages.Where(x => x.ProductId == image.ProductId);
+                Random rand = new Random();
+                var skip = (int)(rand.NextDouble() * images.Count());
+                var row = images.Skip(skip).Take(1).First();
+                row.IsDefault = true;
+            }
             _context.ProductImages.Remove(image);
             return await SaveChangeService.SaveChangeAsyncImage(_context,image.ImagePath,_storageService);
         }
 
-       
-
         public async Task<ApiResult<bool>> UpdateImage(int imageId, ProductImageUpdateRequest request)
         {
+            
             var image = await _context.ProductImages.FindAsync(imageId);
             if (image == null) return new ApiResultErrors<bool>($"can not find image with id: {imageId}");
+            if (request.IsDefault == true && image.IsDefault==false)
+            {
+
+                var some = _context.ProductImages.Where(x => x.ProductId == image.ProductId).ToList();
+                some.ForEach(a =>
+                {
+                    a.IsDefault = false;
+                }
+                            );
+                //await _context.SaveChangesAsync();
+            }
+            else if(request.IsDefault == false && image.IsDefault == true)
+            {
+                var images = _context.ProductImages.Where(x => x.ProductId == image.ProductId);
+                Random rand = new Random();
+                var skip = (int)(rand.NextDouble() * images.Count());
+                var row = images.Skip(skip).Take(1).First();
+                row.IsDefault = true;
+            }
             image.Caption = request.Caption;
             image.IsDefault = request.IsDefault;
             if (request.ThumbnailImage != null)

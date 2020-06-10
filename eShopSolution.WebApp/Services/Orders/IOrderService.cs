@@ -1,9 +1,7 @@
 ﻿using eShopSolution.ViewModel.Catalog.OrderDetails;
 using eShopSolution.ViewModel.Catalog.Orders;
 using eShopSolution.ViewModel.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace eShopSolution.WebApp.Services.Orders

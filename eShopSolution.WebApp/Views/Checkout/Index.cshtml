@@ -1,6 +1,6 @@
 ﻿@model OrderCreateRequest
 @{
-    var cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(@Context.Request.Cookies, "CartSessionKey");
+    var cart = Context.Session.GetObjectFromJson<List<CartItemViewModel>>("CartSessionKey");
     var total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
     var NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
     ViewData["Header"] = "header--2";
@@ -13,7 +13,7 @@
 }
 @section Header{
 
-    <link href="~/lib/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="~/lib/select2/css/select2.css" rel="stylesheet" />
     <link href="~/lib/select2-bootstrap-theme/select2-bootstrap.css" rel="stylesheet" />
 }
 <div class="ps-section--hero">
@@ -107,6 +107,7 @@
                                     <label>Street <span class="text-danger">*</span></label>
                                     <input type="text" placeholder="Street" asp-for="Street" class="form-control" value="" required="">
                                 </div>
+
                                 <div class="form-group col-xl-12 mb-0 mr-15 ml-15">
                                     <label>Order Notes</label>
                                     <textarea asp-for="OrderNotes" rows="5" class="form-control" placeholder="Order Notes (Optional)"></textarea>

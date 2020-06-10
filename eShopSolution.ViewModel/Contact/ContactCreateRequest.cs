@@ -1,7 +1,4 @@
 ﻿using eShopSolution.ViewModel.Email;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Contact
 {

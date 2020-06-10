@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Carts;
 using eShopSolution.Data.Enums;
@@ -13,7 +12,6 @@ using eShopSolution.WebApp.Services.Orders;
 using eShopSolution.WebApp.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 
 namespace eShopSolution.WebApp.Controllers
 {
@@ -92,8 +90,7 @@ namespace eShopSolution.WebApp.Controllers
                     {
                         await _cartService.DeleteAll(Convert.ToInt32(ViewBag.CartId));
                     }
-                    //CookieHelpers.SetObjectAsJson(Response.Cookies, "CartId");
-                    CookieHelpers.SetObjectAsJson(HttpContext.Response.Cookies, CartSessionKey, cart, null);
+                    HttpContext.Session.Remove(CartSessionKey);
                     return RedirectToAction("index", "home");
                 }
                 ModelState.AddModelError(string.Empty, result.Message);

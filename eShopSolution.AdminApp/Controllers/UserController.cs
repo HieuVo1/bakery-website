@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Categorys;
 using eShopSolution.AdminApp.Service.Languages;
 using eShopSolution.AdminApp.Service.Users;
-using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.System.Users;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace eShopSolution.AdminApp.Controllers
 {

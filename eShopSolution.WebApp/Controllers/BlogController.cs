@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.ViewModel.Comment;
 using eShopSolution.WebApp.Services.Blogs;
@@ -31,7 +29,17 @@ namespace eShopSolution.WebApp.Controllers
             
             ViewBag.CategoryUrl = (categoryUrl == null)?"index":categoryUrl;
             var categories = await _categoryService.GetAll("vn");
-            var blogs = await _blogService.GetAll(pageIndex, _pageSize,categoryUrl,keyword);
+            var blogs = await _blogService.GetAll(pageIndex, _pageSize,categoryUrl,keyword,languageDefauleId,ViewBag.UserId);
+            //if (ViewBag.UserId != null)
+            //{
+            //    foreach (var blog in blogs.ResultObject.Items)
+            //    {
+            //        if (blog.UserLiked.FindIndex(ViewBag.UserId)!=-1)
+            //        {
+            //            blog.Liked = true;
+            //        }
+            //    }
+            //}
             var top = await _blogService.GetAll(pageIndex, 3);
             ViewData["blogs"] = blogs.ResultObject.Items;
             ViewBag.top = top.ResultObject.Items;
@@ -90,7 +98,7 @@ namespace eShopSolution.WebApp.Controllers
             return View(request);
         }
         [HttpGet]
-        public async Task<IActionResult> deleteCommentAsync(int commentId,int blogId)
+        public async Task<IActionResult> deleteComment(int commentId,int blogId)
         {
             var result = await _commentService.Delete(commentId);
             if (result.IsSuccessed)

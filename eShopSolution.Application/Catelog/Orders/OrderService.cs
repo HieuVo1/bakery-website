@@ -5,10 +5,8 @@ using eShopSolution.ViewModel.Catalog.Orders;
 using eShopSolution.ViewModel.Common;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Linq;
 using System.Threading.Tasks;
-using eShopSolution.ViewModel.Comment;
 using Microsoft.EntityFrameworkCore;
 using eShopSolution.ViewModel.Catalog.OrderDetails;
 
@@ -49,8 +47,12 @@ namespace eShopSolution.Application.Catelog.Orders
                     order.OrderDetails.Add(orderDetail);
                 }
                 _context.Orders.Add(order);
-                 await SaveChangeService.SaveChangeAsyncNotImage(_context);
-                return new ApiResultSuccess<string>(order.Id.ToString());
+                var result = await SaveChangeService.SaveChangeAsyncNotImage(_context);
+                if (result.IsSuccessed)
+                {
+                    return new ApiResultSuccess<string>(order.Id.ToString());
+                }
+                return new ApiResultErrors<string>(result.Message);
             }
             catch(Exception ex)
             {
@@ -148,6 +150,7 @@ namespace eShopSolution.Application.Catelog.Orders
             var query = from p in _context.OrderDetails
                         where p.OrderId == orderId
                         join pr in _context.ProductTranslations on p.ProductId  equals pr.ProductId
+                        where pr.LanguageId=="vn"
                         join img in _context.ProductImages on p.ProductId  equals img.ProductId
                         where img.IsDefault==true
                         select new { p,pr,img };

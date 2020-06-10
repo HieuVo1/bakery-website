@@ -1,7 +1,5 @@
 ﻿using eShopSolution.Data.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Catalog.Orders
 {

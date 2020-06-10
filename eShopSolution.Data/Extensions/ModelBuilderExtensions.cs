@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace eShopSolution.Data.Extensions
 {
@@ -106,6 +105,14 @@ namespace eShopSolution.Data.Extensions
                 SecurityStamp = string.Empty,
                 Dob = new DateTime(2020, 01, 31),
                 RoleID= roleId
+            });
+            modelBuilder.Entity<Cart>().HasData(new Cart
+            {
+                Id = 2,
+                UserId = adminId,   
+                Price=0,
+                Created_At = DateTime.Now,
+                CartProducts = new List<CartProduct>(),
             });
         }
     }

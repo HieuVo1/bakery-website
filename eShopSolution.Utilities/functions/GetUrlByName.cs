@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace eShopSolution.Utilities.functions
+﻿namespace eShopSolution.Utilities.functions
 {
     public static class GetUrlByName
     {

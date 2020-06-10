@@ -3991,6 +3991,7 @@ textarea.form-control {
   width: 140px;
   margin-right: 10px;
   font-family: "Varela Round", sans-serif;
+  font-family: "Varela Round", sans-serif;
   font-size: 10px;
   letter-spacing: 1.8px;
   color: #ffffff;
@@ -4072,11 +4073,23 @@ textarea.form-control {
   color: #fff;
 }
 
-.ps-post .ps-post__action a.like:hover {
+/*.ps-post .ps-post__action a.like:hover {
   color: #fff;
   border-color: #ee7560;
-}
+}*/
+    .ps-post .ps-post__action a.liked.like {
+        color: #fff;
+        /*border-color: white;*/
+        background: #ee7560;
+    }
 
+        .ps-post .ps-post__action a.liked.like > i {
+            color: #fff;
+        }
+
+        .ps-post .ps-post__action a.liked.like span {
+            background-color: #ee7560;
+        }        
 .ps-post .ps-post__action a.like:hover > i {
   color: #fff;
 }

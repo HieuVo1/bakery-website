@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Categories;
 using eShopSolution.Data.Enums;
 using eShopSolution.ViewModel.Catalog.Categories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.BackEndAPI.Controllers

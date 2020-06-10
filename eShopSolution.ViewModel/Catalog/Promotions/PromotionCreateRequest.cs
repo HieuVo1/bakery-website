@@ -1,8 +1,6 @@
 ﻿using eShopSolution.ViewModel.Helpers;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Catalog.Promotions
 {

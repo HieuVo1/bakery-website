@@ -8,12 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.X509Certificates;
 
 namespace eShopSolution.Application.Blogs
 {
@@ -70,8 +68,17 @@ namespace eShopSolution.Application.Blogs
             var query = from p in _context.Blogs
                         join us in _context.Users on p.UserId equals us.Id
                         join c in _context.CategoryTranslations on p.CategoryId equals c.CategoryId
-                        select new { p, us, c };
-                        
+                        where c.LanguageId == request.languageId
+                        join l in _context.Likes on p.Id equals l.BlogId
+                        into ps
+                        from l in ps.DefaultIfEmpty()
+                        select new
+                        {
+                            p,
+                            us,
+                            c,
+                            l
+                        };
             //filter
             if (!String.IsNullOrEmpty(request.Keyword))
             {
@@ -83,20 +90,23 @@ namespace eShopSolution.Application.Blogs
                 query = query.Where(x => x.c.CategoryUrl.Equals(request.CategoryUrl));
             }
             int totalRow = await query.CountAsync();
+
             //Pagging
             if (request.PageIndex == 0 || request.PageSize == 0)
             {
                 var data = await query
                 .Select(x => new BlogViewModel()
                 {
-                    Id=x.p.Id,
+                    Id = x.p.Id,
                     Content = x.p.Content,
                     Created_At = x.p.Created_At,
                     Title = x.p.Title,
-                    LikeCount=x.p.LikeCount,
+                    LikeCount = x.p.LikeCount,
                     ImagePath = x.p.ImagePath,
                     UserName = x.us.UserName,
                     CategoryName = x.c.Name,
+                    CategoryUrl = x.c.CategoryUrl,
+                   
                 }).ToListAsync();
                 var pageViewModel = new PageViewModel<BlogViewModel>()
                 {
@@ -120,7 +130,59 @@ namespace eShopSolution.Application.Blogs
                          ImagePath = x.p.ImagePath,
                          UserName = x.us.UserName,
                          CategoryName = x.c.Name,
+                         CategoryUrl = x.c.CategoryUrl,
                      }).ToListAsync();
+                //if (!String.IsNullOrEmpty(request.Keyword))
+                //{
+                //    query = query.Where(x => x.blog.Title.Contains(request.Keyword));
+                //}
+                ////filter
+                //if (!String.IsNullOrEmpty(request.CategoryUrl))
+                //{
+                //    query = query.Where(x => x.category.CategoryUrl.Equals(request.CategoryUrl));
+                //}
+                //int totalRow = await query.CountAsync();
+
+                ////Pagging
+                //if (request.PageIndex == 0 || request.PageSize == 0)
+                //{
+                //    var data = await query
+                //    .Select(x => new BlogViewModel()
+                //    {
+                //        Id=x.blog.Id,
+                //        Content = x.blog.Content,
+                //        Created_At = x.blog.Created_At,
+                //        Title = x.blog.Title,
+                //        LikeCount=x.blog.LikeCount,
+                //        ImagePath = x.blog.ImagePath,
+                //        UserName = x.user.UserName,
+                //        CategoryName = x.category.Name,
+                //        CategoryUrl=x.category.CategoryUrl,
+                //    }).ToListAsync();
+                //    var pageViewModel = new PageViewModel<BlogViewModel>()
+                //    {
+                //        TotalRecords = totalRow,
+                //        Items = data,
+                //        PageSize = request.PageSize,
+                //        PageIndex = request.PageIndex
+                //    };
+                //    return new ApiResultSuccess<PageViewModel<BlogViewModel>>(pageViewModel);
+                //}
+                //else
+                //{
+                //    var data = await query.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize)
+                //         .Select(x => new BlogViewModel()
+                //         {
+                //             Id = x.blog.Id,
+                //             Content = x.blog.Content,
+                //             Created_At = x.blog.Created_At,
+                //             Title = x.blog.Title,
+                //             LikeCount = x.blog.LikeCount,
+                //             ImagePath = x.blog.ImagePath,
+                //             UserName = x.user.UserName,
+                //             CategoryName = x.category.Name,
+                //             CategoryUrl = x.category.CategoryUrl,
+                //         }).ToListAsync();
                 var pageViewModel = new PageViewModel<BlogViewModel>()
                 {
                     TotalRecords = totalRow,
@@ -139,6 +201,8 @@ namespace eShopSolution.Application.Blogs
             var user = await _userManager.FindByIdAsync(blog.UserId.ToString());
             var category = await _context.CategoryTranslations.FirstOrDefaultAsync(x=>x.CategoryId==blog.CategoryId);
             var commentCount = _context.Comments.Where(c => c.BlogId == blogId).Count();
+            var Liked =  _context.Likes.Where(x => x.BlogId == blogId);
+            var data = await Liked.Select(x => x.UserId.ToString()).ToListAsync();
             var blogViewModel = new BlogViewModel()
             {
                 Id = blog.Id,
@@ -149,15 +213,28 @@ namespace eShopSolution.Application.Blogs
                 ImagePath = blog.ImagePath,
                 UserName = user.UserName,
                 CategoryName = category.Name,
-                CountComment=commentCount
+                CountComment=commentCount,
+                CategoryUrl =category.CategoryUrl,
             };
             return new ApiResultSuccess<BlogViewModel>(blogViewModel);
         }
 
-        public async Task<ApiResult<bool>> Liked(int blogId)
+        public async Task<ApiResult<bool>> Liked(LikeCreateRequest request)
         {
-            var blog = await _context.Blogs.FindAsync(blogId);
-            blog.LikeCount++;
+            var blog = await _context.Blogs.FindAsync(request.BlogId);
+            var like = await _context.Likes.FirstOrDefaultAsync(x => x.BlogId == request.BlogId && x.UserId==new Guid(request.UserId));
+            if (like == null)
+            {
+                var newLike = new Like{
+                    BlogId=request.BlogId,
+                    UserId = new Guid(request.UserId)
+                };
+                _context.Likes.Add(newLike);
+                blog.LikeCount++;
+                return await SaveChangeService.SaveChangeAsyncNotImage(_context);
+            }
+            blog.LikeCount--;
+            _context.Likes.Remove(like);
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
 

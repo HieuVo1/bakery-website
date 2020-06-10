@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Orders;
 using eShopSolution.ViewModel.Catalog.Orders;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.BackEndAPI.Controllers

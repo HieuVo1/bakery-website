@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.functions;
@@ -13,7 +11,6 @@ using eShopSolution.WebApp.Services.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Org.BouncyCastle.Asn1.Esf;
 
 namespace eShopSolution.WebApp.Controllers
 {

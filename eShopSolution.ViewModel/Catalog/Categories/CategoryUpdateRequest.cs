@@ -1,9 +1,6 @@
 ﻿using eShopSolution.Data.Enums;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Catalog.Categories
 {
@@ -17,7 +14,6 @@ namespace eShopSolution.ViewModel.Catalog.Categories
         public string Description { set; get; }
         public string CategoryUrl { set; get; }
         public string LanguageId { set; get; }
-        [Required]
         public IFormFile ThumbnailImage { get; set; }
     }
 }

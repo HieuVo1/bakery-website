@@ -126,6 +126,7 @@
                             $(this).prev().val(newValue);
                             $.post("https://localhost:5002/cart/update",
                                 {
+                                    PriceChange: price,
                                     Quantity: newValue,
                                     ProductID: productId,
                                     CartId : "@ViewBag.CartId"
@@ -151,6 +152,7 @@
                             $(this).next().val(newValue);
                             $.post("https://localhost:5002/cart/update",
                                 {
+                                    PriceChange: -price,
                                     Quantity: newValue,
                                     ProductID: productId,
                                     CartId : "@ViewBag.CartId"
@@ -169,8 +171,9 @@
                             var that = this;
                             $.post("https://localhost:5002/cart/delete",
                                 {
-                                    productId: productId,
-                                    cartId : "@ViewBag.CartId"
+                                    PriceChange: -price,
+                                    ProductId: productId,
+                                    CartId : "@ViewBag.CartId"
                                 },
                                 function (data, status) {
                                     $(that).parent().parent().remove();
@@ -195,13 +198,12 @@
                                 newPrice = 0;
                             }
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
-                            console.log(oldPrice)
-                            console.log(newPrice)
                             $(this).parent().parent().next().children().html(newPrice);
                             $('.ps-cart__totalPrice').html(total + newPrice - oldPrice);
                             $(".ps-cart__totalPrice").attr("data-price", total + newPrice - oldPrice);
                             $.post("https://localhost:5002/cart/update",
                                 {
+                                    PriceChange: newPrice - oldPrice,
                                     Quantity: newValue,
                                     ProductID: productId,
                                     CartId : "@ViewBag.CartId"

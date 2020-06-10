@@ -33,58 +33,63 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-lg-6 col-md-12">
-                <div class="card">
-                    @for (int i = 0; i <= (blogs.Count - 1) / 2; i++)
-                    {
-                        <div class="blogitem mb-5">
-                            <div class="blogitem-image">
-                                <a href="/blog/edit/@blogs[i].Id"><img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image"></a>
-                                <span class="blogitem-date">@blogs[i].Created_At</span>
-                            </div>
-                            <div class="blogitem-content">
-                                <div class="blogitem-header">
-                                    <div class="blogitem-meta">
-                                        <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
-                                        <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
-                                    </div>
-                                </div>
-                                <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
-                                @Html.Raw(blogs[i].Content)
-                                <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
-                                <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-12">
-                <div class="card">
-                    @for (int i = (blogs.Count - 1) / 2+1; i < blogs.Count; i++)
-                    {
-                        <div class="blogitem mb-5">
-                            <div class="blogitem-image">
-                                <a href="/blog/edit/@blogs[i].Id">
-                                    <img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image"></a>
+            @if (blogs.Count()>0)
+            {
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        @for (int i = 0; i <= (blogs.Count - 1) / 2; i++)
+                        {
+                            <div class="blogitem mb-5">
+                                <div class="blogitem-image">
+                                    <a href="/blog/edit/@blogs[i].Id"><img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image"></a>
                                     <span class="blogitem-date">@blogs[i].Created_At</span>
-                            </div>
-                            <div class="blogitem-content">
-                                <div class="blogitem-header">
-                                    <div class="blogitem-meta">
-                                        <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
-                                        <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
-                                    </div>
-
                                 </div>
-                                <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
-                                @Html.Raw(blogs[i].Content)
-                                <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
-                                <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
+                                <div class="blogitem-content">
+                                    <div class="blogitem-header">
+                                        <div class="blogitem-meta">
+                                            <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
+                                            <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
+                                        </div>
+                                    </div>
+                                    <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
+                                    @Html.Raw(blogs[i].Content)
+                                    <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
+                                    <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
+                                </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        @for (int i = (blogs.Count - 1) / 2 + 1; i < blogs.Count; i++)
+                        {
+                            <div class="blogitem mb-5">
+                                <div class="blogitem-image">
+                                    <a href="/blog/edit/@blogs[i].Id">
+                                        <img src="@blogs[i].ImagePath" height="300" width="465" alt="blog image">
+                                    </a>
+                                    <span class="blogitem-date">@blogs[i].Created_At</span>
+                                </div>
+                                <div class="blogitem-content">
+                                    <div class="blogitem-header">
+                                        <div class="blogitem-meta">
+                                            <span><i class="zmdi zmdi-account"></i>By <a href="javascript:void(0);">@blogs[i].UserName</a></span>
+                                            <span><i class="zmdi zmdi-comments"></i><a href="javascript:void(0);">Comments(3)</a></span>
+                                        </div>
+
+                                    </div>
+                                    <h5><a href="/blog/edit/@blogs[i].Id">@blogs[i].Title</a></h5>
+                                    @Html.Raw(blogs[i].Content)
+                                    <a href="/blog/edit/@blogs[i].Id" class="btn btn-info">Edit</a>
+                                    <a href="/blog/delete/@blogs[i].Id" class="btn btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
         </div>
     </div>
 </div>

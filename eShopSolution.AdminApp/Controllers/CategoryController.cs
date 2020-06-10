@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.AdminApp.Service.Categorys;
 using eShopSolution.AdminApp.Service.Languages;
-using eShopSolution.Utilities.functions;
 using eShopSolution.ViewModel.Catalog.Categories;
-using eShopSolution.ViewModel.Language;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 

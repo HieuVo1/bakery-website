@@ -1,8 +1,6 @@
-﻿using eShopSolution.Data.Entities;
-using eShopSolution.ViewModel.Catalog.Carts.CartItems;
+﻿using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace eShopSolution.ViewModel.Catalog.Carts
 {

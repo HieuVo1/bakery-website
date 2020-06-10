@@ -17,27 +17,16 @@ using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Service.Categorys
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService :BaseService, ICategoryService
     {
-        private readonly IHttpClientFactory _httpClientFactor;
-        private HttpClient _client;
-        private readonly IConfiguration _configuration;
-        private IHttpContextAccessor _httpContextAccessor;
         public CategoryService(IHttpClientFactory httpClientFactory, 
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IConfiguration configuration):base(httpClientFactory,httpContextAccessor,configuration)
         {
-            _httpClientFactor = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
-            _client = _httpClientFactor.CreateClient();
-            _configuration = configuration;
-            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
-            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> Create(CategoryCreateRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
+           
             var json = JsonConvert.SerializeObject(request);
             MultipartFormDataContent form = new MultipartFormDataContent();
             form.Add(new StringContent(request.LanguageId), "languageId");
@@ -51,77 +40,23 @@ namespace eShopSolution.AdminApp.Service.Categorys
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-            
-            var response = await _client.PostAsync($"/api/categories", form);
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await CreateWithImageAsync<ApiResult<string>>($"/api/categories", form);
         }
 
         public async Task<ApiResult<string>> Delete(int categorytId)
         {
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/categories/{categorytId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await DeleteAsync<ApiResult<string>>($"/api/categories/{categorytId}");
         }
 
         public async Task<ApiResult<List<CategoryViewModel>>> GetAll(string languageId, int pageIndex=0, int pageSize=0)
         {
-            var response = await _client.GetAsync($"/api/categories/{languageId}?pageIndex={pageIndex}&pageSize={pageSize}");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<List<CategoryViewModel>>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<List<CategoryViewModel>>>(data);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await GetAsync<ApiResult<List<CategoryViewModel>>>($"/api/categories/{languageId}?pageIndex={pageIndex}&pageSize={pageSize}");
         }
 
         public async Task<ApiResult<CategoryViewModel>> GetById(int categoryId, string languageId)
         {
-            var response = await _client.GetAsync($"/api/categories/{categoryId}/{languageId}");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<CategoryViewModel>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<CategoryViewModel>>(data);
-
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            return await GetAsync<ApiResult<CategoryViewModel>>($"/api/categories/{categoryId}/{languageId}");
         }
-
         public async Task<ApiResult<string>> Update(CategoryUpdateRequest request,int categoryId)
         {
             var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
@@ -139,13 +74,7 @@ namespace eShopSolution.AdminApp.Service.Categorys
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-            
-            var response = await _client.PatchAsync($"/api/categories/{categoryId}", form);
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(await response.Content.ReadAsStringAsync());
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(await response.Content.ReadAsStringAsync());
+            return await UpdateWithImageAsync<ApiResult<string>>($"/api/categories/{categoryId}", form);
         }
 
         public Task<ApiResult<string>> Updatestatus(int CategoryId, CategoryStatus status)

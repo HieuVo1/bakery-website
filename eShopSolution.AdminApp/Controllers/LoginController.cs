@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using eShopSolution.AdminApp.Service.Categorys;
 using eShopSolution.AdminApp.Service.Users;
 using eShopSolution.ViewModel.System.Users;
 using Microsoft.AspNetCore.Authentication;

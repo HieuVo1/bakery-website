@@ -2,7 +2,6 @@
 using eShopSolution.ViewModel.Common;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
-using eShopSolution.Utilities.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using eShopSolution.Application.Comom;
-using eShopSolution.ViewModel.Catalog.ProductImages;
 using eShopSolution.Utilities.functions;
 
 namespace eShopSolution.Application.Catelog.Products

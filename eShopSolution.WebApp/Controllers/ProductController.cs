@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using eShopSolution.ViewModel.Email;
 using eShopSolution.ViewModel.Review;
-using eShopSolution.WebApp.Helpers;
 using eShopSolution.WebApp.Services.Categorys;
 using eShopSolution.WebApp.Services.Emails;
 using eShopSolution.WebApp.Services.ImageProducts;

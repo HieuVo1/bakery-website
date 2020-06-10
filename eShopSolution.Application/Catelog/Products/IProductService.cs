@@ -1,10 +1,5 @@
-﻿using eShopSolution.ViewModel.Catalog.ProductImages;
-using eShopSolution.ViewModel.Catalog.Products;
+﻿using eShopSolution.ViewModel.Catalog.Products;
 using eShopSolution.ViewModel.Common;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catelog.Products

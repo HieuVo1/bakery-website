@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catelog.Carts
@@ -21,8 +20,13 @@ namespace eShopSolution.Application.Catelog.Carts
         {
             _context = context;
         }
-        public async Task<ApiResult<bool>> AddToCart(CartItemCreateRequest request)
+        public async Task<ApiResult<bool>> AddToCart(CartItemRequest request)
         {
+            var cart = await _context.Carts.FindAsync(request.CartID);
+            if (cart != null)
+            {
+                cart.Price += request.PriceChange;
+            }
             var cartItem = await _context.CartProducts.FirstOrDefaultAsync(x => x.CartID == request.CartID && x.ProductID == request.ProductID);
             if (cartItem != null) {
                 cartItem.Quantity += request.Quantity;
@@ -71,8 +75,10 @@ namespace eShopSolution.Application.Catelog.Carts
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
         }
 
-        public async Task<ApiResult<bool>> DeleteItem(int cartId, int productId)
+        public async Task<ApiResult<bool>> DeleteItem(int cartId, int productId,decimal priceChange)
         {
+            var cart = await _context.Carts.FindAsync(cartId);
+            cart.Price += priceChange;
             var cartItem = await _context.CartProducts.FirstOrDefaultAsync(x => x.CartID == cartId
             && x.ProductID == productId);
             if (cartItem == null) return new ApiResultErrors<bool>($"Can not find cartItem");
@@ -81,6 +87,8 @@ namespace eShopSolution.Application.Catelog.Carts
         }
         public async Task<ApiResult<bool>> DeleteAll(int cartId)
         {
+            var cart = await _context.Carts.FindAsync(cartId);
+            cart.Price = 0;
             var cartItems =  _context.CartProducts.Where(x => x.CartID == cartId);
             _context.CartProducts.RemoveRange(cartItems);
             return await SaveChangeService.SaveChangeAsyncNotImage(_context);
@@ -93,6 +101,7 @@ namespace eShopSolution.Application.Catelog.Carts
             var query = from c in _context.CartProducts where c.CartID == cart.Id
                         join p in _context.Products on c.ProductID equals p.Id
                         join pt in _context.ProductTranslations on p.Id equals pt.ProductId
+                        where pt.LanguageId=="vn"
                         join img in _context.ProductImages on p.Id equals img.ProductId
                         where img.IsDefault == true
                         select new { c, p,pt,img };
@@ -126,8 +135,10 @@ namespace eShopSolution.Application.Catelog.Carts
             throw new NotImplementedException();
         }
 
-        public async Task<ApiResult<bool>> UpdateQuantity(CartItemUpdateRequest request)
+        public async Task<ApiResult<bool>> UpdateQuantity(CartItemRequest request)
         {
+            var cart = await _context.Carts.FindAsync(request.CartID);
+            cart.Price += request.PriceChange;
             var cartItem = await _context.CartProducts.FirstOrDefaultAsync(x => x.CartID == request.CartID 
             && x.ProductID == request.ProductID);
             if (cartItem == null)

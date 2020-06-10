@@ -1,10 +1,5 @@
-﻿using eShopSolution.ViewModel.Catalog.ProductImages;
-using eShopSolution.ViewModel.Catalog.Products;
+﻿using eShopSolution.ViewModel.Catalog.Products;
 using eShopSolution.ViewModel.Common;
-using eShopSolution.ViewModel.Language;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Service.Products

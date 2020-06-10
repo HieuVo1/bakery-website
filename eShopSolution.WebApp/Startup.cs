@@ -154,9 +154,14 @@ namespace eShopSolution.WebApp
                 endpoints.MapControllerRoute(name: "detaileBlog",
                 pattern: "blog/detail/{blogId}/",
                 defaults: new { controller = "blog", action = "detail" });
+
                 endpoints.MapControllerRoute(name: "detaileBlog",
                 pattern: "blog/detail/{blogId}/",
                 defaults: new { controller = "blog", action = "detail" });
+
+                endpoints.MapControllerRoute(name: "deletecmt",
+                pattern: "blog/deletecomment/{commentId}/{blogId}/",
+                defaults: new { controller = "blog", action = "deletecomment" });
 
                 endpoints.MapControllerRoute(name: "blog",
                 pattern: "blog/{categoryUrl?}",

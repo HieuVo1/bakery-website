@@ -184,6 +184,13 @@ namespace eShopSolution.Data.Migrations
                             Created_At = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Price = 20000m,
                             UserId = new Guid("00000000-0000-0000-0000-000000000000")
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Created_At = new DateTime(2020, 6, 2, 21, 2, 27, 812, DateTimeKind.Local).AddTicks(4645),
+                            Price = 0m,
+                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
                         });
                 });
 
@@ -745,7 +752,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "9f4b1fe4-a1c0-403c-be17-d14be310952e",
+                            ConcurrencyStamp = "a5eba12f-65e0-4557-9df2-148ea7f91f1d",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -753,7 +760,7 @@ namespace eShopSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dd"),
-                            ConcurrencyStamp = "e514956b-e424-467a-a117-a4160afa0b98",
+                            ConcurrencyStamp = "64068eaf-e7be-4ecf-b7bc-8bfa59f0fee4",
                             Description = "Client role",
                             Name = "client",
                             NormalizedName = "client"
@@ -834,14 +841,14 @@ namespace eShopSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e2ee2004-f7db-4fb2-8c3a-4bfb2ab3cd43",
+                            ConcurrencyStamp = "86fe0c11-5703-4e8d-9759-72fd1cdb7667",
                             Dob = new DateTime(2020, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hieuvo044@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "hieuvo044@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEB0OvivSxWHcIqWC8qLJOHL0jXjBpC48bQZ/Fq60OMrkBxye/1JEokkz2UN2gZh2Ig==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGvdcKJGV1ztwlADsqxNTJZmoHyzBZqB9UORpFRsFtOXU25qPn3+IdtCB8lhqVhrPA==",
                             PhoneNumberConfirmed = false,
                             RoleID = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                             SecurityStamp = "",

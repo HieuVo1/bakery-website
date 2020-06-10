@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using eShopSolution.Application.Comom;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Email;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eShopSolution.BackEndAPI.Controllers

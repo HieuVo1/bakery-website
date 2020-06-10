@@ -1,5 +1,6 @@
 ﻿@{ 
-    var cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(@Context.Request.Cookies, "CartSessionKey");
+    //var cartItems = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(@Context.Request.Cookies, "CartSessionKey");
+    var cart = Context.Session.GetObjectFromJson<List<CartItemViewModel>>("CartSessionKey");
     var total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
     var NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
 }

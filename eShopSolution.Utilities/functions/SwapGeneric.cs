@@ -1,12 +1,8 @@
-﻿using eShopSolution.ViewModel.Catalog.Categories;
-using eShopSolution.ViewModel.Language;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace eShopSolution.Utilities.functions
 {
-   public static class SwapGeneric<T>
+    public static class SwapGeneric<T>
     {
         public static void  Swap(List<T> l,int index1 , int index2) {
             T temp;

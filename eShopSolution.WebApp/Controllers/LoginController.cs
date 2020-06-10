@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using eShopSolution.Application.Catelog.Carts;
 using eShopSolution.Data.Entities;
 using eShopSolution.Utilities.functions;
-using eShopSolution.ViewModel.Catalog.Carts;
 using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Email;
 using eShopSolution.ViewModel.System.Users;
@@ -97,11 +95,17 @@ namespace eShopSolution.WebApp.Controllers
                 return View();
             }
             TempData["Succes"] = "Login Succsess!";
-            //HttpContext.Session.SetString("Token", result.ResultObject);
-            CookieHelpers.SetObjectAsJson(Response.Cookies, "Token", result.ResultObject, 10);
+            HttpContext.Session.SetString("Token", result.ResultObject);
 
             var userPrincipal = this.ValidateToken(result.ResultObject);
-
+            var UserId = new Guid(userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var cartResult = await _cartService.GetById(UserId);
+            if (cartResult.IsSuccessed == true)
+            {
+                var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+                
+                HttpContext.Session.SetObjectAsJson(CartSessionKey, cartResult.ResultObject.CartItems);
+            }
             var authProperties = new AuthenticationProperties
             {
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
@@ -129,9 +133,9 @@ namespace eShopSolution.WebApp.Controllers
             await HttpContext.SignOutAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme);
             var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-            CookieHelpers.RemoveCookie(Response.Cookies, CartSessionKey);
-            CookieHelpers.RemoveCookie(Response.Cookies, "CartId");
-            CookieHelpers.RemoveCookie(Response.Cookies, "Token");
+            HttpContext.Session.Remove(CartSessionKey);
+            HttpContext.Session.Remove("CartId");
+            HttpContext.Session.Remove("Token");
             return RedirectToAction("index", "Login");
         }
         [HttpPost]
@@ -148,15 +152,14 @@ namespace eShopSolution.WebApp.Controllers
                 return View();
             }
             TempData["Succes"] = "Login Succsess!";
-            CookieHelpers.SetObjectAsJson(Response.Cookies, "Token", result.ResultObject, 10);
+            HttpContext.Session.SetString("Token", result.ResultObject);
             var userPrincipal = this.ValidateToken(result.ResultObject);
             var UserId = new Guid(userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var cartResult = await _cartService.GetById(UserId);
             if (cartResult.IsSuccessed == true)
             {
                 var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-                CookieHelpers.RemoveCookie(Response.Cookies, CartSessionKey);
-                CookieHelpers.SetObjectAsJson(HttpContext.Response.Cookies, CartSessionKey, cartResult.ResultObject.CartItems, null);
+                HttpContext.Session.SetObjectAsJson(CartSessionKey, cartResult.ResultObject.CartItems);
             }
             var authProperties = new AuthenticationProperties
             {
@@ -290,12 +293,12 @@ namespace eShopSolution.WebApp.Controllers
         }
         public void GetCart()
         {
-            List<CartItemViewModel> cart = new List<CartItemViewModel>();
+            List<CartItemViewModel> cartItems = new List<CartItemViewModel>();
             var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-            cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
-            ViewBag.cart = cart;
-            ViewBag.total = (cart != null) ? cart.Sum(item => item.Product.Price * item.Quantity) : 0;
-            ViewBag.NumItem = (cart != null) ? cart.Sum(x => x.Quantity) : 0;
+            cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey);
+            ViewBag.cart = cartItems;
+            ViewBag.total = (cartItems != null) ? cartItems.Sum(item => item.Product.Price * item.Quantity) : 0;
+            ViewBag.NumItem = (cartItems != null) ? cartItems.Sum(x => x.Quantity) : 0;
         }
     }
 }

@@ -1,12 +1,7 @@
 ﻿using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Roles;
 using eShopSolution.ViewModel.System.Users;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.System.Users

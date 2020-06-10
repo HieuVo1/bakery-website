@@ -1,11 +1,9 @@
 ﻿using eShopSolution.Application.Comom;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
-using eShopSolution.Utilities.Exceptions;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.Language;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

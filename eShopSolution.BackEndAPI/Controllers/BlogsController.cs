@@ -67,11 +67,11 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{blodId}/like")]
+        [HttpPost("like")]
         [AllowAnonymous]
-        public async Task<IActionResult> UpdateLike(int blodId)
+        public async Task<IActionResult> UpdateLike([FromForm] LikeCreateRequest request)
         {
-            var result = await _blogService.Liked(blodId);
+            var result = await _blogService.Liked(request);
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }

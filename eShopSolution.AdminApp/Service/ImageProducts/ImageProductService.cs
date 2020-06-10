@@ -15,22 +15,12 @@ using System.Threading.Tasks;
 
 namespace eShopSolution.AdminApp.Service.ImageProducts
 {
-    public class ImageProductService : IImageProductService
+    public class ImageProductService :BaseService, IImageProductService
     {
-        private readonly IHttpClientFactory _httpClientFactor;
-        private HttpClient _client;
-        private readonly IConfiguration _configuration;
-        private IHttpContextAccessor _httpContextAccessor;
         public ImageProductService(IHttpClientFactory httpClientFactory,
             IHttpContextAccessor httpContextAccessor,
-            IConfiguration configuration)
+            IConfiguration configuration):base(httpClientFactory,httpContextAccessor,configuration)
         {
-            _httpClientFactor = httpClientFactory;
-            _httpContextAccessor = httpContextAccessor;
-            _client = _httpClientFactor.CreateClient();
-            _configuration = configuration;
-            var baseUrl = _configuration.GetSection("BackendUrlBase").Value;
-            _client.BaseAddress = new Uri(baseUrl);
         }
         public async Task<ApiResult<string>> AddImage(int ProductId, ProductImageCreateRequest request)
         {
@@ -48,14 +38,7 @@ namespace eShopSolution.AdminApp.Service.ImageProducts
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-
-            var response = await _client.PostAsync($"/api/productimages/{ProductId}/images", form);
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await CreateWithImageAsync<ApiResult<string>>($"/api/productimages/{ProductId}/images", form);
         }
 
         public Task<ApiResult<ProductImageViewModel>> GetImageById(int imageId)
@@ -65,42 +48,13 @@ namespace eShopSolution.AdminApp.Service.ImageProducts
 
         public async Task<ApiResult<List<ProductImageViewModel>>> GetListImage(int ProductId)
         {
-            //[HttpGet("{productId}/images")]
-            var response = await _client.GetAsync($"/api/productimages/{ProductId}/Images");
-            using (HttpContent content = response.Content)
-            {
-                //convert data content to string using await
-                var data = await content.ReadAsStringAsync();
-
-                //If the data is not null, parse(deserialize) the data to a C# object
-                if (data != null)
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return JsonConvert.DeserializeObject<ApiResultSuccess<List<ProductImageViewModel>>>(data);
-                    }
-                    return JsonConvert.DeserializeObject<ApiResultErrors<List<ProductImageViewModel>>>(data);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
+            return await GetAsync<ApiResult<List<ProductImageViewModel>>>($"/api/productimages/{ProductId}/Images");
+           
         }
 
         public async Task<ApiResult<string>> RemoveImage(int productId,int ImageId)
         {
-            //{productId}/images/{imageId}
-            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
-            var response = await _client.DeleteAsync($"/api/productimages/images/{ImageId}");
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await DeleteAsync<ApiResult<string>>($"/api/productimages/images/{ImageId}");
         }
 
         public async Task<ApiResult<string>> UpdateImage(int productId,int imageId, ProductImageUpdateRequest request)
@@ -119,14 +73,7 @@ namespace eShopSolution.AdminApp.Service.ImageProducts
                 ByteArrayContent bytes = new ByteArrayContent(data);
                 form.Add(bytes, "ThumbnailImage", request.ThumbnailImage.FileName);
             }
-
-            var response = await _client.PatchAsync($"/api/productimages/images/{imageId}", form);
-            var result = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<ApiResultSuccess<string>>(result);
-            }
-            return JsonConvert.DeserializeObject<ApiResultErrors<string>>(result);
+            return await UpdateWithImageAsync<ApiResult<string>>($"/api/productimages/images/{imageId}", form);
         }
 
     }

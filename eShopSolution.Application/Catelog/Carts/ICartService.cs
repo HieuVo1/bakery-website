@@ -2,8 +2,6 @@
 using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Common;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catelog.Carts
@@ -14,9 +12,9 @@ namespace eShopSolution.Application.Catelog.Carts
         Task<ApiResult<bool>> Create(CartCreateRequest request);
         Task<ApiResult<bool>> Update(CartUpdateRequest request);
         Task<ApiResult<bool>> Delete(int cartId);
-        Task<ApiResult<bool>> AddToCart(CartItemCreateRequest request);
-        Task<ApiResult<bool>> UpdateQuantity(CartItemUpdateRequest request);
-        Task<ApiResult<bool>> DeleteItem(int cartId,int productId);
+        Task<ApiResult<bool>> AddToCart(CartItemRequest request);
+        Task<ApiResult<bool>> UpdateQuantity(CartItemRequest request);
+        Task<ApiResult<bool>> DeleteItem(int cartId,int productId,decimal priceChange);
         Task<ApiResult<bool>> DeleteAll(int cartId);
     }
 }

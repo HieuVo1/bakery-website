@@ -1,14 +1,9 @@
 ﻿using eShopSolution.Application.Comom;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
-using eShopSolution.Utilities.Exceptions;
-using eShopSolution.ViewModel.Catalog.Carts;
-using eShopSolution.ViewModel.Catalog.Carts.CartItems;
 using eShopSolution.ViewModel.Common;
 using eShopSolution.ViewModel.System.Roles;
 using eShopSolution.ViewModel.System.Users;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -159,12 +153,14 @@ namespace eShopSolution.Application.System.Users
             if (signInResult.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(request.Email);
-                var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
+                var role = await _roleManager.FindByIdAsync(user.RoleID.ToString());
+                var cart = await _context.Carts.FirstOrDefaultAsync(x => x.UserId == user.Id);
                 var userToken = new UserToken
                 {
+                    CartId = cart.Id.ToString(),
                     UserId = user.Id.ToString(),
                     UserName = user.UserName,
-                    Role = string.Join(";", role.Result.Name),
+                    Role = string.Join(";", role.Name),
                     ImagePath = user.ImagePath,
                     Email = user.Email,
                 };
@@ -192,13 +188,28 @@ namespace eShopSolution.Application.System.Users
 
                         };
                         var result = await _userManager.CreateAsync(user);
+                        if (result.Succeeded)
+                        {
+                            var cartadd = new Cart
+                            {
+                                Created_At = DateTime.Now,
+                                UserId = user.Id,
+                                Price = 0,
+                                CartProducts = new List<CartProduct>(),
+                            };
+                            _context.Carts.Add(cartadd);
+                            await _context.SaveChangesAsync();
+                        }
+                        
                     }
+                    var cart = await _context.Carts.FirstOrDefaultAsync(x => x.UserId == user.Id);
                     var info = new UserLoginInfo(request.LoginProvider, request.ProviderKey, request.ProviderDisPlayName);
                     await _userManager.AddLoginAsync(user, info);
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     var role = _roleManager.FindByIdAsync(user.RoleID.ToString());
                     var userToken = new UserToken
                     {
+                        CartId = cart.Id.ToString(),
                         UserId = user.Id.ToString(),
                         UserName = user.UserName,
                         Role = string.Join(";", role.Result.Name),

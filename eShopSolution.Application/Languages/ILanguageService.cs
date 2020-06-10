@@ -1,9 +1,6 @@
 ﻿using eShopSolution.ViewModel.Language;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using eShopSolution.Data.Entities;
 using eShopSolution.ViewModel.Common;
 
 namespace eShopSolution.Application.Languages

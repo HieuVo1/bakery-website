@@ -51,7 +51,7 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(result);
         }
         [HttpPost("Items")]
-        public async Task<IActionResult> AddToCart(CartItemCreateRequest request)
+        public async Task<IActionResult> AddToCart(CartItemRequest request)
         {
             if (ModelState.IsValid == false)
             {
@@ -62,8 +62,8 @@ namespace eShopSolution.BackEndAPI.Controllers
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
-        [HttpPut("Items")]
-        public async Task<IActionResult> UpdateQuantity(CartItemUpdateRequest request)
+        [HttpPatch("Items")]
+        public async Task<IActionResult> UpdateQuantity(CartItemRequest request)
         {
             if (ModelState.IsValid == false)
             {
@@ -75,9 +75,9 @@ namespace eShopSolution.BackEndAPI.Controllers
             return Ok(result);
         }
         [HttpDelete("Items")]
-        public async Task<IActionResult> DeleteItem([FromQuery]int cartId,int productId)
+        public async Task<IActionResult> DeleteItem([FromQuery]int cartId,int productId,decimal priceChange)
         {
-            var result = await _cartService.DeleteItem(cartId,productId);
+            var result = await _cartService.DeleteItem(cartId,productId, priceChange);
 
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);

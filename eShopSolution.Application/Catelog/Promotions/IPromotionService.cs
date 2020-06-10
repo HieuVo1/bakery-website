@@ -1,8 +1,6 @@
 ﻿using eShopSolution.ViewModel.Catalog.Promotions;
 using eShopSolution.ViewModel.Common;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catelog.Promotions
