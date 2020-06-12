@@ -4090,18 +4090,18 @@ textarea.form-control {
         .ps-post .ps-post__action a.liked.like span {
             background-color: #ee7560;
         }        
-.ps-post .ps-post__action a.like:hover > i {
+/*.ps-post .ps-post__action a.like:hover > i {
   color: #fff;
 }
 
 .ps-post .ps-post__action a.like:hover span {
   background-color: #ee7560;
-}
+}*/
 
-.ps-post .ps-post__action a:hover {
+/*.ps-post .ps-post__action a:hover {
   background-color: #ee7560;
   border-color: #ee7560;
-}
+}*/
 
 @media (max-width: 767px) {
   .ps-post .ps-post__header {

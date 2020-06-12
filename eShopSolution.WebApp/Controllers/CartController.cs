@@ -29,7 +29,10 @@ namespace eShopSolution.WebApp.Controllers
             var x = GetCartAsync();
             List<CartItemViewModel> cartItems = new List<CartItemViewModel>();
             //cart = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
-            cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey);
+            if (HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey) != null)
+            {
+                cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey);
+            }
             ViewBag.cart = cartItems;
             ViewBag.count = cartItems.Count();
             ViewBag.total = (cartItems != null) ? cartItems.Sum(item => item.Product.Price * item.Quantity) : 0;

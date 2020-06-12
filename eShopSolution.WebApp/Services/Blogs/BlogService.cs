@@ -18,16 +18,17 @@ namespace eShopSolution.WebApp.Services.Blogs
         {
             return await GetAsync<ApiResult<PageViewModel<BlogViewModel>>>($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}&categoryUrl={categoryUrl}&keyword={keyword}&languageId={languageId}&UserId={UserId}");
         }
-
-        public async Task<ApiResult<BlogViewModel>> GetById(int blogId)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetById(int blogId)
         {
-            return await GetAsync<ApiResult<BlogViewModel>>($"/api/blogs/{blogId}");
+            return await GetAsync<ApiResult<PageViewModel<BlogViewModel>>>($"/api/blogs/{blogId}");
         }
-
-        public async Task<ApiResult<string>> Liked(LikeCreateRequest request)
+        public async Task<ApiResult<string>> Like(LikeCreateRequest request)
         {
             return await CreateAsync<ApiResult<string>, LikeCreateRequest>("/api/blogs/like", request);
         }
-
+        public async Task<ApiResult<string>> DisLike(LikeCreateRequest request)
+        {
+            return await CreateAsync<ApiResult<string>, LikeCreateRequest>("/api/blogs/dislike", request);
+        }
     }
 }

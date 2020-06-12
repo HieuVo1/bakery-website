@@ -39,7 +39,7 @@
                                     <div class="ps-post__tags"><i class="fa fa-tags"></i><a href="/blog/@blog.CategoryUrl">@blog.CategoryName</a></div>
                                 </div>
                                 <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 ">
-                                    <div class="ps-post__action"><a class="like" data-id="@blog.Id" data-like="@blog.LikeCount" href="#">Like<i class="fa fa-heart"></i><span><i>@blog.LikeCount</i></span></a><a class="facebook" href="#"><i class="fa fa-facebook"></i>Share</a><a class="twitter" href="#"><i class="fa fa-twitter"></i>Tweet</a></div>
+                                    <div class="ps-post__action"><a class="like @((blog.Liked==true?"liked":"")) " data-id="@blog.Id" data-like="@blog.LikeCount" href="javascript:void(0)">Like<i class="fa fa-heart"></i><span><i>@blog.LikeCount</i></span></a><a class="facebook" href="#"><i class="fa fa-facebook"></i>Share</a><a class="twitter" href="#"><i class="fa fa-twitter"></i>Tweet</a></div>
                                 </div>
                             </div>
                         </footer>
@@ -205,48 +205,59 @@
                     });
                 });
             </script>
-            <script>
-                $(document).ready(function () {
-                    var flag = true;
-
-                    $('.like').click(function (e) {
-                        e.preventDefault();
-                        var likeCount = $(this).attr("data-like");
-                        var id = $(this).attr("data-id");
-                        if (flag == true) {
+            @if (ViewBag.UserId != null)
+            {
+                <script>
+                    $(document).ready(function () {
+                         $('body').on('click',".like",function (e) {
+                            e.preventDefault();
+                            var likeCount = $(this).attr("data-like");
+                             var id = $(this).attr("data-id");
                             var newLikeCount = (parseInt(likeCount) + 1);
-                            like();
-                        }
-                        else {
-                            var newLikeCount = (parseInt(likeCount) - 1)
-                            Dislike();
-                        }
-                        $(this).attr("data-like", newLikeCount);
-                        $(this).children().remove();
-                        $(this).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
-                        flag = !flag;
-                        function like() {
-                            $.ajax({
-                                type: "get",
-                                url: "https://localhost:5001/api/blogs/" + id + "/like",
-                                dataType: "json",
-                                success: function (res) {
-                                    console.log(res);
-                                }
-                            });
-                        }
-                        function Dislike() {
-                            $.ajax({
-                                type: "get",
-                                url: "https://localhost:5001/api/blogs/" + id + "/dislike",
-                                dataType: "json",
-                                success: function (res) {
-                                    console.log(res);
-                                }
-                            });
-                        }
+                            var that = this;
+                             $.ajax({
+                                    type: "post",
+                                    url: "https://localhost:5001/api/blogs/like",
+                                    data: {
+                                        UserId:'@ViewBag.UserId',
+                                        BlogId:id
+                                    },
+                                    dataType: "json",
+                                    success: function (res) {
+                                        $(that).attr("data-like", newLikeCount);
+                                        $(that).children().remove();
+                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
+                                        $(that).addClass("liked");
+                                    }
+                                });
+                        });
                     });
-
-                });
-            </script>
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        $('body').on('click','.like.liked',function (e) {
+                            e.preventDefault();
+                            var likeCount = $(this).attr("data-like");
+                            var id = $(this).attr("data-id");
+                            var newLikeCount = (parseInt(likeCount) - 1);
+                            var that = this;
+                             $.ajax({
+                                    type: "post",
+                                    url: "https://localhost:5001/api/blogs/dislike",
+                                    data: {
+                                        UserId:'@ViewBag.UserId',
+                                        BlogId:id
+                                    },
+                                    dataType: "json",
+                                    success: function (res) {
+                                        $(that).attr("data-like", newLikeCount);
+                                        $(that).children().remove();
+                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
+                                        $(that).removeClass("liked");
+                                    }
+                                });
+                        });
+                    });
+                </script>
+            }
         }

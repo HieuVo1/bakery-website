@@ -6,11 +6,11 @@ namespace eShopSolution.Application.Blogs
 {
     public interface IBlogService
     {
-        Task<ApiResult<BlogViewModel>> GetById(int blogId);
+        Task<ApiResult<PageViewModel<BlogViewModel>>> GetById(int blogId);
         Task<ApiResult<bool>> Create(BlogCreateRequest request);
         Task<ApiResult<bool>> Update(BlogUpdateRequest request, int blogId);
-        Task<ApiResult<bool>> Liked(LikeCreateRequest request);
-        Task<ApiResult<bool>> DisLike(int blogId);
+        Task<ApiResult<bool>> Like(LikeCreateRequest request);
+        Task<ApiResult<bool>> DisLike(LikeCreateRequest request);
         Task<ApiResult<bool>> Delete(int blogId);
         Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(GetBlogPaggingRequest request);
     }

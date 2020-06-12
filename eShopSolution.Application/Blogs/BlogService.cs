@@ -56,13 +56,6 @@ namespace eShopSolution.Application.Blogs
             return await SaveChangeService.SaveChangeAsyncImage(_context, blog.ImagePath, _storageService);
         }
 
-        public async Task<ApiResult<bool>> DisLike(int blogId)
-        {
-            var blog = await _context.Blogs.FindAsync(blogId);
-            blog.LikeCount--;
-            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
-        }
-
         public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetAll(GetBlogPaggingRequest request)
         {
             var query = from p in _context.Blogs
@@ -106,7 +99,7 @@ namespace eShopSolution.Application.Blogs
                     UserName = x.us.UserName,
                     CategoryName = x.c.Name,
                     CategoryUrl = x.c.CategoryUrl,
-                   
+                    UserLikeId = x.l.UserId.ToString()
                 }).ToListAsync();
                 var pageViewModel = new PageViewModel<BlogViewModel>()
                 {
@@ -131,58 +124,8 @@ namespace eShopSolution.Application.Blogs
                          UserName = x.us.UserName,
                          CategoryName = x.c.Name,
                          CategoryUrl = x.c.CategoryUrl,
+                         UserLikeId = x.l.UserId.ToString()
                      }).ToListAsync();
-                //if (!String.IsNullOrEmpty(request.Keyword))
-                //{
-                //    query = query.Where(x => x.blog.Title.Contains(request.Keyword));
-                //}
-                ////filter
-                //if (!String.IsNullOrEmpty(request.CategoryUrl))
-                //{
-                //    query = query.Where(x => x.category.CategoryUrl.Equals(request.CategoryUrl));
-                //}
-                //int totalRow = await query.CountAsync();
-
-                ////Pagging
-                //if (request.PageIndex == 0 || request.PageSize == 0)
-                //{
-                //    var data = await query
-                //    .Select(x => new BlogViewModel()
-                //    {
-                //        Id=x.blog.Id,
-                //        Content = x.blog.Content,
-                //        Created_At = x.blog.Created_At,
-                //        Title = x.blog.Title,
-                //        LikeCount=x.blog.LikeCount,
-                //        ImagePath = x.blog.ImagePath,
-                //        UserName = x.user.UserName,
-                //        CategoryName = x.category.Name,
-                //        CategoryUrl=x.category.CategoryUrl,
-                //    }).ToListAsync();
-                //    var pageViewModel = new PageViewModel<BlogViewModel>()
-                //    {
-                //        TotalRecords = totalRow,
-                //        Items = data,
-                //        PageSize = request.PageSize,
-                //        PageIndex = request.PageIndex
-                //    };
-                //    return new ApiResultSuccess<PageViewModel<BlogViewModel>>(pageViewModel);
-                //}
-                //else
-                //{
-                //    var data = await query.Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize)
-                //         .Select(x => new BlogViewModel()
-                //         {
-                //             Id = x.blog.Id,
-                //             Content = x.blog.Content,
-                //             Created_At = x.blog.Created_At,
-                //             Title = x.blog.Title,
-                //             LikeCount = x.blog.LikeCount,
-                //             ImagePath = x.blog.ImagePath,
-                //             UserName = x.user.UserName,
-                //             CategoryName = x.category.Name,
-                //             CategoryUrl = x.category.CategoryUrl,
-                //         }).ToListAsync();
                 var pageViewModel = new PageViewModel<BlogViewModel>()
                 {
                     TotalRecords = totalRow,
@@ -195,33 +138,48 @@ namespace eShopSolution.Application.Blogs
 
         }
 
-        public async Task<ApiResult<BlogViewModel>> GetById(int blogId)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetById(int blogId)
         {
-            var blog = await _context.Blogs.FindAsync(blogId);
-            var user = await _userManager.FindByIdAsync(blog.UserId.ToString());
-            var category = await _context.CategoryTranslations.FirstOrDefaultAsync(x=>x.CategoryId==blog.CategoryId);
-            var commentCount = _context.Comments.Where(c => c.BlogId == blogId).Count();
-            var Liked =  _context.Likes.Where(x => x.BlogId == blogId);
-            var data = await Liked.Select(x => x.UserId.ToString()).ToListAsync();
-            var blogViewModel = new BlogViewModel()
+            var query = from p in _context.Blogs where p.Id == blogId
+                        join us in _context.Users on p.UserId equals us.Id
+                        join c in _context.CategoryTranslations on p.CategoryId equals c.CategoryId
+                        where c.LanguageId == "vn"
+                        join l in _context.Likes on p.Id equals l.BlogId
+                        into ps
+                        from l in ps.DefaultIfEmpty()
+                        select new
+                        {
+                            p,
+                            us,
+                            c,
+                            l
+                        };
+            var data = await query
+               .Select(x => new BlogViewModel()
+               {
+                   Id = x.p.Id,
+                   Content = x.p.Content,
+                   Created_At = x.p.Created_At,
+                   Title = x.p.Title,
+                   LikeCount = x.p.LikeCount,
+                   ImagePath = x.p.ImagePath,
+                   UserName = x.us.UserName,
+                   CategoryName = x.c.Name,
+                   CategoryUrl = x.c.CategoryUrl,
+                   UserLikeId = x.l.UserId.ToString()
+               }).ToListAsync();
+            var pageViewModel = new PageViewModel<BlogViewModel>()
             {
-                Id = blog.Id,
-                Content = blog.Content,
-                Created_At = blog.Created_At,
-                Title = blog.Title,
-                LikeCount = blog.LikeCount,
-                ImagePath = blog.ImagePath,
-                UserName = user.UserName,
-                CategoryName = category.Name,
-                CountComment=commentCount,
-                CategoryUrl =category.CategoryUrl,
+                TotalRecords = 1,
+                Items = data,
+                PageSize =0,
+                PageIndex = 0
             };
-            return new ApiResultSuccess<BlogViewModel>(blogViewModel);
+            return new ApiResultSuccess<PageViewModel<BlogViewModel>>(pageViewModel);
         }
 
-        public async Task<ApiResult<bool>> Liked(LikeCreateRequest request)
+        public async Task<ApiResult<bool>> Like(LikeCreateRequest request)
         {
-            var blog = await _context.Blogs.FindAsync(request.BlogId);
             var like = await _context.Likes.FirstOrDefaultAsync(x => x.BlogId == request.BlogId && x.UserId==new Guid(request.UserId));
             if (like == null)
             {
@@ -230,12 +188,21 @@ namespace eShopSolution.Application.Blogs
                     UserId = new Guid(request.UserId)
                 };
                 _context.Likes.Add(newLike);
-                blog.LikeCount++;
-                return await SaveChangeService.SaveChangeAsyncNotImage(_context);
+                await _context.SaveChangesAsync();
+                return new ApiResultSuccess<bool>();
             }
-            blog.LikeCount--;
+            return new ApiResultErrors<bool>("You liked  this blog");
+        }
+        public async Task<ApiResult<bool>> DisLike(LikeCreateRequest request)
+        {
+            var like = await _context.Likes.FirstOrDefaultAsync(x => x.BlogId == request.BlogId && x.UserId == new Guid(request.UserId));
+            if (like == null)
+            {
+                return new ApiResultErrors<bool>("Not found");
+            }
             _context.Likes.Remove(like);
-            return await SaveChangeService.SaveChangeAsyncNotImage(_context);
+            await _context.SaveChangesAsync();
+            return new ApiResultSuccess<bool>();
         }
 
         public async Task<ApiResult<bool>> Update(BlogUpdateRequest request, int blogId)

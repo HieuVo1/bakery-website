@@ -57,7 +57,7 @@ namespace eShopSolution.WebApp.Services
         }
         protected async Task<TResponse> DeleteAsync<TResponse>(string url)
         {
-            var sections = _httpContextAccessor.HttpContext.Request.Cookies.GetObjectFromJson<string>("Token");
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var response = await _client.DeleteAsync(url);
             if (response.IsSuccessStatusCode)
@@ -68,7 +68,7 @@ namespace eShopSolution.WebApp.Services
         }
         protected async Task<TResponse> CreateAsync<TResponse,TRequest>(string url, TRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Request.Cookies.GetObjectFromJson<string>("Token");
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var json = JsonConvert.SerializeObject(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
@@ -82,7 +82,7 @@ namespace eShopSolution.WebApp.Services
         }
         protected async Task<TResponse> UpdateAsync<TResponse, TRequest>(string url, TRequest request)
         {
-            var sections = _httpContextAccessor.HttpContext.Request.Cookies.GetObjectFromJson<string>("Token");
+            var sections = _httpContextAccessor.HttpContext.Session.GetString("Token");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sections);
             var json = JsonConvert.SerializeObject(request);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");

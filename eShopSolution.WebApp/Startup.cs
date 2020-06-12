@@ -160,7 +160,7 @@ namespace eShopSolution.WebApp
                 defaults: new { controller = "blog", action = "detail" });
 
                 endpoints.MapControllerRoute(name: "deletecmt",
-                pattern: "blog/deletecomment/{commentId}/{blogId}/",
+                pattern: "blog/deletecomment/{blogId}/{commentId}/",
                 defaults: new { controller = "blog", action = "deletecomment" });
 
                 endpoints.MapControllerRoute(name: "blog",

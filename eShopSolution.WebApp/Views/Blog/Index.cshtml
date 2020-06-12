@@ -128,34 +128,12 @@
         @section Scripts{
             @if (ViewBag.UserId != null)
             {
-    <script>
+                <script>
                     $(document).ready(function () {
-                        $('.like.liked').click(function (e) {
+                         $('body').on('click',".like",function (e) {
                             e.preventDefault();
                             var likeCount = $(this).attr("data-like");
-                            var id = $(this).attr("data-id");
-                            var newLikeCount = (parseInt(likeCount) - 1);
-                            var that = this;
-                             $.ajax({
-                                    type: "post",
-                                    url: "https://localhost:5001/api/blogs/like",
-                                    data: {
-                                        UserId:'@ViewBag.UserId',
-                                        BlogId:id
-                                    },
-                                    dataType: "json",
-                                    success: function (res) {
-                                        $(that).attr("data-like", newLikeCount);
-                                        $(that).children().remove();
-                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
-                                        $(that).removeClass("liked");
-                                    }
-                                });
-                        });
-                         $('.like').click(function (e) {
-                            e.preventDefault();
-                            var likeCount = $(this).attr("data-like");
-                            var id = $(this).attr("data-id");
+                             var id = $(this).attr("data-id");
                             var newLikeCount = (parseInt(likeCount) + 1);
                             var that = this;
                              $.ajax({
@@ -175,7 +153,33 @@
                                 });
                         });
                     });
-    </script>
+                </script>
+                <script>
+                    $(document).ready(function () {
+                        $('body').on('click','.like.liked',function (e) {
+                            e.preventDefault();
+                            var likeCount = $(this).attr("data-like");
+                            var id = $(this).attr("data-id");
+                            var newLikeCount = (parseInt(likeCount) - 1);
+                            var that = this;
+                             $.ajax({
+                                    type: "post",
+                                    url: "https://localhost:5001/api/blogs/dislike",
+                                    data: {
+                                        UserId:'@ViewBag.UserId',
+                                        BlogId:id
+                                    },
+                                    dataType: "json",
+                                    success: function (res) {
+                                        $(that).attr("data-like", newLikeCount);
+                                        $(that).children().remove();
+                                        $(that).append('<i class="fa fa-heart"></i><span><i>' + newLikeCount + '</i></span>')
+                                        $(that).removeClass("liked");
+                                    }
+                                });
+                        });
+                    });
+                </script>
             }
 
             <script>

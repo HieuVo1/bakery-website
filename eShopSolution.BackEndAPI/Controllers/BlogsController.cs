@@ -24,7 +24,7 @@ namespace eShopSolution.BackEndAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetPagging([FromQuery] GetBlogPaggingRequest request)
         {
-            var result = await _blogService.GetAll(request);
+                var result = await _blogService.GetAll(request);
             if (result.IsSuccessed == false)
             {
                 return BadRequest(result);
@@ -71,15 +71,15 @@ namespace eShopSolution.BackEndAPI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> UpdateLike([FromForm] LikeCreateRequest request)
         {
-            var result = await _blogService.Liked(request);
+            var result = await _blogService.Like(request);
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
-        [HttpGet("{blodId}/dislike")]
+        [HttpPost("dislike")]
         [AllowAnonymous]
-        public async Task<IActionResult> DisLike(int blodId)
+        public async Task<IActionResult> DisLike([FromForm] LikeCreateRequest request)
         {
-            var result = await _blogService.DisLike(blodId);
+            var result = await _blogService.DisLike(request);
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
