@@ -166,6 +166,69 @@ namespace eShopSolution.Application.Catelog.Orders
             return new ApiResultSuccess<List<OrderDetailViewModel>>(data);
         }
 
+        public async Task<ApiResult<List<RevenueViewModel>>> GetRevenue()
+        {
+            var query = (from or in _context.Orders
+                         where ((or.Created_At.Month < DateTime.Now.Month) && (or.Created_At.Year == DateTime.Now.Year))
+                        
+                         group or by new
+                         {
+                             or.Created_At.Month
+                         } into result
+                         select new
+                         {
+                             month = result.Key.Month,
+                             total = (decimal?)result.Sum(p => p.Total)
+                         })
+                        .Union(from or in _context.Orders
+                                where ((or.Created_At.Month >= DateTime.Now.Month) && (or.Created_At.Year == (DateTime.Now.Year-1)))
+                               group or by new
+                               {
+                                   or.Created_At.Month
+                               } into result
+                               select new
+                               {
+                                   month = result.Key.Month,
+                                   total = (decimal?)result.Sum(p => p.Total)
+                               });
+            var data = await query
+            .Select(x => new RevenueViewModel
+            { 
+                Month = (x.month<DateTime.Now.Month)?(x.month+ DateTime.Now.Month): (x.month - DateTime.Now.Month),
+                Total =x.total
+                 
+            }).ToListAsync();
+            return new ApiResultSuccess<List<RevenueViewModel>>(data);
+        }
+
+        public async Task<ApiResult<List<RevenueByCategory>>> GetRevenueByCategory(int take)
+        {
+            var query = from or in _context.Orders
+                        join od in _context.OrderDetails on or.Id equals od.OrderId
+                        join pro in _context.Products on od.ProductId equals pro.Id
+                        join ca in _context.CategoryTranslations on pro.CategoryId equals ca.CategoryId
+                        where ca.LanguageId == "vn"
+                        select new { or, ca }
+                        into re
+                        group re by re.ca.Name
+                        into result
+                        orderby
+                         (decimal?)result.Sum(p => p.or.Total) descending
+                        select new
+                        {
+                            catelogyName = result.Key,
+                            total = (decimal?)result.Sum(p => p.or.Total)
+                        };
+            var data = await query.Take(take)
+               .Select(x => new RevenueByCategory()
+               {
+                 CategoryName = x.catelogyName,
+                 Total=x.total
+               }).ToListAsync();
+
+            return new ApiResultSuccess<List<RevenueByCategory>>(data);
+        }
+
         public Task<ApiResult<bool>> Update(OrderUpdateRequest request)
         {
             throw new NotImplementedException();

@@ -17,5 +17,7 @@ namespace eShopSolution.Application.Catelog.Orders
         Task<ApiResult<bool>> Update(OrderUpdateRequest request);
         Task<ApiResult<bool>> UpdateStatus(int status, int orderID);
         Task<ApiResult<bool>> Delete(int orderId);
+        Task<ApiResult<List<RevenueViewModel>>> GetRevenue();
+        Task<ApiResult<List<RevenueByCategory>>> GetRevenueByCategory(int take);
     }
 }

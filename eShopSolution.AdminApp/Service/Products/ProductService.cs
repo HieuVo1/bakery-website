@@ -101,5 +101,9 @@ namespace eShopSolution.AdminApp.Service.Products
         {
             throw new NotImplementedException();
         }
+        public async Task<ApiResult<PageViewModel<ProductViewModel>>> GetTopSelling(string languageId, int pageSize = 0)
+        {
+            return await GetAsync<ApiResult<PageViewModel<ProductViewModel>>>($"/api/products/top/{languageId}?pageSize={pageSize}");
+        }
     }
 }

@@ -18,82 +18,82 @@ function initSparkline() {
 }
 function initC3Chart() {
     setTimeout(function(){ 
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-area-spline-sracked', // id of chart wrapper
-                data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 21, 8, 32, 18, 19, 17, 23, 12, 25, 37],
-                        ['data2', 7, 11, 5, 7, 9, 16, 15, 23, 14, 55],
-                        ['data3', 13, 7, 9, 15, 9, 31, 8, 27, 42, 18],
-                    ],
-                    type: 'area-spline', // default type of chart
-                    groups: [
-                        [ 'data1', 'data2', 'data3']
-                    ],
-                    colors: {
-                        'data1': Aero.colors["gray"],
-                        'data2': Aero.colors["teal"],
-                        'data3': Aero.colors["lime"],
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'Revenue',
-                        'data2': 'Returns',
-                        'data3': 'Queries',
-                    }
-                },
-                axis: {
-                    x: {
-                        type: 'category',
-                        // name of each category
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct']
-                    },
-                },
-                legend: {
-                    show: true, //hide legend
-                },
-                padding: {
-                    bottom: 0,
-                    top: 0
-                },
-            });
-        });    
-        $(document).ready(function(){
-            var chart = c3.generate({
-                bindto: '#chart-pie', // id of chart wrapper
-                data: {
-                    columns: [
-                        // each columns data
-                        ['data1', 55],
-                        ['data2', 25],
-                        ['data3', 20],
-                    ],
-                    type: 'pie', // default type of chart
-                    colors: {
-                        'data1': Aero.colors["lime"],
-                        'data2': Aero.colors["teal"],
-                        'data3': Aero.colors["gray"],
-                    },
-                    names: {
-                        // name of each serie
-                        'data1': 'Arizona',
-                        'data2': 'Florida',
-                        'data3': 'Texas',
-                    }
-                },
-                axis: {
-                },
-                legend: {
-                    show: true, //hide legend
-                },
-                padding: {
-                    bottom: 0,
-                    top: 0
-                },
-            });
-        });
+        //$(document).ready(function(){
+        //    var chart = c3.generate({
+        //        bindto: '#chart-area-spline-sracked', // id of chart wrapper
+        //        data: {
+        //            columns: [
+        //                // each columns data
+        //                ['data1', 21, 8, 32, 18, 19, 17, 23, 12, 25, 37],
+        //                ['data2', 7, 11, 5, 7, 9, 16, 15, 23, 14, 55],
+        //                ['data3', 13, 7, 9, 15, 9, 31, 8, 27, 42, 18],
+        //            ],
+        //            type: 'area-spline', // default type of chart
+        //            groups: [
+        //                [ 'data1', 'data2', 'data3']
+        //            ],
+        //            colors: {
+        //                'data1': Aero.colors["gray"],
+        //                'data2': Aero.colors["teal"],
+        //                'data3': Aero.colors["lime"],
+        //            },
+        //            names: {
+        //                // name of each serie
+        //                'data1': 'Revenue',
+        //                'data2': 'Returns',
+        //                'data3': 'Queries',
+        //            }
+        //        },
+        //        axis: {
+        //            x: {
+        //                type: 'category',
+        //                // name of each category
+        //                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sept', 'Oct']
+        //            },
+        //        },
+        //        legend: {
+        //            show: true, //hide legend
+        //        },
+        //        padding: {
+        //            bottom: 0,
+        //            top: 0
+        //        },
+        //    });
+        //});    
+        //$(document).ready(function(){
+        //    var chart = c3.generate({
+        //        bindto: '#chart-pie', // id of chart wrapper
+        //        data: {
+        //            columns: [
+        //                // each columns data
+        //                ['data1', 55],
+        //                ['data2', 25],
+        //                ['data3', 20],
+        //            ],
+        //            type: 'pie', // default type of chart
+        //            colors: {
+        //                'data1': Aero.colors["lime"],
+        //                'data2': Aero.colors["teal"],
+        //                'data3': Aero.colors["gray"],
+        //            },
+        //            names: {
+        //                // name of each serie
+        //                'data1': 'Arizona',
+        //                'data2': 'Florida',
+        //                'data3': 'Texas',
+        //            }
+        //        },
+        //        axis: {
+        //        },
+        //        legend: {
+        //            show: true, //hide legend
+        //        },
+        //        padding: {
+        //            bottom: 0,
+        //            top: 0
+        //        },
+        //    });
+        //});
         $(document).ready(function(){
             var chart = c3.generate({
                 bindto: '#chart-area-step', // id of chart wrapper

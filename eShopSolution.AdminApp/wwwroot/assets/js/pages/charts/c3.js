@@ -155,7 +155,7 @@ $(function() {
                 data: {
                     columns: [
                         // each columns data
-                        ['data1', 11, 8, 15, 18, 19, 17],
+                        ['data1', 0, 0, 0, 0,0, 0],
                         ['data2', 7, 7, 5, 7, 9, 12]
                     ],
                     type: 'area-spline', // default type of chart

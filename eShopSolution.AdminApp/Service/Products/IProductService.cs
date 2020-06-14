@@ -20,6 +20,7 @@ namespace eShopSolution.AdminApp.Service.Products
         Task<ApiResult<string>> UpdatePrice(int ProductId, decimal newPrice);
 
         Task<ApiResult<string>> UpdateStock(int ProductId, int addedQuantity);
+        Task<ApiResult<PageViewModel<ProductViewModel>>> GetTopSelling(string languageId, int pageSize = 0);
 
     }
 }

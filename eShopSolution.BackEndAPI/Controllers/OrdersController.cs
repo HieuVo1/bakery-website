@@ -91,5 +91,19 @@ namespace eShopSolution.BackEndAPI.Controllers
             if (result.IsSuccessed == false) return BadRequest(result);
             return Ok(result);
         }
+        [HttpGet("getRevenue")]
+        public async Task<IActionResult> GetRevenue()
+        {
+            var result = await _orderService.GetRevenue();
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
+        }
+        [HttpGet("getRevenueByCategory/{take}")]
+        public async Task<IActionResult> GetRevenueByCategory(int take)
+        {
+            var result = await _orderService.GetRevenueByCategory(take);
+            if (result.IsSuccessed == false) return BadRequest(result);
+            return Ok(result);
+        }
     }
 }
