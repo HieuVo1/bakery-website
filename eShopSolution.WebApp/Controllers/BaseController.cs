@@ -25,7 +25,6 @@ namespace eShopSolution.WebApp.Controllers
         }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            //section =  CookieHelpers.GetObjectFromJson<string>(Request.Cookies, "Token");
             section = HttpContext.Session.GetString("Token");
             GetCart();
             if (section != null)
@@ -44,7 +43,6 @@ namespace eShopSolution.WebApp.Controllers
         {
             List<CartItemViewModel> cartItems = new List<CartItemViewModel>();
             var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-            //cartItems = CookieHelpers.GetObjectFromJson<List<CartItemViewModel>>(HttpContext.Request.Cookies, CartSessionKey);
             cartItems = HttpContext.Session.GetObjectFromJson<List<CartItemViewModel>>(CartSessionKey);
             ViewBag.cart = cartItems;
             ViewBag.total = (cartItems != null) ? cartItems.Sum(item => item.Product.Price * item.Quantity) : 0;

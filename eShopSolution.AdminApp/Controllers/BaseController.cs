@@ -47,6 +47,7 @@ namespace eShopSolution.AdminApp.Controllers
                 ViewBag.UserName = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 ViewBag.Email = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                 ViewBag.Id = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                ViewBag.Role = userPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
             }
             ViewBag.result = TempData["result"];
              ViewBag.IsSuccess = TempData["IsSuccess"];
