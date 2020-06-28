@@ -12,6 +12,7 @@ using eShopSolution.WebApp.Services.Orders;
 using eShopSolution.WebApp.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Stripe;
 
 namespace eShopSolution.WebApp.Controllers
 {
@@ -54,52 +55,166 @@ namespace eShopSolution.WebApp.Controllers
             var result = await _locationService.GetAll(keyword);
             return Ok(result);
         }
+        //[HttpPost]
+        //public async Task<IActionResult> Orders(OrderCreateRequest request)
+        //{
+        //    request.OrderDetails = new List<OrderDetailCreateRequest>();
+        //    foreach (var item in ViewBag.cart)
+        //    {
+        //        var detail = new OrderDetailCreateRequest
+        //        {
+        //            ProductId = item.Product.Id,
+        //            Price = item.Product.Price,
+        //            Quantity = item.Quantity
+        //        };
+        //        request.OrderDetails.Add(detail);
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        var result = await _orderService.Create(request);
+        //        if (result.IsSuccessed)
+        //        {
+        //            var data = new
+        //            {
+        //                Id = result.ResultObject,
+        //                Name = request.ShipName,
+        //                Phone = request.ShipPhone,
+        //                Address = request.ShipAddress,
+        //                Total = request.Total,
+        //                Status = OrderStatus.InProgress.ToString(),
+        //                Create_At = DateTime.Now.ToShortDateString(),
+        //            };
+        //            await ChannelHelper.Trigger(data, "feed", "new_feed", _configuration);
+        //            var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+        //            List<CartItemViewModel> cart = new List<CartItemViewModel>();
+        //            if (ViewBag.CartId != null)
+        //            {
+        //                await _cartService.DeleteAll(Convert.ToInt32(ViewBag.CartId));
+        //            }
+        //            HttpContext.Session.Remove(CartSessionKey);
+        //            return RedirectToAction("index", "home");
+        //        }
+        //        ModelState.AddModelError(string.Empty, result.Message);
+        //        return View("index");
+        //    }
+        //    else
+        //    {
+        //        return View("index");
+        //    }
+        //}
         [HttpPost]
-        public async Task<IActionResult> Order(OrderCreateRequest request)
+        public async Task<IActionResult> OrderAsync(OrderCreateRequest request)
         {
-            request.OrderDetails = new List<OrderDetailCreateRequest>();
-            foreach (var item in ViewBag.cart)
+            if (string.IsNullOrEmpty(request.StripeToken))
             {
-                var detail = new OrderDetailCreateRequest
+                request.OrderDetails = new List<OrderDetailCreateRequest>();
+                foreach (var item in ViewBag.cart)
                 {
-                    ProductId = item.Product.Id,
-                    Price = item.Product.Price,
-                    Quantity = item.Quantity
-                };
-                request.OrderDetails.Add(detail);
-            }
-            if (ModelState.IsValid)
-            {
-                var result = await _orderService.Create(request);
-                if (result.IsSuccessed)
-                {
-                    var data = new
+                    var detail = new OrderDetailCreateRequest
                     {
-                        Id = result.ResultObject,
-                        Name = request.ShipName,
-                        Phone = request.ShipPhone,
-                        Address = request.ShipAddress,
-                        Total = request.Total,
-                        Status = OrderStatus.InProgress.ToString(),
-                        Create_At = DateTime.Now.ToShortDateString(),
+                        ProductId = item.Product.Id,
+                        Price = item.Product.Price,
+                        Quantity = item.Quantity
                     };
-                    await ChannelHelper.Trigger(data, "feed", "new_feed", _configuration);
-                    var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
-                    List<CartItemViewModel> cart = new List<CartItemViewModel>();
-                    if (ViewBag.CartId != null)
-                    {
-                        await _cartService.DeleteAll(Convert.ToInt32(ViewBag.CartId));
-                    }
-                    HttpContext.Session.Remove(CartSessionKey);
-                    return RedirectToAction("index", "home");
+                    request.OrderDetails.Add(detail);
                 }
-                ModelState.AddModelError(string.Empty, result.Message);
-                return View("index");
+                if (ModelState.IsValid)
+                {
+                    var result = await _orderService.Create(request);
+                    if (result.IsSuccessed)
+                    {
+                        var data = new
+                        {
+                            Id = result.ResultObject,
+                            Name = request.ShipName,
+                            Phone = request.ShipPhone,
+                            Address = request.ShipAddress,
+                            Total = request.Total,
+                            Status = OrderStatus.InProgress.ToString(),
+                            Create_At = DateTime.Now.ToShortDateString(),
+                        };
+                        await ChannelHelper.Trigger(data, "feed", "new_feed", _configuration);
+                        var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+                        List<CartItemViewModel> cart = new List<CartItemViewModel>();
+                        if (ViewBag.CartId != null)
+                        {
+                            await _cartService.DeleteAll(Convert.ToInt32(ViewBag.CartId));
+                        }
+                        HttpContext.Session.Remove(CartSessionKey);
+                        return RedirectToAction("index", "home");
+                    }
+                    ModelState.AddModelError(string.Empty, result.Message);
+                    return View("index");
+                }
+                else
+                {
+                    return View("index");
+                }
             }
-            else
+            var customers = new CustomerService();
+            var charges = new ChargeService();
+            var customer = customers.Create(new CustomerCreateOptions
             {
-                return View("index");
+                Email = request.ShipEmail,
+                Source = request.StripeToken,
+                Name = request.ShipName,
+            });
+            var charge = charges.Create(new ChargeCreateOptions
+            {
+                Amount = Convert.ToInt64(request.Total)*100,
+                Description=request.OrderNotes,
+                Currency = "usd",
+                Customer = customer.Id,
+                ReceiptEmail = request.ShipEmail,
+            });
+            if (charge.Status == "succeeded")
+            {
+                request.TransactionId = charge.BalanceTransactionId;
+                request.OrderDetails = new List<OrderDetailCreateRequest>();
+                foreach (var item in ViewBag.cart)
+                {
+                    var detail = new OrderDetailCreateRequest
+                    {
+                        ProductId = item.Product.Id,
+                        Price = item.Product.Price,
+                        Quantity = item.Quantity
+                    };
+                    request.OrderDetails.Add(detail);
+                }
+                if (ModelState.IsValid)
+                {
+                    var result = await _orderService.Create(request);
+                    if (result.IsSuccessed)
+                    {
+                        var data = new
+                        {
+                            Id = result.ResultObject,
+                            Name = request.ShipName,
+                            Phone = request.ShipPhone,
+                            Address = request.ShipAddress,
+                            Total = request.Total,
+                            Status = OrderStatus.InProgress.ToString(),
+                            Create_At = DateTime.Now.ToShortDateString(),
+                        };
+                        await ChannelHelper.Trigger(data, "feed", "new_feed", _configuration);
+                        var CartSessionKey = _configuration.GetSection("CartSessionKey").Value;
+                        List<CartItemViewModel> cart = new List<CartItemViewModel>();
+                        if (ViewBag.CartId != null)
+                        {
+                            await _cartService.DeleteAll(Convert.ToInt32(ViewBag.CartId));
+                        }
+                        HttpContext.Session.Remove(CartSessionKey);
+                        return RedirectToAction("index", "home");
+                    }
+                    ModelState.AddModelError(string.Empty, result.Message);
+                    return View("index");
+                }
+                else
+                {
+                    return View("index");
+                }
             }
+            return View("index");
         }
     }
 }

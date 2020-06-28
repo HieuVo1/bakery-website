@@ -15,6 +15,7 @@ namespace eShopSolution.Data.Entities
         public string ShipPhone { set; get; }
         public string ShipAddress { set; get; }
         public string OrderNotes { set; get; }
+        public string TransactionId { set; get; }
         public decimal Total { set; get; }
         public OrderStatus Status { set; get; }
         public DateTime Created_At { set; get; }

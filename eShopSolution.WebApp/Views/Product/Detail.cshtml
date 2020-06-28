@@ -57,7 +57,7 @@
                             <option value="1">4</option>
                             <option value="5">5</option>
                         </select>
-                        <p class="ps-product__price" data-price="@Model.Price">@Model.Price</p>
+                        <p class="ps-product__price" data-price="@Model.Price">@string.Format("{0:C}", Model.Price)</p>
                         
                     <div class="ps-product__description">
                         @Html.Raw(Model.Description)

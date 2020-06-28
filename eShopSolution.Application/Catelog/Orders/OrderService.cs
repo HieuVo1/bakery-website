@@ -34,6 +34,7 @@ namespace eShopSolution.Application.Catelog.Orders
                     ShipEmail = request.ShipEmail,
                     ShipPhone = request.ShipPhone,
                     Total = request.Total,
+                    TransactionId = request.TransactionId,
                     OrderDetails = new List<OrderDetail>()
                 };
                 foreach (var item in request.OrderDetails)
@@ -126,7 +127,7 @@ namespace eShopSolution.Application.Catelog.Orders
         {
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null) return new ApiResultErrors<OrderViewModel>($"Can not find order with id: {orderId}");
-
+            var promotion = await _context.Promotions.FindAsync(order.PromotionId);
             var orderViewModel = new OrderViewModel
             {
                 Id = order.Id,
@@ -134,6 +135,7 @@ namespace eShopSolution.Application.Catelog.Orders
                 OrderNotes = order.OrderNotes,
                 UserId = order.UserId.ToString(),
                 PromotionId = order.PromotionId ?? 0,
+                PromotionDiscount = promotion==null ? 0:promotion.DiscountAmount,
                 ShipName = order.ShipName,
                 ShipAddress = order.ShipAddress,
                 ShipEmail = order.ShipEmail,

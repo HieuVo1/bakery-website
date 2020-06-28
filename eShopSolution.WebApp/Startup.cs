@@ -2,6 +2,7 @@ using eShopSolution.Application.Catelog.Carts;
 using eShopSolution.Data.EF;
 using eShopSolution.Data.Entities;
 using eShopSolution.ViewModel.System.Users;
+using eShopSolution.WebApp.Helpers;
 using eShopSolution.WebApp.Services.Blogs;
 using eShopSolution.WebApp.Services.Carts;
 using eShopSolution.WebApp.Services.Categorys;
@@ -26,6 +27,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -98,7 +100,7 @@ namespace eShopSolution.WebApp
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<ILanguageService, LanguageService>();
-            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IProductService, Services.products.ProductService>();
             services.AddTransient<IUserAPIClient, UserAPIClient>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<IContactService, ContactService>();
@@ -106,11 +108,13 @@ namespace eShopSolution.WebApp
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IImageProductService, ImageProductService>();
-            services.AddTransient<IReviewService, ReviewService>();
+            services.AddTransient<IReviewService, Services.Reviews.ReviewService>();
             services.AddTransient<ILocationService, LocationService>();
-            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IOrderService, Services.Orders.OrderService>();
 
             services.AddTransient<SignInManager<UserApp>, SignInManager<UserApp>>();
+            services.Configure<StripeSetting>(Configuration.GetSection("Stripe"));
+
             IMvcBuilder builder = services.AddRazorPages();
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -125,6 +129,7 @@ namespace eShopSolution.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["Secret_Key"]);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

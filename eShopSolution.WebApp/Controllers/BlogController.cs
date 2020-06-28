@@ -39,10 +39,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewData["blogs"] = SetLiked(blogs.ResultObject.Items,userId);
             ViewBag.top = top.ResultObject.Items;
             ViewData["categories"] = categories.ResultObject;
-            if (section != null)
-            {
-                ViewBag.IsLogged = true;
-            }
             return View(blogs.ResultObject);
         }
         public async Task<IActionResult> DetailAsync(int blogId)
@@ -56,10 +52,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewData["comments"] = comments.ResultObject;
             ViewData["categories"] = categories.ResultObject;
             ViewBag.top = top.ResultObject.Items;
-            if (section != null)
-            {
-                ViewBag.IsLogged = true;
-            }
             return View();
         }
         [HttpPost]

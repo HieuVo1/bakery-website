@@ -38,10 +38,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewData["languages"] = languages.ResultObject;
             ViewData["categories"] = categories.ResultObject;
             ViewData["products"] = products.ResultObject.Items;
-            if (section != null)
-            {
-                ViewBag.IsLogged = true;
-            }
             return View();
         }
 

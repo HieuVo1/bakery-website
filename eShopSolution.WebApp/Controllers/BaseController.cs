@@ -26,6 +26,10 @@ namespace eShopSolution.WebApp.Controllers
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             section = HttpContext.Session.GetString("Token");
+            if (section != null)
+            {
+                ViewBag.IsLogged = true;
+            }
             GetCart();
             if (section != null)
             {

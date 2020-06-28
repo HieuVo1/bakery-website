@@ -36,10 +36,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewBag.cart = cartItems;
             ViewBag.count = cartItems.Count();
             ViewBag.total = (cartItems != null) ? cartItems.Sum(item => item.Product.Price * item.Quantity) : 0;
-            if (section != null)
-            {
-                ViewBag.IsLogged = true;
-            }
             return View();
         }
         [HttpPost]

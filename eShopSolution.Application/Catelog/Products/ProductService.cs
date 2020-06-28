@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using eShopSolution.Application.Comom;
 using eShopSolution.Utilities.functions;
+using Org.BouncyCastle.Ocsp;
 
 namespace eShopSolution.Application.Catelog.Products
 {
@@ -334,6 +335,9 @@ namespace eShopSolution.Application.Catelog.Products
             productTranslation.Name = request.Name;
             productTranslation.ProductUrl = GetUrlByName.Converts(request.Name);
             productTranslation.Description = request.Description;
+            product.Price = request.Price;
+            product.OriginalPrice= request.OriginalPrice;
+            product.Stock = request.Stock;
             //Save Image
             if (request.ThumbnailImage != null)
             {

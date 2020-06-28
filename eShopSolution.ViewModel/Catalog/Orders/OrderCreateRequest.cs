@@ -15,6 +15,8 @@ namespace eShopSolution.ViewModel.Catalog.Orders
         public string ShipAddress { set; get; }
         public string Street { set; get; }
         public string OrderNotes { set; get; }
+        public string TransactionId { set; get; }
+        public string StripeToken { set; get; }
         public decimal Total { set; get; }
         public OrderStatus Status { set; get; }
         public DateTime Created_At { set; get; }

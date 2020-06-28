@@ -49,10 +49,6 @@ namespace eShopSolution.WebApp.Controllers
             ViewData["maxPrice"] = maxPrice;
             ViewData["categories"] = categories.ResultObject;
             ViewBag.top = topSelling.ResultObject.Items;
-            if (section != null)
-            {
-                ViewBag.IsLogged = true;
-            }
             return View(products.ResultObject);
         }
         [HttpGet]
