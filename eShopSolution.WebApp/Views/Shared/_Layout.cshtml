@@ -129,14 +129,18 @@
         $(document).ready(function () {
             $('body').on('click', '.ps-cart-item__close', function (e) {
                 e.preventDefault();
+                var formatter = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                });
                 var productId = $(this).attr("data-id");
                 var quantity = parseInt($(this).next().next().children().eq(1).children().eq(0).children().html());
-                var totalPrice = parseInt($(this).next().next().children().eq(1).children().eq(1).children().html());
+                var totalPrice = parseInt($(this).next().next().children().eq(1).children().eq(1).children().attr("data-price"));
                 var $numberItems = $(this).parent().parent().next().children().eq(0).children();
                 var numberItems = parseInt($numberItems.html());
                 var that = this;
                 var $priceAll = $(this).parent().parent().next().children().eq(1).children();
-                var priceAll = parseInt($priceAll.html());
+                var priceAll = parseInt($priceAll.attr("data-price"));
                 $.post("https://localhost:5002/cart/delete",
                     {
                         productId: productId,
@@ -144,7 +148,8 @@
                     },
                     function (data, status) {
                         $numberItems.html(numberItems - quantity);
-                        $priceAll.html(priceAll - totalPrice);
+                        $priceAll.html(formatter.format(priceAll - totalPrice));
+                        $priceAll.attr("data-price", priceAll - totalPrice)
                         $(that).parent().parent().parent().parent().prev().children().eq(0).children().html(numberItems - quantity);
                         $(that).parent().remove();
                     });

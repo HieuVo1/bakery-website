@@ -46,9 +46,9 @@ namespace eShopSolution.AdminApp.Service.Blogs
             return await GetAsync<ApiResult<PageViewModel<BlogViewModel>>>($"/api/blogs?pageIndex={pageIndex}&pageSize={pageSize}&languageId={languageId}");
         }
 
-        public async Task<ApiResult<BlogViewModel>> GetById(int blogId)
+        public async Task<ApiResult<PageViewModel<BlogViewModel>>> GetById(int blogId)
         {
-            return await GetAsync<ApiResult<BlogViewModel>>($"/api/blogs/{blogId}");
+            return await GetAsync<ApiResult<PageViewModel<BlogViewModel>>>($"/api/blogs/{blogId}");
         }
 
         public async Task<ApiResult<string>> Liked(int blogId)

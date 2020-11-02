@@ -6,7 +6,7 @@ namespace eShopSolution.AdminApp.Service.Blogs
 {
     public interface IBlogService
     {
-        Task<ApiResult<BlogViewModel>> GetById(int blogId);
+        Task<ApiResult<PageViewModel<BlogViewModel>>> GetById(int blogId);
         Task<ApiResult<string>> Create(BlogCreateRequest request);
         Task<ApiResult<string>> Update(BlogUpdateRequest request, int blogId);
         Task<ApiResult<string>> Delete(int blogId);

@@ -8113,6 +8113,9 @@ textarea.form-control {
 .header--2 .menu > li.current > a {
   color: #ee7560;
 }
+.breadcrumb > li.current > a {
+    color: #ee7560;
+}
 
 @media (max-width: 1199px) {
   .header--2 {
@@ -8177,7 +8180,7 @@ textarea.form-control {
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 100000;
+  z-index: 1000;
   transition: all 0.4s ease;
 }
 

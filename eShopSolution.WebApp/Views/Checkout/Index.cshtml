@@ -30,7 +30,7 @@
 </div>
 <div class="ps-section--checkout pt-80 pb-80">
     <div class="container">
-        <form class="ps-checkout" asp-action="order" asp-controller="Checkout" method="post" id="payment-form">
+        <form class="ps-checkout payment-form" asp-action="order" asp-controller="Checkout" method="post" id="payment-form">
             @*<input type="hidden" name="stripeToken" value="" id="stripeToken"/>*@
             <div class="row">
                 @if (ViewBag.UserInfo != null)
@@ -137,26 +137,26 @@
                                         <tr>
                                             <td> <strong>@item.Product.Name</strong> </td>
                                             <td>@string.Concat("x", @item.Quantity)</td>
-                                            <td><strong>@(item.Product.Price*item.Quantity)</strong></td>
+                                            <td><strong>@string.Format("{0:C}", item.Product.Price * item.Quantity)</strong></td>
                                         </tr>
                                     }
                                 }
                                 <tr style="border-top: 2px solid black;">
                                     <td></td>
                                     <td></td>
-                                    <td><strong>@total</strong></td>
+                                    <td><strong>@string.Format("{0:C}", total)</strong></td>
                                 </tr>
                                 @if (ViewBag.PromotionId != 0)
                                 {
                                     <tr>
                                         <td></td>
                                         <td></td>
-                                        <td><strong>-@ViewBag.PromotionPrice</strong></td>
+                                        <td><strong>-@string.Format("{0:C}", (ViewBag.PromotionPrice!=null? ViewBag.PromotionPrice:0))</strong></td>
                                     </tr>
                                     <tr>
                                         <td class="text-uppercase"><strong>Order Total</strong></td>
                                         <td></td>
-                                        <td><strong>@(total-ViewBag.PromotionPrice)</strong></td>
+                                        <td><strong>@string.Format("{0:C}", total - (ViewBag.PromotionPrice != null ? ViewBag.PromotionPrice : 0))</strong></td>
                                     </tr>
                                 }
                             </tbody>
@@ -165,16 +165,17 @@
                         <div class="group-tabs">
                             <!-- Nav tabs -->
                             <ul class="nav nav-tabs" role="tablist">
-                                <li role="presentation" class="active"><a href="#default" aria-controls="default" role="tab" data-toggle="tab">Payment on delivery</a></li>
-                                <li role="presentation"><a href="#stripe" aria-controls="stripe" role="tab" data-toggle="tab">Payment with stripe</a></li>
+                                <li role="presentation" class=" active stripeclass"><a href="#stripe" aria-controls="stripe" role="tab" data-toggle="tab">Payment with stripe</a></li>
+                                <li role="presentation" class=" default"><a href="#default" aria-controls="default" role="tab" data-toggle="tab">Payment on delivery</a></li>
+
                             </ul>
 
                             <!-- Tab panes -->
                             <div class="tab-content">
-                                <div role="tabpanel" class="tab-pane active mt-15 mb-15" id="default">
-                                    <button class="ps-btn ps-btn--sm">Place Order</button>
+                                <div role="tabpanel" class="tab-pane  mt-15 mb-15" id="default">
+                                    <button type="submit" class="ps-btn ps-btn--sm">Place Order</button>
                                 </div>
-                                <div role="tabpanel" class="tab-pane mt-15 mb-15" id="stripe">
+                                <div role="tabpanel" class="tab-pane active mt-15 mb-15" id="stripe">
                                         <div class="form-row">
                                             <label for="card-element mt-15 mb-15">
                                                 Credit or debit card
@@ -187,7 +188,7 @@
                                             <div id="card-errors" role="alert"></div>
                                         </div>
                                         <div class="text-center mt-15 mb-15">
-                                            <button class="btn btn-primary">Submit Payment</button>
+                                            <button type="submit" class="btn btn-primary">Submit Payment</button>
                                         </div>
                                 </div>
                                
@@ -255,8 +256,70 @@
     @*<script src="~/lib/select2/js/select2.min.js"></script>*@
     <script src="~/lib/select2/js/select2.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    @*<script>
+        $(document).ready(function(){
+            $(".default").click(function(){
+                $('.ps-checkout').attr('id','');
+                $('#stripe').children().remove();
+            });
+         $(".stripeclass").click(function(){
+                $('.ps-checkout').attr('id','payment-form');
+                $('#stripe').append(
+        `<div class="form-row">
+            <label for="card-element mt-15 mb-15">
+                Credit or debit card
+            </label>
+            <div id="card-element">
+                <!-- A Stripe Element will be inserted here. -->
+            </div>
+
+            <!-- Used to display form errors. -->
+            <div id="card-errors" role="alert"></div>
+         </div>
+         <div class="text-center mt-15 mb-15">
+             <button type="submit" class="btn btn-primary">Submit Payment</button>
+         </div>`
+             );
+             var stripe = Stripe('pk_test_51GzafRL8yRIwZZ6Woi4s42t5iepvblt1cON9ATbiqtbcZurXfDZHiDek49tZi50PSBrstNKcynWPMjoDRhhWr2ls00ya9lveNE');
+
+             // Create an instance of Elements.
+             var elements = stripe.elements();
+             var style = {
+                 base: {
+                     color: '#32325d',
+                     fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                     fontSmoothing: 'antialiased',
+                     fontSize: '16px',
+                     '::placeholder': {
+                         color: '#aab7c4'
+                     }
+                 },
+                 invalid: {
+                     color: '#fa755a',
+                     iconColor: '#fa755a'
+                 }
+             };
+
+             // Create an instance of the card Element.
+             var card = elements.create('card', { style: style });
+
+             // Add an instance of the card Element into the `card-element` <div>.
+             card.mount('#card-element');
+
+             // Handle real-time validation errors from the card Element.
+             card.on('change', function (event) {
+                 var displayError = document.getElementById('card-errors');
+                 if (event.error) {
+                     displayError.textContent = event.error.message;
+                 } else {
+                     displayError.textContent = '';
+                 }
+             });
+            });
+        });
+    </script>*@
     <script>
-        var stripe = Stripe('pk_test_51GyICsGIZGuZHkRDrctkfTyAubLNBT29JxzlRL6SEkmZ15Ac0lWSjkiyDaAiBa2T2CtZE9rLC4nKu5GNvgr3kcFs008yxyjhww');
+        var stripe = Stripe('pk_test_51GzafRL8yRIwZZ6Woi4s42t5iepvblt1cON9ATbiqtbcZurXfDZHiDek49tZi50PSBrstNKcynWPMjoDRhhWr2ls00ya9lveNE');
 
         // Create an instance of Elements.
         var elements = stripe.elements();
@@ -297,26 +360,11 @@
 
         // Handle form submission.
         var form = document.getElementById('payment-form');
-        //$('#payment-form').submit(function (e) {
-        //    e.preventDefault();
-        //    var that= this;
-        //    stripe.createToken(card).then(function (result) {
-        //        if (result.error) {
-        //            // Inform the user if there was an error.
-        //            var errorElement = document.getElementById('card-errors');
-        //            errorElement.textContent = result.error.message;
-        //        } else {
-        //            // Send the token to your server.
-        //            //stripeTokenHandler(result.token);
-        //            $('stripeToken').val(result.token);
-        //            $(this).submit();
-        //        }
-        //    });
-        //});
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            stripe.createToken(card).then(function (result) {
+            stripe.createToken(card)
+                .then(function (result) {
                 if (result.error) {
                     // Inform the user if there was an error.
                     var errorElement = document.getElementById('card-errors');
@@ -325,7 +373,10 @@
                     // Send the token to your server.
                     stripeTokenHandler(result.token);
                 }
-            });
+                })
+                .catch(function(reason) {
+                    console.log(reason)
+            });;
         });
 
         // Submit the form with the token ID.
@@ -337,7 +388,6 @@
             hiddenInput.setAttribute('name', 'stripeToken');
             hiddenInput.setAttribute('value', token.id);
             form.appendChild(hiddenInput);
-
             // Submit the form
             form.submit();
         }

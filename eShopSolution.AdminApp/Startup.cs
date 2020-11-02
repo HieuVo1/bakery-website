@@ -45,6 +45,7 @@ namespace eShopSolution.AdminApp
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                .AddCookie(options =>
                {
+                   options.Cookie.Name = "CookiLogin";
                    options.LoginPath = "/Login/index/";
                    options.AccessDeniedPath = "/User/Forbidden/";
                });

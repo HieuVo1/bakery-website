@@ -357,7 +357,12 @@ namespace eShopSolution.Application.System.Users
 
                 return new ApiResultSuccess<VerificationViewModel>(model);
             }
-            return new ApiResultErrors<VerificationViewModel>("Register failed");
+            string errors = string.Empty;
+            foreach(var error in result.Errors)
+            {
+                errors += error.Description;
+            }
+            return new ApiResultErrors<VerificationViewModel>(errors);
 
         }
 

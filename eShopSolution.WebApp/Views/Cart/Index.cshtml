@@ -9,8 +9,8 @@
         <h3 class="ps-section__title">OUR BAKERY</h3>
         <div class="ps-breadcrumb">
             <ol class="breadcrumb">
-                <li><a href="index.html">Home</a></li>
-                <li class="active">Cart</li>
+                <li><a href="/">Home</a></li>
+                <li class="current"><a href="/cart">Carts</a></li>
             </ol>
         </div>
     </div>
@@ -40,7 +40,7 @@
                                     <td>
                                         <div class="ps-product--cart"><img src="@item.Product.ImagePath" alt=""><a asp-action="detail" asp-controller="product" asp-route-productId="@item.Product.Id">@item.Product.Name</a></div>
                                     </td>
-                                    <td>@item.Product.Price</td>
+                                    <td>@string.Format("{0:C}", item.Product.Price)</td>
                                     <td>
                                         <div class="form-group--number" data-id="@item.Product.Id">
                                             <button class="minus"><span>-</span></button>
@@ -48,7 +48,7 @@
                                             <button class="plus"><span>+</span></button>
                                         </div>
                                     </td>
-                                    <td><span class="total-row" data-price="@item.Product.Price">@(item.Product.Price*item.Quantity)</span></td>
+                                    <td><span class="total-row" data-price="@item.Product.Price">@string.Format("{0:C}", item.Product.Price * item.Quantity)</span></td>
                                     <td>
                                         <div class="ps-cart-listing__remove" data-id="@item.Product.Id"></div>
                                     </td>
@@ -73,7 +73,7 @@
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 ">
                             <div class="ps-cart__total">
-                                <p>Total Price: <span data-price="@ViewBag.total" class="ps-cart__totalPrice">@ViewBag.total</span></p>
+                                <p>Total Price: <span data-price="@ViewBag.total" class="ps-cart__totalPrice">@string.Format("{0:C}", ViewBag.total)</span></p>
                                 <form asp-controller="checkout" asp-action="index" method="post">
                                     <input type="hidden" name="PromotionId" class="promotionId" />
                                     <input type="hidden" name="PromotionPrice" class="promotionPrice" />
@@ -112,6 +112,10 @@
         @section Scripts{
                 <script>
                     $(document).ready(function () {
+                        var formatter = new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                        });
                         $(".plus").click(function (e) {
                             e.preventDefault();
                             var productId = $(this).parent().attr("data-id");
@@ -119,9 +123,9 @@
                             var newValue = parseInt(quantity) + 1;
                             var price = parseInt($(this).parent().parent().next().children().attr("data-price"));
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
-                            $(this).parent().parent().next().children().html(price * newValue);
+                            $(this).parent().parent().next().children().html(formatter.format(price * newValue));
 
-                            $('.ps-cart__totalPrice').html(total + price);
+                            $('.ps-cart__totalPrice').html(formatter.format(total + price));
                             $(".ps-cart__totalPrice").attr("data-price", total + price);
                             $(this).prev().val(newValue);
                             $.post("https://localhost:5002/cart/update",
@@ -144,9 +148,9 @@
                             var price = $(this).parent().parent().next().children().attr("data-price");
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
                             //updatePriceForProduct
-                            $(this).parent().parent().next().children().html(parseInt(price) * newValue);
+                            $(this).parent().parent().next().children().html(formatter.format(parseInt(price) * newValue));
                             //updatePriceForAll
-                            $('.ps-cart__totalPrice').html(total - price);
+                            $('.ps-cart__totalPrice').html(formatter.format(total - price));
                             $(".ps-cart__totalPrice").attr("data-price", total - price);
                             //UpdateValueOfInput
                             $(this).next().val(newValue);
@@ -166,7 +170,7 @@
                             var productId = $(this).attr("data-id");
                             var price = parseInt($(this).parent().prev().children().html());
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
-                            $('.ps-cart__totalPrice').html(total - price);
+                            $('.ps-cart__totalPrice').html(formatter.format(total - price));
                             $(".ps-cart__totalPrice").attr("data-price", total - price);
                             var that = this;
                             $.post("https://localhost:5002/cart/delete",
@@ -198,8 +202,8 @@
                                 newPrice = 0;
                             }
                             var total = parseInt($(".ps-cart__totalPrice").attr("data-price"));
-                            $(this).parent().parent().next().children().html(newPrice);
-                            $('.ps-cart__totalPrice').html(total + newPrice - oldPrice);
+                            $(this).parent().parent().next().children().html(formatter.format(newPrice));
+                            $('.ps-cart__totalPrice').html(formatter.format(total + newPrice - oldPrice));
                             $(".ps-cart__totalPrice").attr("data-price", total + newPrice - oldPrice);
                             $.post("https://localhost:5002/cart/update",
                                 {
@@ -222,20 +226,21 @@
                                 success: function (res) {
                                     if (res.isSuccessed == true) {
                                         console.log(res)
-                                        $('.ps-cart__totalPrice').html(total - parseInt(res.resultObject.discountAmount));
+                                        $('.ps-cart__totalPrice').html(formatter.format(total - parseInt(res.resultObject.discountAmount)));
                                         $('.promotionId').val(res.resultObject.id);
                                         $('.promotionPrice').val(res.resultObject.discountAmount);
                                     }
                                     else {
-                                        $('.ps-cart__totalPrice').html(total);
-                                        $('.promotionId').val();
-                                        $('.promotionPrice').val();
+                                       
+                                        $('.ps-cart__totalPrice').html(formatter.format(total));
+                                        $('.promotionId').val(0);
+                                        $('.promotionPrice').val(0);
                                     }
                                 },
                                 error: function () {
-                                    $('.ps-cart__totalPrice').html(total);
-                                    $('.promotionId').val();
-                                    $('.promotionPrice').val();
+                                    $('.ps-cart__totalPrice').html(formatter.format(total));
+                                    $('.promotionId').val(0);
+                                    $('.promotionPrice').val(0);
                                 }
                                 
                             });

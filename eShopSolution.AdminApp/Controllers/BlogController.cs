@@ -61,8 +61,8 @@ namespace eShopSolution.AdminApp.Controllers
         {
             var blog = await _blogService.GetById(blogId);
             var categories = await GetListCategoryAsync(languageDefauleId);
-            ViewData["blog"] = blog.ResultObject;
-            var index = categories.FindIndex(x => x.Name == blog.ResultObject.CategoryName);
+            ViewData["blog"] = blog.ResultObject.Items[0];
+            var index = categories.FindIndex(x => x.Name == blog.ResultObject.Items[0].CategoryName);
             //Swap
             if (index != 0)
             {

@@ -16,7 +16,7 @@
                 @{
                     if (ViewBag.IsLogged == true)
                     {
-                        <a class="ps-img-user-btn" href="#">
+                        <a class="ps-img-user-btn" asp-action="Profile" asp-controller="user">
                             <img height="30" width="30" class="img-user" src="@ViewBag.ImagePath" />
                         </a>
                         <div class="btn-group ps-dropdown">

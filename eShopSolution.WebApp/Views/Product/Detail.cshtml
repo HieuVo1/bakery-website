@@ -199,9 +199,9 @@
                                     <div class="ps-badge ps-badge--new"><span>New</span></div>
                                     <a class="ps-product__overlay" asp-action="detail" asp-controller="product" asp-route-productId="@product.Id"></a><img height="260" width="260" src="@product.ImagePath" alt="">
                                     <ul class="ps-product__action">
-                                        <li><a class="popup-modal" href="#quickview-modal" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
-                                        <li><a href="#" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
-                                        <li><a href="#" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
+                                        <li><a href="javascript:void(0)" data-effect="mfp-zoom-out" data-tooltip="View"><i class="ps-icon--search"></i></a></li>
+                                        <li><a href="javascript:void(0)" data-tooltip="Add to wishlist"><i class="ps-icon--heart"></i></a></li>
+                                        <li><a href="javascript:void(0)" data-tooltip="Compare"><i class="ps-icon--reload"></i></a></li>
                                         <li><a href="#" class="AddToCart" data-id="@product.Id" data-tooltip="Add to cart"><i class="ps-icon--shopping-cart"></i></a></li>
                                     </ul>
                                 </div>
@@ -219,7 +219,7 @@
                                         <option value="1">4</option>
                                         <option value="5">5</option>
                                     </select>
-                                    <p class="ps-product__price">@product.Price VNĐ</p>
+                                    <p class="ps-product__price">@string.Format("{0:C}", product.Price)</p>
                                 </div>
                             </div>
                         }
@@ -235,46 +235,69 @@
         <partial name="../Shared/_Footer.cshtml" />
 
         @section Scripts{
-                <script>
-                    $(document).ready(function () {
-                        $(".plus").click(function (e) {
-                            e.preventDefault();
-                            var quantity = $(this).prev().val();
-                            var newValue = parseInt(quantity) + 1;
-                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
-                            $('.ps-product__price').html(price * newValue);
-                            $(this).prev().val(newValue);
-                        });
-                        $(".minus").click(function (e) {
-                            e.preventDefault();
-                            var quantity = $(this).next().val();
-                            var newValue = (parseInt(quantity) - 1 >= 0) ? (parseInt(quantity) - 1) : 0;
-                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
-                            $('.ps-product__price').html(price * newValue);
-                            $(this).next().val(newValue);
-                        });
-                        function updateCart() {
-                            $.get("https://localhost:5002/cart/getcart",
-                                function (data, status) {
-                                    $(".ps-cart").replaceWith(data);
-                                });
+                <script src="~/assets/js/notify.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $(".plus").click(function (e) {
+                        e.preventDefault();
+                        var quantity = $(this).prev().val();
+                        var newValue = parseInt(quantity) + 1;
+                        var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                        //$('.ps-product__price').html(price * newValue);
+                        $(this).prev().val(newValue);
+                    });
+                    $(".minus").click(function (e) {
+                        e.preventDefault();
+                        var quantity = $(this).next().val();
+                        var newValue = (parseInt(quantity) - 1 >= 0) ? (parseInt(quantity) - 1) : 0;
+                        var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                        //$('.ps-product__price').html(price * newValue);k
+                        $(this).next().val(newValue);
+                    });
+                    function updateCart() {
+                        $.get("https://localhost:5002/cart/getcart",
+                            function (data, status) {
+                                $(".ps-cart").replaceWith(data);
+                            });
+                    }
+                    $(".quantity").on("input", function () {
+                        // Print entered value in a div box
+                        var newValue = parseInt($(this).val());
+                        var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
+                        var newPrice = price * newValue
+                        if (isNaN(newPrice)) {
+                            newPrice = 0;
                         }
-                        $(".quantity").on("input", function () {
-                            // Print entered value in a div box
-                            var newValue = parseInt($(this).val());
-                            var price = parseInt($(this).parent().parent().prev().prev().prev().attr("data-price"));
-                            var newPrice = price * newValue
-                            if (isNaN(newPrice)) {
-                                newPrice = 0;
-                            }
-                            $('.ps-product__price').html(newPrice);
-                        });
-                        $("#formOrder").submit(function (e) {
-                            var quantity = parseInt($('.quantity').val());
-                            var price = parseInt($('.ps-product__price').val());
-                            $('.inputQuantity').val(quantity);
-                            $('.PriceChange').val(price);
+                        $('.ps-product__price').html(newPrice);
+                    });
+                    $("#formOrder").submit(function (e) {
+                        var quantity = parseInt($('.quantity').val());
+                        var price = parseInt($('.ps-product__price').val());
+                        $('.inputQuantity').val(quantity);
+                        $('.PriceChange').val(price);
+                    });
+                });
+            </script>
+            <script>
+                    $(document).ready(function () {
+                        $(".AddToCart").click(function (e) {
+                            e.preventDefault();
+                            var productId = $(this).attr("data-id");
+                            $.post("https://localhost:5002/cart/buy",
+                                {
+                                    Quantity: 1,
+                                    ProductID: productId,
+                                    CartId : "@ViewBag.CartId"
+                                },
+                                function (data, status) {
+                                    $.get("https://localhost:5002/cart/getcart",
+                                        function (data, status) {
+                                            $(".ps-cart").replaceWith(data);
+                                            $.notify("Added to cart", "success");
+                                        });
+                                });
+
                         });
                     });
-                </script>
+            </script>
         }

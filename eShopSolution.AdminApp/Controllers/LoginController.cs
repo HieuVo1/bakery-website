@@ -64,7 +64,7 @@ namespace eShopSolution.AdminApp.Controllers
             HttpContext.Session.SetString("Token", result.ResultObject);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddSeconds(60),
                 IsPersistent = request.RememberMe // có sử dụng persistent cookie
             };
 
